@@ -18,8 +18,9 @@ Private m_loggedAt As Date
 Private m_pwdLastUpdateAt As Date
 Private m_isPwdExpired As Boolean
 
-Private m_sqlQuery As clsSqlQuery
 Private m_auditsColl As Collection
+
+Private m_record As CRecord
 
 
 '***************************************************************************************************************************************************************
@@ -28,6 +29,22 @@ Private m_auditsColl As Collection
 
 Public Property Get Self() As CUser
     Set Self = Me
+End Property
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'   Property      : Record
+'   Purpose       : The Record of the user
+'
+'   Date            Developer           Action
+'   ---------------------------------------------------------------------------------------
+'   2025/01/09      Jude Parfait        Created
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Public Property Set Record(oRecord As CRecord)
+    Set m_record = oRecord
+End Property
+
+Public Property Get Record() As CRecord
+    Set Record = m_record
 End Property
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -174,22 +191,6 @@ Public Property Get IsPwdExpired() As Boolean
     IsPwdExpired = m_isPwdExpired
 End Property
 
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-'   Property      : SqlQuery
-'   Purpose       : Determine whether the User password is expired
-'
-'   Date            Developer           Action
-'   ---------------------------------------------------------------------------------------
-'   2025/01/09      Jude Parfait        Created
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Property Set SqlQuery(oSqlQuery As clsSqlQuery)
-    Set m_sqlQuery = oSqlQuery
-End Property
-
-Public Property Get SqlQuery() As clsSqlQuery
-    Set SqlQuery = m_sqlQuery
-End Property
-
 ' AuditsList
 Public Property Get AuditsList() As Collection
     Set AuditsList = m_auditsColl
@@ -200,19 +201,23 @@ End Property
 '    Public functions and subs
 '*****************************************************************************************************************************
 
-Public Sub Init(lId As Long, Optional sLogin As String = "", Optional sName As String = "")
+Public Sub Init(lId As Long, Optional oRecord As CRecord = Nothing, Optional sLogin As String = "", Optional sName As String = "")
     Me.Id = lId
     
-    If sLogin = "" Then
-        LoadFromDB
-    Else
-        Me.LogIn = sLogin
-        Me.Name = sName
+    If Not oRecord Is Nothing Then
+        Set Me.Record = oRecord
     End If
+    
+    'If sLogin = "" Then
+    '    LoadFromDB
+    'Else
+    '    Me.LogIn = sLogin
+    '    Me.Name = sName
+    'End If
 End Sub
 
 Public Function TryLogIn(sLogin As String, sPwd As String) As Boolean
-    Dim userData As Variant, sqlRst As String, recordCount As Long, i As Integer, audit As clsAudit
+    Dim userData As Variant, sqlRst As String, recordCount As Long, i As Integer, audit As CAudit
     
     Set audit = Me.StartNewAudit("Connexion à l'Application, Login: " & sLogin)
     
@@ -235,7 +240,7 @@ Public Function TryLogIn(sLogin As String, sPwd As String) As Boolean
 End Function
 
 Public Function Logout() As Boolean
-    Dim audit As clsAudit
+    Dim audit As CAudit
     
     Set audit = Me.StartNewAudit("Déconnexion de l'Application")
     audit.EndWithSuccess
@@ -246,7 +251,7 @@ Public Sub SetRole(lId As Long, sTitle As String)
 End Sub
 
 Public Function SavePwd(sPwd As String, Optional auditAction As Boolean = True) As Boolean
-    Dim userData As Variant, sqlRst As String, recordCount As Long, i As Integer, audit As clsAudit
+    Dim userData As Variant, sqlRst As String, recordCount As Long, i As Integer, audit As CAudit
     
     If auditAction Then
         Set audit = loggedUser.StartNewAudit("Modification Mot de Passe Utilisateur (" & Me.Id & ") " & Me.Name)
@@ -279,7 +284,7 @@ Public Function IsPwdSameAs(clearPwdToCheck As String)
 End Function
 
 Public Function SaveLastLogin(Optional auditAction As Boolean = True) As Boolean
-    Dim userData As Variant, sqlRst As String, recordCount As Long, i As Integer, audit As clsAudit
+    Dim userData As Variant, sqlRst As String, recordCount As Long, i As Integer, audit As CAudit
     
     If auditAction Then
         Set audit = loggedUser.StartNewAudit("Modification Derniere date Login Utilisateur (" & Me.Id & ") " & Me.Name)
@@ -332,9 +337,9 @@ Public Function Can(arrPermissions As Variant) As Boolean
     Can = False
 End Function
 
-Public Function StartNewAudit(sAction As String) As clsAudit
-    Dim oAudit As clsAudit
-
+Public Function StartNewAudit(sAction As String) As CAudit
+    Dim oAudit As CAudit
+    
     Set oAudit = NewAudit(Me, sAction)
     
     ' Add Audit to The Audits Collection

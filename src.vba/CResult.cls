@@ -1,88 +1,89 @@
 'Build 000
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-' Module    : CUIControl
+' Module    : CResult
 ' Author    : Jude Parfait NGOM NZE (jud10parfait@gmail.com)
-' Created   : 2025/01/08
-' Purpose   : UI Control Class
+' Created   : 2025/01/12
+' Purpose   : An Operation result
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 Option Explicit
 
-Private m_control_inner As IUIControl
-Private m_user As CUser
+Private m_is_ok As Boolean
+Private m_code As Long
+Private m_message As String
+Private m_label As String
 
-Private m_record As CRecord
 
 
 '***************************************************************************************************************************************************************
 '   Public Properties
 '***************************************************************************************************************************************************************
 
-Public Property Get Self() As CUIControl
+Public Property Get Self() As CResult
     Set Self = Me
 End Property
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-'   Property      : ControlInner
-'   Purpose       : The Inner Control bearing the UForm.XXX control
+'   Property      : IsOK
+'   Purpose       : Tells if the operation has been well performed
 '
 '   Date            Developer           Action
 '   ---------------------------------------------------------------------------------------
-'   2025/01/08      Jude Parfait        Created
+'   2025/01/12      Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Property Set ControlInner(oControlInner As IUIControl)
-    Set m_control_inner = oControlInner
+Public Property Let IsOK(blnIsOK As Boolean)
+    m_is_ok = blnIsOK
 End Property
 
-Public Property Get ControlInner() As IUIControl
-    Set User = m_control_inner
+Public Property Get IsOK() As Boolean
+    IsOK = m_is_ok
 End Property
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-' Property      : Name
-' Purpose       : The UI Control s name
+'   Property      : Code
+'   Purpose       : The Result Code
+'
+'   Date            Developer           Action
+'   ---------------------------------------------------------------------------------------
+'   2025/01/12      Jude Parfait        Created
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Public Property Let Code(lngCode As Long)
+    m_code = lngCode
+End Property
+
+Public Property Get Code() As Long
+    Code = m_code
+End Property
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+' Property      : Message
+' Purpose       : The Result Message
 '
 ' Date          Developer           Action
 ' ---------------------------------------------------------------------------------------
-' 2025/01/11    Jude Parfait        Created
+' 2025/01/08    Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Property Let Name(sName As String)
-    Me.ControlInner.Name = sName
+Public Property Let Message(strMessage As String)
+    m_message = strMessage
 End Property
 
-Public Property Get Name() As String
-    Name = Me.ControlInner.Name
+Public Property Get Message() As String
+    Message = m_message
 End Property
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-' Property      : Value
-' Purpose       : The UI Control s value
+' Property      : Label
+' Purpose       : The Result Label
 '
 ' Date          Developer           Action
 ' ---------------------------------------------------------------------------------------
-' 2025/01/11    Jude Parfait        Created
+' 2025/01/18    Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Property Let Value(varValue As Variant)
-    Me.ControlInner.Value = varValue
+Public Property Let Label(strLabel As String)
+    m_label = strLabel
 End Property
 
-Public Property Get Value() As Variant
-    Value = Me.ControlInner.Value
-End Property
-
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-' Property      : Record
-' Purpose       : The UI Record s for BLL operations
-'
-' Date          Developer           Action
-' ---------------------------------------------------------------------------------------
-' 2025/01/11    Jude Parfait        Created
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Property Set Record(oRecord As CRecord)
-    Set Record = oRecord
-End Property
-
-Public Property Get Record() As CRecord
-    Set Record = m_record
+Public Property Get Label() As String
+    Label = m_label
 End Property
 
 
@@ -94,41 +95,43 @@ End Property
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 '   Subroutine    : Init
 '   Purpose       : Initialize the Object
-'   Arguments     : IUIControl        The Inner Control
+'   Arguments     : blnIsOK             Tells if the operation has been well performed
+'                   lngCode             The Result Code
+'                   strMessage          The Result Message
+'
 '   Returns       : Void
 '
 '   Date            Developer           Action
 '   ---------------------------------------------------------------------------------------
-'   2025/01/08      Jude Parfait        Created
+'   2025/01/12      Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Sub Init(oControlInner As IUIControl)
-    Set Me.ControlInner = oControlInner
+Public Sub Init(Optional strLabel As String = "", Optional blnIsOK As Boolean = False, Optional lngCode As Long = 0, Optional strMessage As String = "")
+    
+    Me.Label = strLabel
+    Me.IsOK = blnIsOK
+    Me.Code = lngCode
+    Me.Message = strMessage
 End Sub
-`
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-' Function      : Clear
-' Purpose       : Clear the control
-' Returns       : Boolean           True if clear OK, False if something goes wrong
-'
-' Date          Developer           Action
-' ---------------------------------------------------------------------------------------
-' 2025/01/11    Jude Parfait        Created
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Function Clear() As Boolean
-    Me.ControlInner.Clear
-End Function
 
-Public Sub ExecuteAction(oUIControlAction As IUIControlAction)
-    If Not IsEmpty(oUIControlAction.ActionPermissions) Then
-        If Not loggedUser.Can(Me.IUCTLACTION_ActionPermissions) Then
-            Exit Sub
-        End If
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'   Subroutine    : DisplayMessage
+'   Purpose       : Display the Result Message
+'   Arguments     :
+'
+'   Returns       : Void
+'
+'   Date            Developer           Action
+'   ---------------------------------------------------------------------------------------
+'   2025/01/12      Jude Parfait        Created
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Public Sub DisplayMessage()
+    If Me.IsOK Then
+        MsgBox "Erreur de Traitement !" & vbCrLf & Me.Message, vbInformation, SettingApp.Name
+    Else
+        MsgBox "Succes de Traitement !" & vbCrLf & Me.Message, vbCritical, SettingApp.Name
     End If
 End Sub
 
-'***************************************************************************************************************************************************************
-'    Private Functions and Subs
-'***************************************************************************************************************************************************************
 
 
 '***************************************************************************************************************************************************************
@@ -136,6 +139,9 @@ End Sub
 '***************************************************************************************************************************************************************
 
 Private Sub Class_Initialize()
-    
+    m_code = 0
+End Sub
+
+Private Sub Class_Terminate()
 End Sub
 
