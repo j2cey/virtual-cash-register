@@ -8,90 +8,17 @@
 Option Explicit
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-' Property      : Name
-' Purpose       : The UI Control s name
+'   Function    : BuildConnectionString
+'   Purpose     : Construct a full connection string, set local properties, and
+'                 return string to calling routine.
 '
-' Date          Developer           Action
-' ---------------------------------------------------------------------------------------
-' 2025/01/08    Jude Parfait        Created
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Property Let Name(sName As String)
-End Property
-
-Public Property Get Name() As String
-End Property
-
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-' Property      : Value
-' Purpose       : The UI Control s value
+'   Arguments   :
 '
-' Date          Developer           Action
-' ---------------------------------------------------------------------------------------
-' 2025/01/08    Jude Parfait        Created
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Property Let Value(varValue As Variant)
-End Property
-
-Public Property Get Value() As Variant
-End Property
-
-
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-' Function      : Clear
-' Purpose       : Clear the control
-' Returns       : Boolean           True if clear OK, False if something goes wrong
+'   Returns     : String
 '
-' Date          Developer           Action
-' ---------------------------------------------------------------------------------------
-' 2025/01/08    Jude Parfait        Created
+'   Date        Developer       Action
+'   ---------------------------------------------------------------------------------------
+'   2025/01/19  Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Function Clear() As Boolean
+Public Function BuildConnectionString() As String
 End Function
-
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-' Function      : SetFormatNormal
-' Purpose       : Set the Control Format as Normal
-' Returns       : Boolean           True if clear OK, False if something goes wrong
-'
-' Date          Developer           Action
-' ---------------------------------------------------------------------------------------
-' 2025/01/08    Jude Parfait        Created
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Function SetFormatNormal() As Boolean
-End Function
-
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-' Function      : SetFormatError
-' Purpose       : Set the Control Format as Error
-' Returns       : Boolean           True if clear OK, False if something goes wrong
-'
-' Date          Developer           Action
-' ---------------------------------------------------------------------------------------
-' 2025/01/08    Jude Parfait        Created
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Function SetFormatError() As Boolean
-End Function
-
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-' Function      : SetFormatError
-' Purpose       : Set the Control Format as Error
-' Returns       : Boolean           True if clear OK, False if something goes wrong
-'
-' Date          Developer           Action
-' ---------------------------------------------------------------------------------------
-' 2025/01/08    Jude Parfait        Created
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Function OnHover(uAction As enuHoverAction) As Boolean
-End Function
-
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-' Function      : SetEnabled
-' Purpose       : Set the Control Enabled Value
-' Returns       : Void
-'
-' Date          Developer           Action
-' ---------------------------------------------------------------------------------------
-' 2025/01/09    Jude Parfait        Created
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Sub SetEnabled(blnEnabledValue As Boolean)
-End Sub

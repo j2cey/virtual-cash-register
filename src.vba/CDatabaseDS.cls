@@ -1,6 +1,6 @@
 'Build 000
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-' Module    : DatabaseDS
+' Module    : CDatabaseDS
 ' Author    : Jude Parfait NGOM NZE (jud10parfait@gmail.com)
 ' Created   : 2025/01/18
 ' Purpose   : Database Data Source
@@ -20,7 +20,7 @@ Private m_inner_database As IDatabaseDS
 '   Public Properties
 '***************************************************************************************************************************************************************
 
-Public Property Get Self() As DatabaseDS
+Public Property Get Self() As CDatabaseDS
     Set Self = Me
 End Property
 

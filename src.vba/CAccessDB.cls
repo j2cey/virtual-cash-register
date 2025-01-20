@@ -13,6 +13,7 @@ Private m_connection_string As String
 Private m_current_server As String
 Private m_current_database As String
 
+Private m_upper_database As DatabaseDS
 Private m_inner_database As IAccessDB
 
 Implements IDatabaseDS
@@ -114,39 +115,170 @@ Public Property Get InnerDatabase() As IAccessDB
 End Property
 
 
+'***************************************************************************************************************************************************************
+'    Private Functions and Subs
+'***************************************************************************************************************************************************************
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'   Subroutine    : ShowErrorMessages
+'   Purpose       : IConstruct a comprehensive error message based on the passed objects.
+'   Arguments     : StandardErrorObject
+'                   SourceModule
+'                   SourceMethod
+'
+'   Returns       : Void
+'
+'   Date            Developer           Action
+'   ---------------------------------------------------------------------------------------
+'   2025/01/12      Jude Parfait        Created
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Public Sub ShowErrorMessages(ByVal StandardErrorObject As VBA.ErrObject, _
+    ByVal SourceModule As String, ByVal SourceMethod As String)
+    
+    Dim strMsg As String
+    'Handle the standard error, if any.
+    If StandardErrorObject.Number <> 0 Then
+        strMsg = "Error: " & CStr(Err.Number) & vbCrLf & vbCrLf & "Description: " & _
+        Err.Description & vbCrLf & vbCrLf
+    End If
+    'Include the database-related errors, if any.
+    If Not (gobjDB Is Nothing) Then
+        strMsg = strMsg & gobjDB.ADOErrors()
+    End If
+    'Finally, tack on the module/method names.
+    strMsg = strMsg & SourceModule & "::" & SourceMethod & vbCrLf
+    
+    Err.Clear
+    MsgBox strMsg, vbCritical, "Contact Technical Support For Assistance"
+End Sub
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'   Function    : BuildConnectionString
+'   Purpose     : Construct a full connection string, set local properties, and
+'                 return string to calling routine.
+'
+'   Arguments   :
+'
+'   Returns     : String
+'
+'   Date        Developer       Action
+'   ---------------------------------------------------------------------------------------
+'   2025/01/19  Jude Parfait        Created
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Public Function BuildConnectionString() As String
+    BuildConnectionString = InnerDatabase.BuildConnectionString
+End Function
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'   Function    : OpenDatabase
+'   Purpose     : Open a connection to the specified server and database, if not already open.
+'                 If the parameters are not specified, then just re-use the last connection string that was created.
+'   Arguments   :
+'
+'   Returns     : Boolean
+'
+'   Date        Developer       Action
+'   ---------------------------------------------------------------------------------------
+'   2025/01/19  Jude Parfait        Created
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Public Function OpenDatabase() As Boolean
+    Dim blnNewConnect As Boolean, blnReturn As Boolean, strDataSource As String
+    Dim strDB As String, strConn As String
+    
+    blnReturn = True
+    blnNewConnect = True
+    
+    On Error GoTo ODError
+        If Not Me.Connection Is Nothing Then
+            If Me.Connection.State And adStateOpen Then
+                'Connection is alread defined and opened.
+                blnNewConnect = False
+            End If
+        End If
+        
+        If blnNewConnect Then
+            'Must create a new connection
+            If TargetServer = "" Or TargetDatabase = "" Then
+                'Calling routine has not specified Server or Database values;
+                ' default to last used.
+                If Len(mstrConnectionString) > 0 Then
+                    strConn = mstrConnectionString
+                Else
+                    'If full connection string is blank, use the individual Server/Environment and
+                    ' Database variables to determine connection.
+                    strConn = BuildConnectionString(mstrDatabaseType, mstrCurrentServer, _
+                    mstrCurrentDatabase, mblnIntegratedSecurity)
+                End If
+            Else
+                'Build connection string, based on passed arguments
+                strConn = BuildConnectionString(DatabaseType, TargetServer, TargetDatabase, _
+                mblnIntegratedSecurity)
+            End If
+            
+            mobjConn.ConnectionString = strConn
+            mobjConn.ConnectionTimeout = 30
+            mobjConn.Open
+        End If
+        
+ODResume:
+    OpenDB = blnReturn
+    Exit Function
+ODError:
+    blnReturn = False
+    ShowErrorMessages Err, mstrModuleName, "OpenDB"
+    Resume ODResume
+End Function
+
+
 
 '***************************************************************************************************************************************************************
 '   Interfaces Implementation
 '***************************************************************************************************************************************************************
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-'   Function    : IDatabaseDS_LastResult
-'   Purpose     : Get / Set The Last Result
+'   Function    : IDatabaseDS_ServerOrPath
+'   Purpose     : Get / Set The Server IP/Name or folder Path
 '
 '   Date        Developer       Action
 '   ---------------------------------------------------------------------------------------
 '   2025/01/12  Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Property Get IDatabaseDS_LastResult() As CResult
-    Set IRecordableBL_LastResult = Me.LastResult
+Public Property Get IDatabaseDS_ServerOrPath() As CResult
+    IRecordableBL_LastResult = Me.CurrentServer
 End Property
 
-Public Property Set IDatabaseDS_LastResult(RHS As CResult)
-    Set Me.LastResult = RHS
+Public Property Let IDatabaseDS_ServerOrPath(RHS As String)
+    Me.CurrentServer = RHS
 End Property
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-'   Function    : IDatabaseDS_FieldsList
-'   Purpose     : Get / Set Fields List
+'   Function    : IDatabaseDS_Name
+'   Purpose     : Get / Set The Database Name
 '
 '   Date        Developer       Action
 '   ---------------------------------------------------------------------------------------
 '   2025/01/12  Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Property Get IDatabaseDS_FieldsList() As Collection
-    Set IRecordableBL_FieldsList = Me.FieldsList
+Public Property Get IDatabaseDS_Name() As String
+    IRecordableBL_FieldsList = Me.CurrentDatabase
 End Property
 
-Public Property Set IDatabaseDS_FieldsList(RHS As Collection)
-    Set Me.FieldsList = RHS
+Public Property Let IDatabaseDS_Name(RHS As String)
+    Me.CurrentDatabase = RHS
 End Property
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'   Function    : IDatabaseDS_OpenDatabase
+'   Purpose     : Open a connection to the specified server and database, if not already open.
+'                 If the parameters are not specified, then just re-use the last connection string that was created.
+'   Arguments   :
+'
+'   Returns     : Boolean
+'
+'   Date        Developer       Action
+'   ---------------------------------------------------------------------------------------
+'   2025/01/19  Jude Parfait        Created
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Public Function IDatabaseDS_OpenDatabase() As Boolean
+    IDatabaseDS_OpenDatabase = Me.OpenDatabase
+End Function

@@ -72,6 +72,22 @@ Public Function CloseDatabase() As Boolean
 End Function
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'   Function    : BuildConnectionString
+'   Purpose     : Construct a full connection string, set local properties, and
+'                 return string to calling routine.
+'
+'   Arguments   :
+'
+'   Returns     : String
+'
+'   Date        Developer       Action
+'   ---------------------------------------------------------------------------------------
+'   2025/01/19  Jude Parfait        Created
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Public Function BuildConnectionString() As String
+End Function
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 '   Function    : GetRecordset
 '   Purpose     : Return a disconnected recordset from the database.
 '   Arguments   : strSQL        The SQL statement
