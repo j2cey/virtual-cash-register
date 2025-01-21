@@ -14,6 +14,8 @@ Private m_previous_value As Variant
 
 Private m_is_required As Boolean
 Private m_is_search_criteria As Boolean
+Private m_is_selectable As Boolean
+Private m_is_savable As Boolean
 
 Private m_fields_list As Collection
 Private m_last_result As CResult
@@ -127,6 +129,38 @@ End Property
 
 Public Property Get IsSearchCriteria() As Boolean
     IsSearchCriteria = m_is_search_criteria
+End Property
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'   Property      : IsSelectable
+'   Purpose       : Determine if this field have to be selected
+'
+'   Date            Developer           Action
+'   ---------------------------------------------------------------------------------------
+'   2025/01/21      Jude Parfait        Created
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Public Property Let IsSelectable(blnIsSelectable As Boolean)
+    m_is_selectable = blnIsSelectable
+End Property
+
+Public Property Get IsSelectable() As Boolean
+    IsSelectable = m_is_selectable
+End Property
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'   Property      : IsSavable
+'   Purpose       : Determine if this field have to be saved
+'
+'   Date            Developer           Action
+'   ---------------------------------------------------------------------------------------
+'   2025/01/21      Jude Parfait        Created
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Public Property Let IsSavable(blnIsSavable As Boolean)
+    m_is_savable = blnIsSavable
+End Property
+
+Public Property Get IsSavable() As Boolean
+    IsSelectable = m_is_savable
 End Property
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''

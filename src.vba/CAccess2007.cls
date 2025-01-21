@@ -84,6 +84,38 @@ Public Function BuildConnectionString() As String
     End If
 End Function
 
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'   Function    : BuildSelectStatement
+'   Purpose     : Construct a full SELECT statement, set local properties, and
+'                 return string to calling routine.
+'
+'   Arguments   : CDatabaseDS   currentDb   The relevant database to build connection string
+'
+'   Returns     : String
+'
+'   Date        Developer       Action
+'   ---------------------------------------------------------------------------------------
+'   2025/01/21  Jude Parfait        Created
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Public Function BuildSelectStatement(currentDb As CRecordableDA, ByRef lngCriterionCount As Long) As String
+    Dim finalRqstStr As String
+
+    lngCriterionCount = 0
+    finalRqstStr = "SELECT * FROM " & cu
+    If Not (lIdCriteria = -1) Then
+        Me.CriterionProvidedCount = 1
+        Me.RequestStr = Me.RequestStr & " WHERE Id = @Id"
+    End If
+    
+    If Not oCriterionFields Is Nothing Then
+        AddCriterionToRequest oCriterionFields
+    End If
+    
+    If Me.CriterionProvidedCount = 0 And lLimitLines > 0 Then
+        Me.RequestStr = SqlSelectSetLIMIT(Me.RequestStr, lLimitLines)
+    End If
+End Function
+
 
 
 '***************************************************************************************************************************************************************
