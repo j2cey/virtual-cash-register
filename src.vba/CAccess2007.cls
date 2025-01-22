@@ -43,6 +43,12 @@ End Property
 '***************************************************************************************************************************************************************
 
 
+
+'***************************************************************************************************************************************************************
+'    Private Functions and Subs
+'***************************************************************************************************************************************************************
+
+
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 '   Function    : BuildConnectionString
 '   Purpose     : Construct a full connection string, set local properties, and return string to calling routine.
@@ -54,7 +60,7 @@ End Property
 '   ---------------------------------------------------------------------------------------
 '   2025/01/12  Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Function BuildConnectionString() As String
+Private Function GetConnectionString() As String
     Dim targetDbFullPath As String
     
     If Not Me.UpperDatabase Is Nothing Then
@@ -62,14 +68,14 @@ Public Function BuildConnectionString() As String
         
         ' Exit Sub if the CurrentServer is not set in the Upper Database
         If Me.UpperDatabase.CurrentServer = "" Then
-            BuildConnectionString = ""
-            Exit Sub
+            GetConnectionString = ""
+            Exit Function
         End If
         
         ' Exit Sub if the CurrentDatabase is not set in the Upper Database
         If Me.UpperDatabase.CurrentDatabase = "" Then
-            BuildConnectionString = ""
-            Exit Sub
+            GetConnectionString = ""
+            Exit Function
         End If
         
         'targetDbFullPath = AppPath & Application.PathSeparator & gblDbLocalFolder & Application.PathSeparator & gblDbName
@@ -78,14 +84,14 @@ Public Function BuildConnectionString() As String
         "Data Source=" & _
         targetDbFullPath & ".accdb;"
         
-        BuildConnectionString = Me.UpperDatabase.ConnectionString
+        GetConnectionString = Me.UpperDatabase.ConnectionString
     Else
-        BuildConnectionString = ""
+        GetConnectionString = ""
     End If
 End Function
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-'   Function    : BuildSelectStatement
+'   Function    : GetSelectStatement
 '   Purpose     : Construct a full SELECT statement, set local properties, and
 '                 return string to calling routine.
 '
@@ -97,14 +103,14 @@ End Function
 '   ---------------------------------------------------------------------------------------
 '   2025/01/21  Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Function BuildSelectStatement(currentDb As CRecordableDA, ByRef lngCriterionCount As Long) As String
+Private Function GetSelectStatement(currentDb As CRecordableDA, ByRef lngCriterionCount As Long) As String
     Dim finalRqstStr As String
 
     lngCriterionCount = 0
-    finalRqstStr = "SELECT * FROM " & cu
+    finalRqstStr = "SELECT * FROM " & currentDb.RecordTable
     If Not (lIdCriteria = -1) Then
         Me.CriterionProvidedCount = 1
-        Me.RequestStr = Me.RequestStr & " WHERE Id = @Id"
+        finalRqstStr = Me.RequestStr & " WHERE Id = @Id"
     End If
     
     If Not oCriterionFields Is Nothing Then
@@ -112,8 +118,44 @@ Public Function BuildSelectStatement(currentDb As CRecordableDA, ByRef lngCriter
     End If
     
     If Me.CriterionProvidedCount = 0 And lLimitLines > 0 Then
-        Me.RequestStr = SqlSelectSetLIMIT(Me.RequestStr, lLimitLines)
+        finalRqstStr = SqlSelectSetLIMIT(Me.RequestStr, lLimitLines)
     End If
+    
+    GetSelectStatement = finalRqstStr
+End Function
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'   Function    : GetInsertStatement
+'   Purpose     : Construct a full INSERT statement, set local properties, and
+'                 return string to calling routine.
+'
+'   Arguments   : CDatabaseDS   currentDb   The relevant database to build connection string
+'
+'   Returns     : String
+'
+'   Date        Developer       Action
+'   ---------------------------------------------------------------------------------------
+'   2025/01/21  Jude Parfait        Created
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Private Function GetInsertStatement(currentDb As CDatabaseDS) As String
+    GetInsertStatement = ""
+End Function
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'   Function    : GetUpdateStatement
+'   Purpose     : Construct a full UPDATE statement, set local properties, and
+'                 return string to calling routine.
+'
+'   Arguments   : CDatabaseDS   currentDb   The relevant database to build connection string
+'
+'   Returns     : String
+'
+'   Date        Developer       Action
+'   ---------------------------------------------------------------------------------------
+'   2025/01/21  Jude Parfait        Created
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Private Function GetUpdateStatement(currentDb As CDatabaseDS) As String
+    GetUpdateStatement = ""
 End Function
 
 
@@ -136,6 +178,6 @@ End Function
 '   2025/01/19  Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 Public Function IAccessDB_BuildConnectionString() As String
-    IAccessDB_BuildConnectionString = Me.BuildConnectionString()
+    IAccessDB_BuildConnectionString = Me.GetConnectionString()
 End Function
 

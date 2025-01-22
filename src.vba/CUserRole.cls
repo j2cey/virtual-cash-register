@@ -87,8 +87,8 @@ Public Sub LoadUsersInRoleToList(lbx As MSForms.ListBox)
         Set currUser = itemColl
         
         lbx.AddItem
-        lbx.list(lbx.listCount - 1, 0) = CStr(currUser.Id)
-        lbx.list(lbx.listCount - 1, 1) = CStr(currUser.Name)
+        lbx.List(lbx.listCount - 1, 0) = CStr(currUser.Id)
+        lbx.List(lbx.listCount - 1, 1) = CStr(currUser.Name)
     Next itemColl
 End Sub
 

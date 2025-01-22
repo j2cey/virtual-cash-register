@@ -545,7 +545,7 @@ Public Function GetRecordsetToArray(strSQL As String, ByRef recordCount As Long)
                     'Disconnect the recordset
                     .ActiveConnection = Nothing
                     'Get the field count
-                    lngX = .fields.count
+                    lngX = .fields.Count
                     recordCount = CLng(.recordCount)
                     arrData = .GetRows()
                 Else

@@ -112,10 +112,10 @@ Private Sub AddGroupPermissionsToList(group As Collection, lbx As MSForms.ListBo
         Set perm = itemColl
         
         lbx.AddItem
-        lbx.list(lbx.listCount - 1, 0) = ""
-        lbx.list(lbx.listCount - 1, 1) = perm.GroupKey
-        lbx.list(lbx.listCount - 1, 2) = CStr(perm.PermissionLevel)
-        lbx.list(lbx.listCount - 1, 3) = perm.permission
+        lbx.List(lbx.listCount - 1, 0) = ""
+        lbx.List(lbx.listCount - 1, 1) = perm.GroupKey
+        lbx.List(lbx.listCount - 1, 2) = CStr(perm.PermissionLevel)
+        lbx.List(lbx.listCount - 1, 3) = perm.permission
     Next itemColl
     
 End Sub

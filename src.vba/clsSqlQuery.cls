@@ -544,7 +544,7 @@ Private Sub AddToResultListBox(oRsltList As clsUCTL, lrow As Long, sValue As Str
         lbxList.AddItem
     End If
     
-    lbxList.list(lrow, lCol) = sValue
+    lbxList.List(lrow, lCol) = sValue
 End Sub
 
 Private Sub AddToResultComboBox(oRsltList As clsUCTL, lrow As Long, sValue As String)
@@ -556,10 +556,10 @@ Private Sub AddToResultComboBox(oRsltList As clsUCTL, lrow As Long, sValue As St
         ' New ID
         cbxList.AddItem sValue
         If cbxList.ColumnCount = 2 Then
-            cbxList.list(lrow, 1) = sValue
+            cbxList.List(lrow, 1) = sValue
         End If
     Else
-        cbxList.list(lrow, 0) = sValue
+        cbxList.List(lrow, 0) = sValue
     End If
     
 End Sub

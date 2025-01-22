@@ -12,8 +12,12 @@ Private m_data_source As IDataSource
 
 Private m_record_id As Long
 Private m_record_table As String
+Private m_fields_list As Collection
+Private m_previous_field_id_picked As Long
 
 Private Const DEFAULT_ID As Long = 0
+
+
 
 '***************************************************************************************************************************************************************
 '   Public Properties
@@ -87,6 +91,37 @@ Public Property Get RecordId() As Long
     RecordId = m_record_id
 End Property
 
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+' Property      : PreviousFieldIdPicked
+' Purpose       : The Field s Id picked (using of the dedicated functions)
+'
+' Date          Developer           Action
+' ---------------------------------------------------------------------------------------
+' 2025/01/21    Jude Parfait        Created
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Public Property Let PreviousFieldIdPicked(lngPreviousFieldIdPicked As Long)
+    m_previous_field_id_picked = lngPreviousFieldIdPicked
+End Property
+
+Public Property Get PreviousFieldIdPicked() As Long
+    PreviousFieldIdPicked = m_previous_field_id_picked
+End Property
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+' Property      : FieldsList
+' Purpose       : The Record s Id
+'
+' Date          Developer           Action
+' ---------------------------------------------------------------------------------------
+' 2025/01/21    Jude Parfait        Created
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Public Property Set FieldsList(oFieldsList As Collection)
+    Set m_fields_list = oFieldsList
+End Property
+
+Public Property Get FieldsList() As Collection
+    Set FieldsList = m_fields_list
+End Property
 
 
 '***************************************************************************************************************************************************************
@@ -114,6 +149,65 @@ Public Function Save() As CResult
     End If
     
     Set Save = result
+End Function
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'   Function    : List
+'   Purpose     : List or Fill values
+'   Arguments   :
+'
+'   Returns     : CResult
+'
+'   Date        Developer       Action
+'   ---------------------------------------------------------------------------------------
+'   2025/01/22  Jude Parfait        Created
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Public Function List() As CResult
+    Dim result As CResult
+    
+    Set List = result
+End Function
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'   Function    : Delete
+'   Purpose     : Delete the Object
+'   Arguments   :
+'
+'   Returns     : CResult
+'
+'   Date        Developer       Action
+'   ---------------------------------------------------------------------------------------
+'   2025/01/22  Jude Parfait        Created
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Public Function Delete() As CResult
+    Dim result As CResult
+    
+    Set Delete = result
+End Function
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'   Function    : AddField
+'   Purpose     : Add Field to the fields list
+'   Arguments   :
+'
+'   Returns     : CResult
+'
+'   Date        Developer       Action
+'   ---------------------------------------------------------------------------------------
+'   2025/01/22  Jude Parfait        Created
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Public Function AddField(ByVal oField As CField, Optional ByVal lngAtIndex = -1) As CResult
+    Dim result As CResult, lngFieldIndex As Long
+    
+    Set result = NewResult("Addfield", True)
+    
+    If lngAtIndex = -1 Then
+        lngFieldIndex = Me.FieldsList.Count + 1
+    Else
+        lngFieldIndex = lngAtIndex
+    End If
+     
+    Set AddField = result
 End Function
 
 
@@ -155,8 +249,9 @@ End Function
 
 Private Sub Class_Initialize()
     m_record_id = 0
+    Set m_fields_list = New Collection
 End Sub
 
 Private Sub Class_Terminate()
-    
+    Set m_fields_list = Nothing
 End Sub
