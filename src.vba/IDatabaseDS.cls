@@ -8,6 +8,35 @@
 Option Explicit
 
 
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'   Property      : UpperDatabase
+'   Purpose       : Get / Set the Upper Database
+'
+'   Date            Developer           Action
+'   ---------------------------------------------------------------------------------------
+'   2025/01/25      Jude Parfait        Created
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Public Property Set UpperDatabase(oUpperDatabase As CDatabaseDS)
+End Property
+
+Public Property Get UpperDatabase() As CDatabaseDS
+End Property
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'   Property      : CurrentRecordable
+'   Purpose       : The current Recordable Object
+'
+'   Date            Developer           Action
+'   ---------------------------------------------------------------------------------------
+'   2025/01/25      Jude Parfait        Created
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Public Property Set CurrentRecordable(oCurrentRecordable As CRecordableDA)
+End Property
+
+Public Property Get CurrentRecordable() As CRecordableDA
+End Property
+
+
 
 '***************************************************************************************************************************************************************
 '    Public Functions and Subs

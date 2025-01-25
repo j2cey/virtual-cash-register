@@ -85,8 +85,8 @@ End Property
 '   ---------------------------------------------------------------------------------------
 '   2025/01/18      Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Property Let DatabaseOrFileName(strDbOrFileName As String)
-    Let m_database_or_file_name = strDbOrFileName
+Public Property Let DatabaseOrFileName(strDatabaseOrFileName As String)
+    Let m_database_or_file_name = strDatabaseOrFileName
 End Property
 
 Public Property Get DatabaseOrFileName() As String
@@ -162,6 +162,27 @@ End Property
 '***************************************************************************************************************************************************************
 '   Public Functions and Subs
 '***************************************************************************************************************************************************************
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'   Subroutine    : Init
+'   Purpose       : Initialize the Object
+'   Arguments     : oRecordDA           The Data Access object
+'                   oUser               The Performing User
+'   Returns       : Void
+'
+'   Date            Developer           Action
+'   ---------------------------------------------------------------------------------------
+'   2025/01/25      Jude Parfait        Created
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Public Sub Init(ByVal oUser As CUser, ByVal strServerOrPath As String, ByVal strDatabaseOrFileName As String, ByVal oInnerDatabase As IDatabaseDS, Optional ByVal blnIntegratedSecurity As Boolean = True)
+    
+    Set Me.User = oUser
+    Me.ServerOrPath = strServerOrPath
+    Me.DatabaseOrFileName = strDatabaseOrFileName
+    Set Me.InnerDatabase = oInnerDatabase
+    Me.IntegratedSecurity = blnIntegratedSecurity
+End Sub
+
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 '   Subroutine    : ShowErrorMessages

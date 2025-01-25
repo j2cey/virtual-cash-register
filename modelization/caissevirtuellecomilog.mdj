@@ -5425,7 +5425,7 @@
 											"top": 442,
 											"width": 555,
 											"height": 10,
-											"text": "+ServerOrPath: String",
+											"text": "+UpperDatabase: CDatabaseDS",
 											"horizontalAlignment": 0
 										},
 										{
@@ -5442,7 +5442,7 @@
 											"top": 454,
 											"width": 555,
 											"height": 10,
-											"text": "+Name: String",
+											"text": "+CurrentRecordable: CRecordableDA",
 											"horizontalAlignment": 0
 										}
 									],
@@ -9612,8 +9612,10 @@
 							"_parent": {
 								"$ref": "AAAAAAGUY8/XoTs6CRM="
 							},
-							"name": "ServerOrPath",
-							"type": "String"
+							"name": "UpperDatabase",
+							"type": {
+								"$ref": "AAAAAAGUY8sqh55+Tno="
+							}
 						},
 						{
 							"_type": "UMLAttribute",
@@ -9621,8 +9623,10 @@
 							"_parent": {
 								"$ref": "AAAAAAGUY8/XoTs6CRM="
 							},
-							"name": "Name",
-							"type": "String"
+							"name": "CurrentRecordable",
+							"type": {
+								"$ref": "AAAAAAGUhNb500UdxXc="
+							}
 						}
 					],
 					"operations": [

@@ -14,7 +14,7 @@ Private m_current_recordable As CRecordableDA
 Private m_request_string As String
 Private m_criteria_count As Long
 
-Implements IAccessDB
+Implements IDatabaseDS
 
 
 '***************************************************************************************************************************************************************
@@ -93,6 +93,28 @@ End Property
 '***************************************************************************************************************************************************************
 '    Public Functions and Subs
 '***************************************************************************************************************************************************************
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'   Subroutine    : Init
+'   Purpose       : Initialize the Object
+'   Arguments     : oRecordDA           The Data Access object
+'                   oUser               The Performing User
+'   Returns       : Void
+'
+'   Date            Developer           Action
+'   ---------------------------------------------------------------------------------------
+'   2025/01/12      Jude Parfait        Created
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Public Sub Init(Optional oRecordDA As CRecordDA = Nothing, Optional oUser As CUser = Nothing)
+    
+    If Not oRecordDA Is Nothing Then
+        Me.RecordDA = oRecordDA
+    End If
+    
+    If Not oUser Is Nothing Then
+        Me.User = oUser
+    End If
+End Sub
 
 
 
