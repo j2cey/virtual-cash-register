@@ -9,7 +9,7 @@ Option Explicit
 
 Private m_user As CUser
 Private m_server_or_path As String
-Private m_db_or_file_name As String
+Private m_database_or_file_name As String
 
 Private m_connection As CDatabaseConnection
 Private m_command As CDatabaseCommand
@@ -78,19 +78,19 @@ Public Property Get User() As CUser
 End Property
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-'   Property      : DbOrFileName
+'   Property      : DatabaseOrFileName
 '   Purpose       : The Database Or File Name
 '
 '   Date            Developer           Action
 '   ---------------------------------------------------------------------------------------
 '   2025/01/18      Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Property Let DbOrFileName(strDbOrFileName As String)
-    Let m_db_or_file_name = strDbOrFileName
+Public Property Let DatabaseOrFileName(strDbOrFileName As String)
+    Let m_database_or_file_name = strDbOrFileName
 End Property
 
-Public Property Get DbOrFileName() As String
-    DbOrFileName = m_db_or_file_name
+Public Property Get DatabaseOrFileName() As String
+    DatabaseOrFileName = m_database_or_file_name
 End Property
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''

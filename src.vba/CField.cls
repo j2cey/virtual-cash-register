@@ -7,6 +7,7 @@
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 Option Explicit
 
+Private m_guid As String
 Private m_name As String
 Private m_label As String
 Private m_value As Variant
@@ -14,6 +15,7 @@ Private m_previous_value As Variant
 
 Private m_is_required As Boolean
 Private m_is_search_criteria As Boolean
+Private m_search_criteria_must_match_exact As Boolean
 Private m_is_selectable As Boolean
 Private m_is_savable As Boolean
 
@@ -30,6 +32,18 @@ Implements IRecordableBL
 
 Public Property Get Self() As CField
     Set Self = Me
+End Property
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'   Property      : Guid
+'   Purpose       : Get the unique identifier of the object
+'
+'   Date            Developer           Action
+'   ---------------------------------------------------------------------------------------
+'   2025/01/23      Jude Parfait        Created
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Public Property Get Guid() As String
+    Guid = m_guid
 End Property
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -72,15 +86,15 @@ End Property
 '   ---------------------------------------------------------------------------------------
 '   2025/01/12      Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Property Let Value(vrnValue As Variant)
+Public Property Let value(vrnValue As Variant)
     Me.Reset
     m_previous_value = m_value
     
     m_value = vrnValue
 End Property
 
-Public Property Get Value() As Variant
-    Value = m_value
+Public Property Get value() As Variant
+    value = m_value
 End Property
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -129,6 +143,22 @@ End Property
 
 Public Property Get IsSearchCriteria() As Boolean
     IsSearchCriteria = m_is_search_criteria
+End Property
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'   Property      : SearchCriteriaMustMatchExact
+'   Purpose       : Determine if the search criteria in this field must match exactly
+'
+'   Date            Developer           Action
+'   ---------------------------------------------------------------------------------------
+'   2025/01/24      Jude Parfait        Created
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Public Property Let SearchCriteriaMustMatchExact(blnSearchCriteriaMustMatchExact As Boolean)
+    m_search_criteria_must_match_exact = blnSearchCriteriaMustMatchExact
+End Property
+
+Public Property Get SearchCriteriaMustMatchExact() As Boolean
+    SearchCriteriaMustMatchExact = m_search_criteria_must_match_exact
 End Property
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -217,7 +247,7 @@ Public Sub Init(strName As String, strLabel As String, Optional vrnValue As Vari
     Me.Label = strLabel
     
     If Not vrnValue = Null Then
-        Me.Value = vrnValue
+        Me.value = vrnValue
     End If
 End Sub
 
@@ -241,7 +271,7 @@ Public Function Reset() As CResult
     If Me.PreviousValue = Null Then
        result.Message = "Pas de valeure précédente"
     Else
-        Me.Value = Me.PreviousValue
+        Me.value = Me.PreviousValue
         result.Message = "Valeur du Champs " & Me.Label & " réinitialisée avec succès !"
     End If
     
@@ -260,7 +290,7 @@ End Function
 '   2025/01/12  Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 Public Sub Clear()
-    Me.Value = Null
+    Me.value = Null
 End Sub
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -276,7 +306,7 @@ End Sub
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 Public Function IsEmpty() As Boolean
     
-    If Me.Value = Null Then
+    If Me.value = Null Then
        IsEmpty = True
     Else
         IsEmpty = False
@@ -302,7 +332,7 @@ Public Function ValidateField() As CResult
     result.IsOK = True
     
     If Me.IsRequired Then
-       result.IsOK = (Not Me.IsEmpty) And (Me.Value <> "")
+       result.IsOK = (Not Me.IsEmpty) And (Me.value <> "")
     End If
     
     ValidateField = result
@@ -326,7 +356,7 @@ Public Function ValidateFieldCriteria() As CResult
     result.IsOK = True
     
     If Not Me.IsEmpty Then
-       result.IsOK = Me.Value <> ""
+       result.IsOK = Me.value <> ""
     End If
     
     ValidateFieldCriteria = result
@@ -376,6 +406,7 @@ End Property
 '***************************************************************************************************************************************************************
 
 Private Sub Class_Initialize()
+    m_guid = CreateGUID
     m_previous_value = Null
     Set m_fields_list = New Collection
 End Sub

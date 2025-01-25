@@ -76,8 +76,8 @@ Public Function GetDbFieldsSavable() As Collection
     For Each itemColl In Me.ListCtls
         Set oUctl = itemColl
         
-        If oUctl.Field.IsSavable Then
-            subList.Add oUctl.Field, oUctl.Field.Name
+        If oUctl.field.IsSavable Then
+            subList.Add oUctl.field, oUctl.field.Name
         End If
     Next itemColl
     
@@ -91,7 +91,7 @@ Public Function GetSavableUCtls() As clsUCTLList
     For Each itemColl In Me.ListCtls
         Set oUctl = itemColl
         
-        If oUctl.Field.IsSavable Then
+        If oUctl.field.IsSavable Then
             subList.AddCtlByUCTL oUctl
         End If
     Next itemColl
@@ -106,8 +106,8 @@ Public Function GetDbFieldsCriterion() As Collection
     For Each itemColl In Me.ListCtls
         Set oUctl = itemColl
         
-        If oUctl.Field.IsCriteria Then
-            subList.Add oUctl.Field, oUctl.Field.Name
+        If oUctl.field.IsCriteria Then
+            subList.Add oUctl.field, oUctl.field.Name
         End If
     Next itemColl
     
@@ -121,7 +121,7 @@ Public Function GetCriterionUCtls() As clsUCTLList
     For Each itemColl In Me.ListCtls
         Set oUctl = itemColl
         
-        If oUctl.Field.IsCriteria Then
+        If oUctl.field.IsCriteria Then
             subList.AddCtlByUCTL oUctl
         End If
     Next itemColl
@@ -137,8 +137,8 @@ Public Function GetDbFieldsResult() As Collection
     For Each itemColl In Me.ListCtls
         Set oUctl = itemColl
         
-        If oUctl.Field.IsResultField Then
-            subList.Add oUctl.Field, oUctl.Field.Name
+        If oUctl.field.IsResultField Then
+            subList.Add oUctl.field, oUctl.field.Name
         End If
     Next itemColl
     
@@ -152,7 +152,7 @@ Public Function GetResultUCtls() As clsUCTLList
     For Each itemColl In Me.ListCtls
         Set oUctl = itemColl
         
-        If oUctl.Field.IsResultField Then
+        If oUctl.field.IsResultField Then
             subList.AddCtlByUCTL oUctl
         End If
     Next itemColl

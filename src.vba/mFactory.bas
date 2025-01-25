@@ -29,7 +29,7 @@ End Function
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 '   Function    : NewRecord
-'   Purpose     : Initialize the Object
+'   Purpose     : Create and Initialize a New Record
 '   Arguments   : blnIsOK           Tells if the operation has been well performed
 '                 lngCode           The Result Code
 '                 strMessage        The Result Message
@@ -44,5 +44,45 @@ Public Function NewRecord(Optional oRecordDA As CRecordDA = Nothing, Optional oU
     With New CRecord
         .Init oRecordDA, oUser
         Set NewRecord = .Self 'returns the newly created instance
+    End With
+End Function
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'   Function    : NewRecordable
+'   Purpose     : Create and Initialize a New Recordable
+'   Arguments   : blnIsOK           Tells if the operation has been well performed
+'                 lngCode           The Result Code
+'                 strMessage        The Result Message
+'
+'   Returns     : CResult
+'
+'   Date        Developer           Action
+'   ---------------------------------------------------------------------------------------
+'   2025/01/25      Jude Parfait        Created
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Public Function NewRecordable(ByVal oUser As CUser, ByVal oDataSource As IDataSource, ByVal strRecordTable As String, Optional ByVal lngRecordId As Long = -1) As CRecordableDA
+    With New CRecordableDA
+        .Init oUser, oDataSource, strRecordTable, lngRecordId
+        Set NewRecordable = .Self 'returns the newly created instance
+    End With
+End Function
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'   Function    : NewDatabase
+'   Purpose     : Create and Initialize a New Database Data Source
+'   Arguments   : blnIsOK           Tells if the operation has been well performed
+'                 lngCode           The Result Code
+'                 strMessage        The Result Message
+'
+'   Returns     : CResult
+'
+'   Date        Developer           Action
+'   ---------------------------------------------------------------------------------------
+'   2025/01/25      Jude Parfait        Created
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Public Function NewDatabase(ByVal oUser As CUser, ByVal oDataSource As IDataSource, ByVal strRecordTable As String, Optional ByVal lngRecordId As Long = -1) As CDatabaseDS
+    With New CDatabaseDS
+        .Init oUser, oDataSource, strRecordTable, lngRecordId
+        Set NewDatabase = .Self 'returns the newly created instance
     End With
 End Function

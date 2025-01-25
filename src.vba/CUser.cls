@@ -55,12 +55,12 @@ End Property
 '   ---------------------------------------------------------------------------------------
 '   2025/01/09      Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Property Let Id(lId As Long)
+Public Property Let id(lId As Long)
     m_id = lId
 End Property
 
-Public Property Get Id() As Long
-    Id = m_id
+Public Property Get id() As Long
+    id = m_id
 End Property
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -202,7 +202,7 @@ End Property
 '*****************************************************************************************************************************
 
 Public Sub Init(lId As Long, Optional oRecord As CRecord = Nothing, Optional sLogin As String = "", Optional sName As String = "")
-    Me.Id = lId
+    Me.id = lId
     
     If Not oRecord Is Nothing Then
         Set Me.Record = oRecord
@@ -254,10 +254,10 @@ Public Function SavePwd(sPwd As String, Optional auditAction As Boolean = True) 
     Dim userData As Variant, sqlRst As String, recordCount As Long, i As Integer, audit As CAudit
     
     If auditAction Then
-        Set audit = loggedUser.StartNewAudit("Modification Mot de Passe Utilisateur (" & Me.Id & ") " & Me.Name)
+        Set audit = loggedUser.StartNewAudit("Modification Mot de Passe Utilisateur (" & Me.id & ") " & Me.Name)
     End If
     
-    sqlRst = "UPDATE users SET userpwd = '" & encrypter.encrypt(sPwd) & "', userpwd_lastupdate_at = '" & Now & "' WHERE Id = " & CStr(Me.Id)
+    sqlRst = "UPDATE users SET userpwd = '" & encrypter.encrypt(sPwd) & "', userpwd_lastupdate_at = '" & Now & "' WHERE Id = " & CStr(Me.id)
     
     Call PrepareDatabase
     If gobjDB.ExecuteActionQuery(sqlRst) Then
@@ -287,10 +287,10 @@ Public Function SaveLastLogin(Optional auditAction As Boolean = True) As Boolean
     Dim userData As Variant, sqlRst As String, recordCount As Long, i As Integer, audit As CAudit
     
     If auditAction Then
-        Set audit = loggedUser.StartNewAudit("Modification Derniere date Login Utilisateur (" & Me.Id & ") " & Me.Name)
+        Set audit = loggedUser.StartNewAudit("Modification Derniere date Login Utilisateur (" & Me.id & ") " & Me.Name)
     End If
     
-    sqlRst = "UPDATE users SET user_lastlogin_at = '" & Now & "' WHERE Id = " & CStr(Me.Id)
+    sqlRst = "UPDATE users SET user_lastlogin_at = '" & Now & "' WHERE Id = " & CStr(Me.id)
     
     Call PrepareDatabase
     If gobjDB.ExecuteActionQuery(sqlRst) Then
@@ -343,7 +343,7 @@ Public Function StartNewAudit(sAction As String) As CAudit
     Set oAudit = NewAudit(Me, sAction)
     
     ' Add Audit to The Audits Collection
-    Me.AuditsList.Add oAudit, CStr(oAudit.Id)
+    Me.AuditsList.Add oAudit, CStr(oAudit.id)
     
     Set StartNewAudit = oAudit
 End Function
@@ -356,7 +356,7 @@ End Function
 Private Function LoadFromDB() As Boolean
     Dim userData As Variant, sqlRst As String, recordCount As Long, i As Integer
     
-    sqlRst = "SELECT * FROM users_view WHERE Id = " & Me.Id & " "
+    sqlRst = "SELECT * FROM users_view WHERE Id = " & Me.id & " "
     
     Call PrepareDatabase
     userData = gobjDB.GetRecordsetToArray(sqlRst, recordCount)
@@ -371,7 +371,7 @@ Private Function LoadFromDB() As Boolean
 End Function
 
 Private Sub SetFromDB(userData As Variant)
-    Me.Id = CLng(userData(0, 0))
+    Me.id = CLng(userData(0, 0))
     Me.LogIn = sLogin
     Me.Name = CStr(userData(2, 0))
     Me.SetRole CLng(userData(4, 0)), CStr(userData(5, 0))

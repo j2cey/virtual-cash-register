@@ -61,12 +61,12 @@ End Property
 ' ---------------------------------------------------------------------------------------
 ' 2025/01/11    Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Property Let Value(varValue As Variant)
-    Me.ControlInner.Value = varValue
+Public Property Let value(varValue As Variant)
+    Me.ControlInner.value = varValue
 End Property
 
-Public Property Get Value() As Variant
-    Value = Me.ControlInner.Value
+Public Property Get value() As Variant
+    value = Me.ControlInner.value
 End Property
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''

@@ -9,6 +9,10 @@ Option Explicit
 
 
 Private m_upper_database As CAccessDB
+Private m_current_recordable As CRecordableDA
+
+Private m_request_string As String
+Private m_criteria_count As Long
 
 Implements IAccessDB
 
@@ -37,6 +41,54 @@ Public Property Get UpperDatabase() As CAccessDB
     Set UpperDatabase = m_upper_database
 End Property
 
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'   Property      : CurrentRecordable
+'   Purpose       : The current Recordable Object
+'
+'   Date            Developer           Action
+'   ---------------------------------------------------------------------------------------
+'   2025/01/25      Jude Parfait        Created
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Public Property Set CurrentRecordable(oCurrentRecordable As CRecordableDA)
+    Set m_current_recordable = oCurrentRecordable
+End Property
+
+Public Property Get CurrentRecordable() As CRecordableDA
+    Set CurrentRecordable = m_current_recordable
+End Property
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'   Property      : RequestString
+'   Purpose       : The Request String
+'
+'   Date            Developer           Action
+'   ---------------------------------------------------------------------------------------
+'   2025/01/25      Jude Parfait        Created
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Public Property Let RequestString(strRequestString As String)
+    m_request_string = strRequestString
+End Property
+
+Public Property Get RequestString() As String
+    RequestString = m_request_string
+End Property
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'   Property      : CriteriaCount
+'   Purpose       : The number of criteria
+'
+'   Date            Developer           Action
+'   ---------------------------------------------------------------------------------------
+'   2025/01/25      Jude Parfait        Created
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Public Property Let CriteriaCount(lngCriteriaCount As Long)
+    m_criteria_count = lngCriteriaCount
+End Property
+
+Public Property Get CriteriaCount() As Long
+    CriteriaCount = m_criteria_count
+End Property
+
 
 '***************************************************************************************************************************************************************
 '    Public Functions and Subs
@@ -54,40 +106,47 @@ End Property
 '   Purpose     : Construct a full connection string, set local properties, and return string to calling routine.
 '   Arguments   :
 '
-'   Returns     : String
+'   Returns     : CResult       The Treatment Result
 '
 '   Date        Developer       Action
 '   ---------------------------------------------------------------------------------------
 '   2025/01/12  Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Private Function GetConnectionString() As String
-    Dim targetDbFullPath As String
+Private Function GetConnectionString(ByRef strConnectionString As String) As CResult
+    Dim targetDbFullPath As String, rslt As CResult
+    
+    strConnectionString = ""
+    Set rslt = NewResult("GetConnectionString", True)
     
     If Not Me.UpperDatabase Is Nothing Then
         'Build connection string
         
         ' Exit Sub if the CurrentServer is not set in the Upper Database
         If Me.UpperDatabase.CurrentServer = "" Then
-            GetConnectionString = ""
-            Exit Function
+            rslt.IsOK = False
+            rslt.Message = "The CurrentServer is not set in the Upper Database"
         End If
         
         ' Exit Sub if the CurrentDatabase is not set in the Upper Database
-        If Me.UpperDatabase.CurrentDatabase = "" Then
-            GetConnectionString = ""
-            Exit Function
+        If rslt.IsOK And Me.UpperDatabase.CurrentDatabase = "" Then
+            rslt.IsOK = False
+            rslt.Message = "The CurrentDatabase is not set in the Upper Database"
         End If
         
-        'targetDbFullPath = AppPath & Application.PathSeparator & gblDbLocalFolder & Application.PathSeparator & gblDbName
-        targetDbFullPath = Me.UpperDatabase.CurrentServer & Application.PathSeparator & Me.UpperDatabase.CurrentDatabase
-        Me.UpperDatabase.ConnectionString = "Provider=Microsoft.ACE.OLEDB.12.0;" & _
-        "Data Source=" & _
-        targetDbFullPath & ".accdb;"
-        
-        GetConnectionString = Me.UpperDatabase.ConnectionString
+        If rslt.IsOK Then
+            'targetDbFullPath = AppPath & Application.PathSeparator & gblDbLocalFolder & Application.PathSeparator & gblDbName
+            targetDbFullPath = Me.UpperDatabase.CurrentServer & Application.PathSeparator & Me.UpperDatabase.CurrentDatabase
+            Me.UpperDatabase.ConnectionString = "Provider=Microsoft.ACE.OLEDB.12.0;" & _
+            "Data Source=" & _
+            targetDbFullPath & ".accdb;"
+            strConnectionString = Me.UpperDatabase.ConnectionString
+        End If
     Else
-        GetConnectionString = ""
+        rslt.IsOK = False
+        rslt.Message = "The Upper Database Is Missing"
     End If
+    
+    Set GetConnectionString = rslt
 End Function
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -97,32 +156,73 @@ End Function
 '
 '   Arguments   : CDatabaseDS   currentDb   The relevant database to build connection string
 '
-'   Returns     : String
+'   Returns     : String        The Build SELECT statement | empty string
 '
 '   Date        Developer       Action
 '   ---------------------------------------------------------------------------------------
 '   2025/01/21  Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Private Function GetSelectStatement(currentDb As CRecordableDA, ByRef lngCriterionCount As Long) As String
-    Dim finalRqstStr As String
-
-    lngCriterionCount = 0
-    finalRqstStr = "SELECT * FROM " & currentDb.RecordTable
-    If Not (lIdCriteria = -1) Then
-        Me.CriterionProvidedCount = 1
-        finalRqstStr = Me.RequestStr & " WHERE Id = @Id"
+Private Function GetSelectStatement(currentDb As CRecordableDA, ByRef strSelectStatement As String, ByRef lngCriteriaCount As Long) As CResult
+    Dim finalRqstStr As String, criterionDone As Boolean, rslt As CResult
+    
+    Me.RequestString = ""
+    Me.CriteriaCount = 0
+    Set Me.CurrentRecordable = currentDb
+    Set rslt = NewResult("GetConnectionString", True)
+    
+    ' If the Table Name is not given, we return empty string
+    If currentDb.RecordTable = "" Then
+        rslt.IsOK = False
+        rslt.Message = "The Table Name is not given"
+    Else
+        Me.RequestString = "SELECT * FROM " & currentDb.RecordTable
     End If
     
-    If Not oCriterionFields Is Nothing Then
-        AddCriterionToRequest oCriterionFields
+    If rslt.IsOK Then
+        AddCriteriaToRequest
     End If
     
     If Me.CriterionProvidedCount = 0 And lLimitLines > 0 Then
-        finalRqstStr = SqlSelectSetLIMIT(Me.RequestStr, lLimitLines)
+        Me.RequestString = SqlSelectSetLIMIT(Me.RequestStr, lLimitLines)
     End If
     
-    GetSelectStatement = finalRqstStr
+    strSelectStatement = Me.RequestString
+    lngCriteriaCount = Me.CriteriaCount
+    Set GetSelectStatement = rslt
 End Function
+
+Private Sub AddCriteriaToRequest()
+    Dim itemColl As Variant, oField As clsDbField, str As String
+    
+    If oFieldList Is Nothing Then
+    Else
+        For Each itemColl In oFieldList
+            str = TypeName(itemColl)
+            If Not (TypeName(itemColl) = "Nothing") Then
+                Set oField = itemColl
+                str = oField.Name
+                
+                If CStr(oField.value) <> "" Then
+                    StrRequestAppendCriteria CStr(oField.Name)
+                    Me.CriterionProvidedCount = Me.CriterionProvidedCount + 1
+                End If
+            End If
+        Next itemColl
+    End If
+End Sub
+
+Private Sub StrRequestAppendCriterion(oField As CField)
+    
+    If Me.CriterionProvidedCount = 0 Then
+        Me.RequestStr = Me.RequestStr & " WHERE "
+    Else
+        Me.RequestStr = Me.RequestStr & " AND "
+    End If
+    
+    Me.RequestStr = Me.RequestStr & " " & s_critColName & " LIKE @" & s_critColName
+    Me.CriterionProvidedCount = Me.CriterionProvidedCount + 1
+    
+End Sub
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 '   Function    : GetInsertStatement
@@ -171,13 +271,13 @@ End Function
 '
 '   Arguments   :
 '
-'   Returns     : String
+'   Returns     : CResult       The Treatment Result
 '
 '   Date        Developer       Action
 '   ---------------------------------------------------------------------------------------
 '   2025/01/19  Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Function IAccessDB_BuildConnectionString() As String
-    IAccessDB_BuildConnectionString = Me.GetConnectionString()
+Public Function IAccessDB_BuildConnectionString(ByRef strConnectionString As String) As CResult
+    Set IAccessDB_BuildConnectionString = GetConnectionString(strConnectionString)
 End Function
 

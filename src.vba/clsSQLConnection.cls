@@ -271,7 +271,7 @@ ParamArray InputParameters() As Variant) As Boolean
                 
                 'Define the Input Parameters
                 For intParam = 0 To UBound(InputParameters) Step 2
-                    .Parameters(InputParameters(intParam)).Value = _
+                    .Parameters(InputParameters(intParam)).value = _
                     InputParameters(intParam + 1)
                 Next intParam
                 
@@ -285,7 +285,7 @@ ParamArray InputParameters() As Variant) As Boolean
             
             'Retrieve the value of the output parameter (if any)
             If Len(Trim(OutputParameter)) > 0 Then
-                OutputValue = objCmd.Parameters(OutputParameter).Value
+                OutputValue = objCmd.Parameters(OutputParameter).value
             Else
                 OutputValue = vbNullString
             End If
@@ -356,9 +356,9 @@ Public Sub PickNums(nbResults As Integer, nbLaureates As Integer, nbResultsLib A
                     'Next i
                     
                     If strResult = "" Then
-                        strResult = CStr(rst.fields("msisdn").Value) & " - " & CStr(rst.fields("nom").Value) & " " & CStr(rst.fields("prenom").Value)
+                        strResult = CStr(rst.fields("msisdn").value) & " - " & CStr(rst.fields("nom").value) & " " & CStr(rst.fields("prenom").value)
                     Else
-                        strResult = strResult & "," & CStr(rst.fields("msisdn").Value) & " - " & CStr(rst.fields("nom").Value) & " " & CStr(rst.fields("prenom").Value)
+                        strResult = strResult & "," & CStr(rst.fields("msisdn").value) & " - " & CStr(rst.fields("nom").value) & " " & CStr(rst.fields("prenom").value)
                     End If
                     rst.MoveNext
                 Loop Until rst.EOF
@@ -655,7 +655,7 @@ Public Sub LoadCsvIntoTable_count()
     Dim pctdone As Single
     
     Dim t As Double
-    t = time
+    t = Time
     
     strFile = Application.GetOpenFilename("Text Files (*.csv),*.csv", , "Selectionnez la base (.csv) de numéros...")
     If strFile = "Faux" Then
@@ -673,7 +673,7 @@ Public Sub LoadCsvIntoTable_count()
             With ChargingDataBaseUFrm
                 .LabelCaption.Caption = "Traitement en cours... " & i & " / " & linesCount
                 .LabelProgress.Width = pctdone * (.FrameProgress.Width)
-                .lblElapsedTime.Caption = "Temps traitement " & Format((time - t), "hh:mm:ss")
+                .lblElapsedTime.Caption = "Temps traitement " & Format((Time - t), "hh:mm:ss")
             End With
                     
             DoEvents
@@ -703,7 +703,7 @@ Public Sub LoadCsvIntoTable()
     Dim pctdone As Single
     
     Dim t As Double
-    t = time
+    t = Time
     
     strFile = Application.GetOpenFilename("Text Files (*.csv),*.csv", , "Selectionnez la base (.csv) de numéros...")
     If strFile = "Faux" Then
@@ -726,7 +726,7 @@ Public Sub LoadCsvIntoTable()
                     With ChargingDataBaseUFrm
                         .LabelCaption.Caption = "Traitement en cours... " & i & " / " & linesCount
                         .LabelProgress.Width = pctdone * (.FrameProgress.Width)
-                        .lblElapsedTime.Caption = "Temps traitement " & Format((time - t), "hh:mm:ss")
+                        .lblElapsedTime.Caption = "Temps traitement " & Format((Time - t), "hh:mm:ss")
                     End With
                     
                     DoEvents
@@ -927,7 +927,7 @@ Public Sub LoadCsvIntoTable_new()
     Dim pctdone As Single
     
     Dim t As Double
-    t = time
+    t = Time
     
     strFile = Application.GetOpenFilename("Text Files (*.csv),*.csv", , "Selectionnez la base (.csv) de numéros...")
     If strFile = "Faux" Then

@@ -19,12 +19,12 @@ Public Property Get Self() As clsSqlQuery
 End Property
 
 ' m_lId
-Public Property Let Id(lId As Long)
+Public Property Let id(lId As Long)
     m_lId = lId
 End Property
 
-Public Property Get Id() As Long
-    Id = m_lId
+Public Property Get id() As Long
+    id = m_lId
 End Property
 
 ' RequestTable
@@ -211,16 +211,16 @@ Private Function SelectToList(oResultList As clsUCTL, oSelectFields As Collectio
                 AddToDoLastSubFromParent 1, selectProgr
                 ' Add Id for list selection
                 If bSelectId Then
-                    AddToResultList oResultList, resultCount, CStr(Me.reqstRecordset.fields("Id").Value), 0
+                    AddToResultList oResultList, resultCount, CStr(Me.reqstRecordset.fields("Id").value), 0
                 End If
                 If Not oSelectFields Is Nothing Then
                     For Each itemColl In oSelectFields
                         Set oField = itemColl
                         
-                        If IsNull(Me.reqstRecordset.fields(oField.Name).Value) Then
+                        If IsNull(Me.reqstRecordset.fields(oField.Name).value) Then
                             AddToResultList oResultList, resultCount, "", oField.Index + 1
                         Else
-                            AddToResultList oResultList, resultCount, CStr(Me.reqstRecordset.fields(oField.Name).Value), oField.Index + 1
+                            AddToResultList oResultList, resultCount, CStr(Me.reqstRecordset.fields(oField.Name).value), oField.Index + 1
                         End If
                     Next itemColl
                 End If
@@ -257,8 +257,8 @@ Private Function SelectToFields(oResultFields As clsUCTLList, Optional oCriterio
                     For Each itemColl In oResultFields.ListCtls
                         Set oUctl = itemColl
                         
-                        If Not IsNull(Me.reqstRecordset.fields(oUctl.Field.Name).Value) Then
-                            oUctl.Text = CStr(Me.reqstRecordset.fields(oUctl.Field.Name).Value)
+                        If Not IsNull(Me.reqstRecordset.fields(oUctl.field.Name).value) Then
+                            oUctl.Text = CStr(Me.reqstRecordset.fields(oUctl.field.Name).value)
                         End If
                     Next itemColl
                 End If
@@ -288,8 +288,8 @@ Private Function SelectOneField(oSelectField As clsDbField, Optional oCriterionF
     
         With Me.reqstRecordset
             .MoveNext
-            If IsNull(.fields(oSelectField.Name).Value) Then
-                SelectOneField = CVar(.fields(oSelectField.Name).Value)
+            If IsNull(.fields(oSelectField.Name).value) Then
+                SelectOneField = CVar(.fields(oSelectField.Name).value)
             Else
                 SelectOneField = Null
             End If
@@ -373,18 +373,18 @@ Private Function AddFieldsToSaveRequest(vSaveType As saveFormStatusType, oSaveFi
             
             Set oUctl = itemColl
             
-            If oUctl.Field.IsRequired And oUctl.Field.Value = "" Then
+            If oUctl.field.IsRequired And oUctl.field.value = "" Then
                 AddFieldsToSaveRequest = -1
                 oUctl.BackColor = oUctl.ErrorColor
-                MsgBox "Le Champs " & oUctl.Field.Title & " est Requis !", vbCritical, GetAppName
+                MsgBox "Le Champs " & oUctl.field.Title & " est Requis !", vbCritical, GetAppName
                 
                 AddDoneLastSubFromParent 2, True, saveProgr
                 Exit Function
             End If
             
-            AppendFieldsToSaveRequest vSaveType, sRqst, oUctl.Field.Name, lFieldCount
+            AppendFieldsToSaveRequest vSaveType, sRqst, oUctl.field.Name, lFieldCount
             If vSaveType = Add Then
-                AppendFieldsToSaveRequest vSaveType, sInsertValues, "@" & oUctl.Field.Name, lFieldCount
+                AppendFieldsToSaveRequest vSaveType, sInsertValues, "@" & oUctl.field.Name, lFieldCount
             End If
             
             AddDoneLastSubFromParent 1, True, saveProgr
@@ -440,11 +440,11 @@ Private Sub BuildRequestCommand(bOpenPrecision As Boolean, Optional oInputFields
             For Each itemColl In oInputFields
                 Set oField = itemColl
                 
-                If oField.Value <> "" Then
+                If oField.value <> "" Then
                     If bOpenPrecision Then
-                        .Parameters.Append .CreateParameter("@" & oField.Name, adVarChar, adParamInput, 255, "%" & oField.Value & "%")
+                        .Parameters.Append .CreateParameter("@" & oField.Name, adVarChar, adParamInput, 255, "%" & oField.value & "%")
                     Else
-                        .Parameters.Append .CreateParameter("@" & oField.Name, adVarChar, adParamInput, 255, oField.Value)
+                        .Parameters.Append .CreateParameter("@" & oField.Name, adVarChar, adParamInput, 255, oField.value)
                     End If
                 End If
             Next itemColl
@@ -455,8 +455,8 @@ Private Sub BuildRequestCommand(bOpenPrecision As Boolean, Optional oInputFields
             For Each itemColl In oOutputFields
                 Set oField = itemColl
                 
-                If oField.Value <> "" Then
-                    .Parameters.Append .CreateParameter("@" & oField.Name, adVarChar, adParamOutput, 255, "%" & oField.Value & "%")
+                If oField.value <> "" Then
+                    .Parameters.Append .CreateParameter("@" & oField.Name, adVarChar, adParamOutput, 255, "%" & oField.value & "%")
                 End If
             Next itemColl
         End If
@@ -475,7 +475,7 @@ Private Sub AddCriterionToRequest(oFieldList As Collection)
                 Set oField = itemColl
                 str = oField.Name
                 
-                If CStr(oField.Value) <> "" Then
+                If CStr(oField.value) <> "" Then
                     StrRequestAppendCriteria CStr(oField.Name)
                     Me.CriterionProvidedCount = Me.CriterionProvidedCount + 1
                 End If

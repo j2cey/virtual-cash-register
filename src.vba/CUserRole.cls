@@ -16,12 +16,12 @@ Public Property Get Self() As CUserRole
 End Property
 
 ' Id
-Public Property Let Id(lId As Long)
+Public Property Let id(lId As Long)
     m_id = lId
 End Property
 
-Public Property Get Id() As Long
-    Id = m_id
+Public Property Get id() As Long
+    id = m_id
 End Property
 
 ' Title
@@ -67,7 +67,7 @@ End Property
 '*****************************************************************************************************************************
 
 Public Sub Init(lId As Long, sTitle As String, Optional sDescription As String)
-    Me.Id = lId
+    Me.id = lId
     Me.Title = sTitle
     
     If Not IsMissing(sDescription) Then
@@ -87,7 +87,7 @@ Public Sub LoadUsersInRoleToList(lbx As MSForms.ListBox)
         Set currUser = itemColl
         
         lbx.AddItem
-        lbx.List(lbx.listCount - 1, 0) = CStr(currUser.Id)
+        lbx.List(lbx.listCount - 1, 0) = CStr(currUser.id)
         lbx.List(lbx.listCount - 1, 1) = CStr(currUser.Name)
     Next itemColl
 End Sub
@@ -112,7 +112,7 @@ End Sub
 Private Sub LoadRolePermissions()
     Dim permissionsData As Variant, sqlRst As String, recordCount As Long, i As Long
     
-    sqlRst = "SELECT * FROM rolepermissions WHERE userrole_id = " & CStr(Me.Id) & ""
+    sqlRst = "SELECT * FROM rolepermissions WHERE userrole_id = " & CStr(Me.id) & ""
     
     Call PrepareDatabase
     permissionsData = gobjDB.GetRecordsetToArray(sqlRst, recordCount)
@@ -131,7 +131,7 @@ End Sub
 Private Sub LoadUsersInRole()
     Dim usersData As Variant, sqlRst As String, recordCount As Long, i As Long
     
-    sqlRst = "SELECT * FROM users_view WHERE role_id = " & CStr(Me.Id) & ""
+    sqlRst = "SELECT * FROM users_view WHERE role_id = " & CStr(Me.id) & ""
     
     Call PrepareDatabase
     usersData = gobjDB.GetRecordsetToArray(sqlRst, recordCount)

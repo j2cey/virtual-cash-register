@@ -5,4 +5,6 @@ Private Sub UserForm_Initialize()
     
     Set rec = NewRecord()
     
+    MsgBox Now_System() & ", MS: " & GetTodayMilliseconds() & ", CreateGUID: " & CreateGUID()
+    
 End Sub
