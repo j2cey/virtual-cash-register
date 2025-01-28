@@ -201,7 +201,7 @@ End Property
 '    Public functions and subs
 '*****************************************************************************************************************************
 
-Public Sub Init(lId As Long, Optional oRecord As CRecord = Nothing, Optional sLogin As String = "", Optional sName As String = "")
+Public Sub Init(Optional ByVal lId As Long = -1, Optional ByVal oRecord As CRecord = Nothing, Optional ByVal sLogin As String = "", Optional ByVal sName As String = "")
     Me.id = lId
     
     If Not oRecord Is Nothing Then

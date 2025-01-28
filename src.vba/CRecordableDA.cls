@@ -448,6 +448,10 @@ Public Function GetNextFieldSavable(Optional ByVal lngAtIndex As Long = -1) As C
     End If
 End Function
 
+Public Function LastFieldReached() As Boolean
+    LastFieldReached = (Me.PreviousFieldIndexPicked >= Me.FieldsList.Count)
+End Function
+
 
 '***************************************************************************************************************************************************************
 '    Private Functions and Subs

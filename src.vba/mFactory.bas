@@ -8,6 +8,26 @@
 Option Explicit
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'   Function    : NewUser
+'   Purpose     : Create and Initialize a New User
+'   Arguments   : blnIsOK           Tells if the operation has been well performed
+'                 lngCode           The Result Code
+'                 strMessage        The Result Message
+'
+'   Returns     : CResult
+'
+'   Date        Developer           Action
+'   ---------------------------------------------------------------------------------------
+'   2025/01/12      Jude Parfait        Created
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Public Function NewUser(Optional ByVal lId As Long = -1, Optional ByVal oRecord As CRecord = Nothing, Optional ByVal sLogin As String = "", Optional ByVal sName As String = "") As CUser
+    With New CUser
+        .Init lId, oRecord, sLogin, sName
+        Set NewUser = .Self 'returns the newly created instance
+    End With
+End Function
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 '   Function    : NewResult
 '   Purpose     : Initialize the Object
 '   Arguments   : blnIsOK           Tells if the operation has been well performed
@@ -104,9 +124,9 @@ End Function
 '   ---------------------------------------------------------------------------------------
 '   2025/01/25      Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Function NewAccess2007(ByVal oUser As CUser, ByVal strServerOrPath As String, ByVal strDatabaseOrFileName As String, ByVal oInnerDatabase As IDatabaseDS, Optional ByVal blnIntegratedSecurity As Boolean = True) As CAccess2007
+Public Function NewAccess2007(Optional oUser As CUser = Nothing, Optional oRecordDA As CRecordDA = Nothing) As CAccess2007
     With New CAccess2007
-        .Init oUser, strServerOrPath, strDatabaseOrFileName, oInnerDatabase, blnIntegratedSecurity
+        .Init oUser, oRecordDA
         Set NewAccess2007 = .Self 'returns the newly created instance
     End With
 End Function

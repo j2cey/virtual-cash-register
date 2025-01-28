@@ -56,7 +56,7 @@ End Property
 '   2025/01/21  Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
-Public Function BuildConnectionString(currentDb As CDatabaseDS) As String
+Public Function BuildConnectionString(ByRef strConnectionString As String) As CResult
 End Function
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -64,7 +64,7 @@ End Function
 '   Purpose     : Construct a full SELECT statement, set local properties, and
 '                 return string to calling routine.
 '
-'   Arguments   : CDatabaseDS   currentDb   The relevant database to build connection string
+'   Arguments   : dataAccess   currentDb   The relevant database to build connection string
 '
 '   Returns     : CResult       The Treatment Result
 '
@@ -73,7 +73,7 @@ End Function
 '   2025/01/21  Jude Parfait        Created
 '   2025/01/24  Jude Parfait        Add ByRef Arguments: strSelectStatement, lngCriteriaCount; Change Return Type: CResult
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Function BuildSelectStatement(currentDb As CRecordableDA, ByRef strSelectStatement As String, ByRef lngCriteriaCount As Long) As CResult
+Public Function BuildSelectStatement(dataAccess As CRecordableDA, ByRef strSelectStatement As String, ByRef lngCriteriaCount As Long) As CResult
 End Function
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -91,7 +91,7 @@ End Function
 '   2025/01/21  Jude Parfait            Created
 '   2025/01/24  Jude Parfait            Add ByRef Arguments: strInsertStatement; Change Return Type: CResult
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Function BuildInsertStatement(currentDb As CDatabaseDS, ByRef strInsertStatement As String) As CResult
+Public Function BuildInsertStatement(dataAccess As CRecordableDA, ByRef strInsertStatement As String) As CResult
 End Function
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -109,5 +109,5 @@ End Function
 '   2025/01/21  Jude Parfait            Created
 '   2025/01/24  Jude Parfait            Add ByRef Arguments: strUpdateStatement; Change Return Type: CResult
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Function BuildUpdateStatement(currentDb As CDatabaseDS, ByRef strUpdateStatement As String) As CResult
+Public Function BuildUpdateStatement(dataAccess As CDatabaseDS, ByRef strUpdateStatement As String) As CResult
 End Function
