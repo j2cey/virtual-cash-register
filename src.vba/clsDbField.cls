@@ -123,15 +123,15 @@ Public Property Get CriteriaValue() As Variant
 End Property
 
 ' m_vValue
-Public Property Let value(vValue As Variant)
+Public Property Let Value(vValue As Variant)
     m_vValue = vValue
 End Property
 
-Public Property Get value() As Variant
+Public Property Get Value() As Variant
     If Me.IsPasswordField Then
-        value = encrypter.encrypt(CStr(m_vValue))
+        Value = encrypter.encrypt(CStr(m_vValue))
     Else
-        value = m_vValue
+        Value = m_vValue
     End If
 End Property
 
@@ -156,7 +156,7 @@ bIsRequired As Boolean, bIsCancellable As Boolean, Optional vValue As Variant, O
     Me.IsResultField = bIsResultField
     Me.IsRequired = bIsRequired
     Me.IsCancellable = bIsCancellable
-    Me.value = vValue
+    Me.Value = vValue
     Me.CriteriaValue = vCriteriaValue
     
 End Sub

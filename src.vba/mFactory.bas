@@ -3,7 +3,7 @@
 ' Module    : mFactory
 ' Author    : Jude Parfait NGOM NZE (jud10parfait@gmail.com)
 ' Created   : 2025/01/08
-' Purpose   : Manage all factories for Classes instantiation
+' Purpose   : Manage all factories for Main Classes instantiation
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 Option Explicit
 
@@ -84,49 +84,5 @@ Public Function NewRecordable(ByVal oUser As CUser, ByVal oDataSource As IDataSo
     With New CRecordableDA
         .Init oUser, oDataSource, strRecordTable, lngRecordId
         Set NewRecordable = .Self 'returns the newly created instance
-    End With
-End Function
-
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-'   Function    : NewDatabase
-'   Purpose     : Create and Initialize a New Database Data Source
-'   Arguments   : oUser                     The user performing
-'                 strServerOrPath           The server IP or File Path
-'                 strDatabaseOrFileName     The Database Or File Name
-'                 oInnerDatabase            The Inner Database
-'                 blnIntegratedSecurity     Determine whether the integrated security must be set or not
-'
-'   Returns     : CDatabaseDS
-'
-'   Date        Developer           Action
-'   ---------------------------------------------------------------------------------------
-'   2025/01/25      Jude Parfait        Created
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Function NewDatabase(ByVal oUser As CUser, ByVal strServerOrPath As String, ByVal strDatabaseOrFileName As String, ByVal oInnerDatabase As IDatabaseDS, Optional ByVal blnIntegratedSecurity As Boolean = True) As CDatabaseDS
-    With New CDatabaseDS
-        .Init oUser, strServerOrPath, strDatabaseOrFileName, oInnerDatabase, blnIntegratedSecurity
-        Set NewDatabase = .Self 'returns the newly created instance
-    End With
-End Function
-
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-'   Function    : NewAccess2007
-'   Purpose     : Create and Initialize a New Access 2007 Database
-'   Arguments   : oUser                     The user performing
-'                 strServerOrPath           The server IP or File Path
-'                 strDatabaseOrFileName     The Database Or File Name
-'                 oInnerDatabase            The Inner Database
-'                 blnIntegratedSecurity     Determine whether the integrated security must be set or not
-'
-'   Returns     : CDatabaseDS
-'
-'   Date        Developer           Action
-'   ---------------------------------------------------------------------------------------
-'   2025/01/25      Jude Parfait        Created
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Function NewAccess2007(Optional oUser As CUser = Nothing, Optional oRecordDA As CRecordDA = Nothing) As CAccess2007
-    With New CAccess2007
-        .Init oUser, oRecordDA
-        Set NewAccess2007 = .Self 'returns the newly created instance
     End With
 End Function

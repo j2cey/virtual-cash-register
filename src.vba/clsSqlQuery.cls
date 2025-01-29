@@ -211,16 +211,16 @@ Private Function SelectToList(oResultList As clsUCTL, oSelectFields As Collectio
                 AddToDoLastSubFromParent 1, selectProgr
                 ' Add Id for list selection
                 If bSelectId Then
-                    AddToResultList oResultList, resultCount, CStr(Me.reqstRecordset.fields("Id").value), 0
+                    AddToResultList oResultList, resultCount, CStr(Me.reqstRecordset.fields("Id").Value), 0
                 End If
                 If Not oSelectFields Is Nothing Then
                     For Each itemColl In oSelectFields
                         Set oField = itemColl
                         
-                        If IsNull(Me.reqstRecordset.fields(oField.Name).value) Then
+                        If IsNull(Me.reqstRecordset.fields(oField.Name).Value) Then
                             AddToResultList oResultList, resultCount, "", oField.Index + 1
                         Else
-                            AddToResultList oResultList, resultCount, CStr(Me.reqstRecordset.fields(oField.Name).value), oField.Index + 1
+                            AddToResultList oResultList, resultCount, CStr(Me.reqstRecordset.fields(oField.Name).Value), oField.Index + 1
                         End If
                     Next itemColl
                 End If
@@ -257,8 +257,8 @@ Private Function SelectToFields(oResultFields As clsUCTLList, Optional oCriterio
                     For Each itemColl In oResultFields.ListCtls
                         Set oUctl = itemColl
                         
-                        If Not IsNull(Me.reqstRecordset.fields(oUctl.field.Name).value) Then
-                            oUctl.Text = CStr(Me.reqstRecordset.fields(oUctl.field.Name).value)
+                        If Not IsNull(Me.reqstRecordset.fields(oUctl.field.Name).Value) Then
+                            oUctl.Text = CStr(Me.reqstRecordset.fields(oUctl.field.Name).Value)
                         End If
                     Next itemColl
                 End If
@@ -288,8 +288,8 @@ Private Function SelectOneField(oSelectField As clsDbField, Optional oCriterionF
     
         With Me.reqstRecordset
             .MoveNext
-            If IsNull(.fields(oSelectField.Name).value) Then
-                SelectOneField = CVar(.fields(oSelectField.Name).value)
+            If IsNull(.fields(oSelectField.Name).Value) Then
+                SelectOneField = CVar(.fields(oSelectField.Name).Value)
             Else
                 SelectOneField = Null
             End If
@@ -373,7 +373,7 @@ Private Function AddFieldsToSaveRequest(vSaveType As saveFormStatusType, oSaveFi
             
             Set oUctl = itemColl
             
-            If oUctl.field.IsRequired And oUctl.field.value = "" Then
+            If oUctl.field.IsRequired And oUctl.field.Value = "" Then
                 AddFieldsToSaveRequest = -1
                 oUctl.BackColor = oUctl.ErrorColor
                 MsgBox "Le Champs " & oUctl.field.Title & " est Requis !", vbCritical, GetAppName
@@ -440,11 +440,11 @@ Private Sub BuildRequestCommand(bOpenPrecision As Boolean, Optional oInputFields
             For Each itemColl In oInputFields
                 Set oField = itemColl
                 
-                If oField.value <> "" Then
+                If oField.Value <> "" Then
                     If bOpenPrecision Then
-                        .Parameters.Append .CreateParameter("@" & oField.Name, adVarChar, adParamInput, 255, "%" & oField.value & "%")
+                        .Parameters.Append .CreateParameter("@" & oField.Name, adVarChar, adParamInput, 255, "%" & oField.Value & "%")
                     Else
-                        .Parameters.Append .CreateParameter("@" & oField.Name, adVarChar, adParamInput, 255, oField.value)
+                        .Parameters.Append .CreateParameter("@" & oField.Name, adVarChar, adParamInput, 255, oField.Value)
                     End If
                 End If
             Next itemColl
@@ -455,8 +455,8 @@ Private Sub BuildRequestCommand(bOpenPrecision As Boolean, Optional oInputFields
             For Each itemColl In oOutputFields
                 Set oField = itemColl
                 
-                If oField.value <> "" Then
-                    .Parameters.Append .CreateParameter("@" & oField.Name, adVarChar, adParamOutput, 255, "%" & oField.value & "%")
+                If oField.Value <> "" Then
+                    .Parameters.Append .CreateParameter("@" & oField.Name, adVarChar, adParamOutput, 255, "%" & oField.Value & "%")
                 End If
             Next itemColl
         End If
@@ -475,7 +475,7 @@ Private Sub AddCriterionToRequest(oFieldList As Collection)
                 Set oField = itemColl
                 str = oField.Name
                 
-                If CStr(oField.value) <> "" Then
+                If CStr(oField.Value) <> "" Then
                     StrRequestAppendCriteria CStr(oField.Name)
                     Me.CriterionProvidedCount = Me.CriterionProvidedCount + 1
                 End If

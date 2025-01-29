@@ -10,10 +10,10 @@ Option Explicit
 Private m_module_name As String
 
 Private m_request_command As ADODB.Command
-Private m_request_recordset As New ADODB.Recordset
-Private m_request_statement As String
 
 Private m_upper_database As CDatabaseDS
+Private m_request_string As String
+Private m_current_recordable As CRecordableDA
 
 Private m_last_result As CResult
 
@@ -60,35 +60,35 @@ Public Property Get RequestCommand() As ADODB.Command
 End Property
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-' Property      : RequestStatement
-' Purpose       : The Request Statement
+'   Property      : RequestString
+'   Purpose       : The Request String
 '
-' Date          Developer           Action
-' ---------------------------------------------------------------------------------------
-' 2025/01/21    Jude Parfait        Created
+'   Date            Developer           Action
+'   ---------------------------------------------------------------------------------------
+'   2025/01/25      Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Property Let RequestStatement(strRequestStatement As String)
-    m_request_statement = strRequestStatement
+Public Property Let RequestString(strRequestString As String)
+    m_request_string = strRequestString
 End Property
 
-Public Property Get RequestStatement() As String
-    RequestStatement = m_request_statement
+Public Property Get RequestString() As String
+    RequestString = m_request_string
 End Property
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-' Property      : RequestRecordset
-' Purpose       : The Request Recordset
+'   Property      : CurrentRecordable
+'   Purpose       : The current Recordable Object
 '
-' Date          Developer           Action
-' ---------------------------------------------------------------------------------------
-' 2025/01/21    Jude Parfait        Created
+'   Date            Developer           Action
+'   ---------------------------------------------------------------------------------------
+'   2025/01/28      Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Property Set RequestRecordset(oRequestRecordset As ADODB.Recordset)
-    Set m_request_recordset = oRequestRecordset
+Public Property Set CurrentRecordable(oCurrentRecordable As CRecordableDA)
+    Set m_current_recordable = oCurrentRecordable
 End Property
 
-Public Property Get RequestRecordset() As ADODB.Recordset
-    Set RequestRecordset = m_request_recordset
+Public Property Get CurrentRecordable() As CRecordableDA
+    Set CurrentRecordable = m_current_recordable
 End Property
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -130,137 +130,119 @@ End Property
 '***************************************************************************************************************************************************************
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-'   Subroutine  : BuildConnectionString
-'   Purpose     : Construct a full connection string, set local properties, and
-'                 return string to calling routine.
+'   Subroutine    : Init
+'   Purpose       : Initialize the Object
+'   Arguments     : oUpperDatabase          The Data Access object
 '
-'   Arguments   :
+'   Returns       : Void
 '
-'   Returns     : void
-'
-'   Date        Developer       Action
+'   Date            Developer               Action
 '   ---------------------------------------------------------------------------------------
-'   2025/01/19  Jude Parfait        Created
+'   2025/01/28      Jude Parfait            Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Sub BuildConnectionString()
-    Me.ConnectionString = UpperDatabase.BuildConnectionString()
+Public Sub Init(oUpperDatabase As CDatabaseDS)
+    
+    Set Me.UpperDatabase = oUpperDatabase
+    
 End Sub
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-'   Function    : OpenConnection
-'   Purpose     : Open a connection to the specified server and database, if not already open.
-'                 If the parameters are not specified, then just re-use the last connection string that was created.
-'   Arguments   :
+'   Function      : BuildRequestCommand
+'   Purpose       : Build the Request Command
+'   Arguments     : oUpperDatabase          The Data Access object
 '
-'   Returns     : Boolean
+'   Returns       : CResult
 '
-'   Date        Developer       Action
+'   Date            Developer               Action
 '   ---------------------------------------------------------------------------------------
-'   2025/01/19  Jude Parfait        Created
+'   2025/01/28      Jude Parfait            Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Function OpenConnection() As Boolean
-    Dim blnNewConnect As Boolean, blnReturn As Boolean, strDataSource As String
-    Dim strDB As String, strConn As String
+Public Function BuildRequestCommand(ByVal dataAccess As CRecordableDA, ByVal strRequestString As String, Optional lngIdCriteria As Long = -1) As CResult
+    Dim itemColl As Variant, oField As clsDbField
     
-    blnReturn = True
-    blnNewConnect = True
+    Me.LastResult = NewResult("BuildRequestCommand", True)
+    Set Me.RequestCommand = New ADODB.Command
+    Set Me.CurrentRecordable = dataAccess
+    Me.RequestString = strRequestString
     
-    On Error GoTo ODError
-        If Not Me.Connection Is Nothing Then
-            If Me.Connection.State And adStateOpen Then
-                'Connection is alread defined and opened.
-                blnNewConnect = False
-            End If
-        End If
+    If Me.UpperDatabase Is Nothing Then
+        Me.LastResult.IsOK = False
+        Me.LastResult.Message = "The Upper Database Is Missing"
+    Else
         
-        If blnNewConnect Then
-            'Must create a new connection
-            'Calling routine has not specified Server or Database values;
-            ' default to last used.
-            If Len(Me.ConnectionString) <= 0 Then
-                'If full connection string is blank, use the individual Server/Environment and
-                ' Database variables to determine connection.
-                Me.BuildConnectionString
+        With Me.RequestCommand
+            .ActiveConnection = Me.UpperDatabase.Connection.Connection
+            .CommandType = adCmdText
+            .CommandText = Me.RequestString
+            
+            ' add Id Parameter
+            If Not (lngIdCriteria = -1) Then
+                .Parameters.Append .CreateParameter("@Id", adBigInt, adParamInput, 255, lngIdCriteria)
             End If
             
-            Me.Connection.ConnectionString = Me.ConnectionString
-            Me.Connection.ConnectionTimeout = Me.ConnectionTimeout
-            Me.Connection.Open
-        End If
-        
-ODResume:
-    OpenConnection = blnReturn
-    Exit Function
-ODError:
-    blnReturn = False
-    UpperDatabase.ShowErrorMessages Err, Me.ModuleName, "OpenConnection"
-    Resume ODResume
-End Function
-
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-'   Function    : CloseConnection
-'   Purpose     : Close connection.
-'   Arguments   :
-'
-'   Returns     : Boolean
-'
-'   Date        Developer       Action
-'   ---------------------------------------------------------------------------------------
-'   2025/01/20  Jude Parfait        Created
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Function CloseConnection() As Boolean
-    
-    On Error Resume Next
-        If Not Me.Connection Is Nothing Then
-            If Me.Connection.State And adStateOpen Then
-                'Connection is defined and still open; close it.
-                Me.Connection.Close
+            ' add Parameters if any
+            Dim rslt As CResult
+            Set rslt = AddCommandParameters
+            
+            If Not rslt.IsOK Then
+                Me.LastResult.IsOK = False
+                Me.LastResult.Message = rslt.Message
             End If
-        End If
-        CloseConnection = True
-    On Error GoTo 0
-End Function
-
-
-
-'***************************************************************************************************************************************************************
-'   Public Functions and Subs
-'***************************************************************************************************************************************************************
-
-Private Function ExecSelect(Optional oCriterionFields As Collection = Nothing, Optional lIdCriteria As Long = -1, Optional lLimitLines As Long = 0) As Long
-    Dim connectionOpened As Boolean, recAffected As Long
-    
-    'StartNewSubProgressionFromParent "Exécution de la Requête SELECT", 1, selectProgr
-    
-    'Call PrepareDatabase
-    
-    'Call RsltListInit
-    
-    'BuildSelectCmdText oCriterionFields, lIdCriteria, lLimitLines
-    
-    'Build the Select Statement
-    Me.RequestStatement = Me.UpperDatabase.dd
-    
-    ' Open The Database
-    connectionOpened = Me.UpperDatabase.OpenDatabase()
-    
-    If connectionOpened Then
-        
-        BuildRequestCommand True, oCriterionFields, Nothing, lIdCriteria
-        
-        Set Me.reqstRecordset = Me.RequestCommand.Execute(recAffected)
-        
-        ExecSelect = 1
-    Else
-        MsgBox "Erreur Ouverture de la Base de Donnees"
-        ExecSelect = -1
+        End With
     End If
     
-    AddDoneLastSubFromParent 1, True, selectProgr
-    
-    'MsgBox Me.RequestStr
+    Set BuildRequestCommand = Me.LastResult
 End Function
 
+Public Function ExecuteCommand(ByRef lngRecAffected As Long) As ADODB.Recordset
+    Set ExecuteCommand = Me.RequestCommand.Execute(lngRecAffected)
+End Function
+
+
+
+'***************************************************************************************************************************************************************
+'   Private Functions and Subs
+'***************************************************************************************************************************************************************
+
+Private Function AddCommandParameters() As CResult
+    Dim rslt As CResult, loopDone As Boolean, field As CField
+    
+    Set rslt = NewResult("AddCommandParameters", True)
+    loopDone = False
+    
+    If rslt.IsOK Then
+        Me.CurrentRecordable.ResetFieldsPicked
+        Do
+            Set field = Me.CurrentRecordable.GetNextFieldCriteria()
+            
+            If Not field Is Nothing Then
+                
+                If CStr(field.Value) <> "" Then
+                    ' Try to Add INPUT Parameter
+                    Set rslt = field.FieldValue.SetInputParameter(Me.RequestCommand)
+                    
+                    ' Try to Add OUTPUT Parameter
+                    Set rslt = field.FieldValue.SetOutputParameter(Me.RequestCommand)
+                End If
+            End If
+            
+            If Me.CurrentRecordable.LastFieldReached() Then
+                ' The end of list is reached
+                Exit Do
+                loopDone = True
+            End If
+            
+        Loop While (Not loopDone)
+    End If
+    
+    setAddCommandParameters = rslt
+End Function
+
+Private Function AddInputParameter(ByVal oField As CField, ByRef oResult As CResult) As Boolean
+    Set oResult = NewResult("AddInputParameter for field " & oField.Name, True)
+    
+    Set oResult = oField.FieldValue.SetInputParameter(Me.RequestCommand)
+End Function
 
 
 '***************************************************************************************************************************************************************
@@ -268,14 +250,13 @@ End Function
 '***************************************************************************************************************************************************************
 
 Private Sub Class_Initialize()
-    m_connection_timeout = 30
-    m_module_name = "CDatabaseConnection"
-    Set Me.Connection = New ADODB.Connection
+    m_module_name = "CDatabaseCommand"
+    Set m_request_command = New ADODB.Command
 End Sub
 
 Private Sub Class_Terminate()
     On Error Resume Next
-        Me.Connection.Close
-        Set Me.Connection = Nothing
+        Set m_request_command = Nothing
+        Set m_request_recordset = Nothing
     On Error GoTo 0
 End Sub

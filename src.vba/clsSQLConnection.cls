@@ -271,7 +271,7 @@ ParamArray InputParameters() As Variant) As Boolean
                 
                 'Define the Input Parameters
                 For intParam = 0 To UBound(InputParameters) Step 2
-                    .Parameters(InputParameters(intParam)).value = _
+                    .Parameters(InputParameters(intParam)).Value = _
                     InputParameters(intParam + 1)
                 Next intParam
                 
@@ -285,7 +285,7 @@ ParamArray InputParameters() As Variant) As Boolean
             
             'Retrieve the value of the output parameter (if any)
             If Len(Trim(OutputParameter)) > 0 Then
-                OutputValue = objCmd.Parameters(OutputParameter).value
+                OutputValue = objCmd.Parameters(OutputParameter).Value
             Else
                 OutputValue = vbNullString
             End If
@@ -356,9 +356,9 @@ Public Sub PickNums(nbResults As Integer, nbLaureates As Integer, nbResultsLib A
                     'Next i
                     
                     If strResult = "" Then
-                        strResult = CStr(rst.fields("msisdn").value) & " - " & CStr(rst.fields("nom").value) & " " & CStr(rst.fields("prenom").value)
+                        strResult = CStr(rst.fields("msisdn").Value) & " - " & CStr(rst.fields("nom").Value) & " " & CStr(rst.fields("prenom").Value)
                     Else
-                        strResult = strResult & "," & CStr(rst.fields("msisdn").value) & " - " & CStr(rst.fields("nom").value) & " " & CStr(rst.fields("prenom").value)
+                        strResult = strResult & "," & CStr(rst.fields("msisdn").Value) & " - " & CStr(rst.fields("nom").Value) & " " & CStr(rst.fields("prenom").Value)
                     End If
                     rst.MoveNext
                 Loop Until rst.EOF

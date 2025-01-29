@@ -161,24 +161,24 @@ Private Function GetConnectionString(ByRef strConnectionString As String) As CRe
         'Build connection string
         
         ' Exit Sub if the CurrentServer is not set in the Upper Database
-        If Me.UpperDatabase.CurrentServer = "" Then
+        If Me.UpperDatabase.ServerOrPath = "" Then
             rslt.IsOK = False
-            rslt.Message = "The CurrentServer is not set in the Upper Database"
+            rslt.Message = "The Server / Path is not set in the Upper Database"
         End If
         
         ' Exit Sub if the CurrentDatabase is not set in the Upper Database
-        If rslt.IsOK And Me.UpperDatabase.CurrentDatabase = "" Then
+        If rslt.IsOK And Me.UpperDatabase.DatabaseOrFileName = "" Then
             rslt.IsOK = False
-            rslt.Message = "The CurrentDatabase is not set in the Upper Database"
+            rslt.Message = "The Database / File Name is not set in the Upper Database"
         End If
         
         If rslt.IsOK Then
             'targetDbFullPath = AppPath & Application.PathSeparator & gblDbLocalFolder & Application.PathSeparator & gblDbName
-            targetDbFullPath = Me.UpperDatabase.CurrentServer & Application.PathSeparator & Me.UpperDatabase.CurrentDatabase
-            Me.UpperDatabase.ConnectionString = "Provider=Microsoft.ACE.OLEDB.12.0;" & _
+            targetDbFullPath = Me.UpperDatabase.ServerOrPath & Application.PathSeparator & Me.UpperDatabase.DatabaseOrFileName
+            strConnectionString = "Provider=Microsoft.ACE.OLEDB.12.0;" & _
             "Data Source=" & _
             targetDbFullPath & ".accdb;"
-            strConnectionString = Me.UpperDatabase.ConnectionString
+            'strConnectionString = Me.UpperDatabase.Connection.ConnectionString
         End If
     Else
         rslt.IsOK = False
@@ -248,8 +248,8 @@ Private Function AddCriteriaToRequest() As CResult
             
             If Not field Is Nothing Then
                 ' Set criterion values
-                If CStr(field.value) <> "" Then
-                    StrRequestAppendCriterion CStr(field)
+                If Not field.IsEmpty Then
+                    StrRequestAppendCriterion field
                 End If
             End If
             
@@ -361,6 +361,24 @@ End Property
 Public Property Get IDatabaseDS_CurrentRecordable() As CRecordableDA
     Set IDatabaseDS_CurrentRecordable = Me.CurrentRecordable
 End Property
+
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'   Property      : RequestString
+'   Purpose       : The Request String
+'
+'   Date            Developer           Action
+'   ---------------------------------------------------------------------------------------
+'   2025/01/28      Jude Parfait        Created
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Public Property Let IDatabaseDS_RequestString(strRequestString As String)
+    Me.RequestString = strRequestString
+End Property
+
+Public Property Get IDatabaseDS_RequestString() As String
+    IDatabaseDS_RequestString = Me.RequestString
+End Property
+
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 '   Function    : IDatabaseDS_BuildConnectionString

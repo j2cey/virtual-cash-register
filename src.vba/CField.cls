@@ -8,16 +8,18 @@
 Option Explicit
 
 Private m_guid As String
+Private m_value As IFieldValue
+Private m_previous_value As Variant
 Private m_name As String
 Private m_label As String
-Private m_value As Variant
-Private m_previous_value As Variant
 
 Private m_is_required As Boolean
 Private m_is_search_criteria As Boolean
 Private m_search_criteria_must_match_exact As Boolean
 Private m_is_selectable As Boolean
 Private m_is_savable As Boolean
+Private m_is_input_parameter As Boolean
+Private m_is_output_parameter As Boolean
 
 Private m_fields_list As Collection
 Private m_last_result As CResult
@@ -44,6 +46,22 @@ End Property
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 Public Property Get Guid() As String
     Guid = m_guid
+End Property
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'   Property      : FieldValue
+'   Purpose       : The field value
+'
+'   Date            Developer           Action
+'   ---------------------------------------------------------------------------------------
+'   2025/01/28      Jude Parfait        Created
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Public Property Set FieldValue(oFieldValue As IFieldValue)
+    Set m_value = oFieldValue
+End Property
+
+Public Property Get FieldValue() As IFieldValue
+    Set FieldValue = m_value
 End Property
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -76,25 +94,6 @@ End Property
 
 Public Property Get Label() As String
     Label = m_label
-End Property
-
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-'   Property      : Value
-'   Purpose       : The field Value
-'
-'   Date            Developer           Action
-'   ---------------------------------------------------------------------------------------
-'   2025/01/12      Jude Parfait        Created
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Property Let value(vrnValue As Variant)
-    Me.Reset
-    m_previous_value = m_value
-    
-    m_value = vrnValue
-End Property
-
-Public Property Get value() As Variant
-    value = m_value
 End Property
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -194,6 +193,38 @@ Public Property Get IsSavable() As Boolean
 End Property
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'   Property      : IsInputParameter
+'   Purpose       : Determine if this field an INPUT parameter
+'
+'   Date            Developer           Action
+'   ---------------------------------------------------------------------------------------
+'   2025/01/28      Jude Parfait        Created
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Public Property Let IsInputParameter(blnIsInputParameter As Boolean)
+    m_is_input_parameter = blnIsInputParameter
+End Property
+
+Public Property Get IsInputParameter() As Boolean
+    IsInputParameter = m_is_input_parameter
+End Property
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'   Property      : IsOutputParameter
+'   Purpose       : Determine if this field an OUTPUT parameter
+'
+'   Date            Developer           Action
+'   ---------------------------------------------------------------------------------------
+'   2025/01/28      Jude Parfait        Created
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Public Property Let IsOutputParameter(blnIsOutputParameter As Boolean)
+    m_is_output_parameter = blnIsOutputParameter
+End Property
+
+Public Property Get IsOutputParameter() As Boolean
+    IsOutputParameter = m_is_output_parameter
+End Property
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 ' Property      : FieldsList
 ' Purpose       : The Record Fields List
 '
@@ -233,22 +264,32 @@ End Property
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 '   Subroutine    : Init
 '   Purpose       : Initialize the Object
-'   Arguments     : strName             The field Name
+'   Arguments     : oFieldValue         The field value
+'                   strName             The field Name
 '                   strLabel            The Performing User
+'
 '   Returns       : Void
 '
 '   Date            Developer           Action
 '   ---------------------------------------------------------------------------------------
 '   2025/01/12      Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Sub Init(strName As String, strLabel As String, Optional vrnValue As Variant = Null)
+Public Sub Init(ByVal oFieldValue As IFieldValue, strName As String, strLabel As String, Optional vrnValue As Variant = Null)
     
+    Set Me.FieldValue = oFieldValue
     Me.Name = strName
     Me.Label = strLabel
     
     If Not vrnValue = Null Then
-        Me.value = vrnValue
+        Me.Value = vrnValue
     End If
+End Sub
+
+Public Sub SetValue(vrnValue As Variant)
+    Me.Reset
+    m_previous_value = Me.FieldValue.GetValue
+    
+    Me.FieldValue.SetValue (vrnValue)
 End Sub
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -271,7 +312,7 @@ Public Function Reset() As CResult
     If Me.PreviousValue = Null Then
        result.Message = "Pas de valeure précédente"
     Else
-        Me.value = Me.PreviousValue
+        Me.FieldValue.SetValue (Me.PreviousValue)
         result.Message = "Valeur du Champs " & Me.Label & " réinitialisée avec succès !"
     End If
     
@@ -290,7 +331,7 @@ End Function
 '   2025/01/12  Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 Public Sub Clear()
-    Me.value = Null
+    Me.FieldValue.ClearValue
 End Sub
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -306,11 +347,7 @@ End Sub
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 Public Function IsEmpty() As Boolean
     
-    If Me.value = Null Then
-       IsEmpty = True
-    Else
-        IsEmpty = False
-    End If
+    IsEmpty = Me.FieldValue.IsEmpty
     
 End Function
 
@@ -332,7 +369,7 @@ Public Function ValidateField() As CResult
     result.IsOK = True
     
     If Me.IsRequired Then
-       result.IsOK = (Not Me.IsEmpty) And (Me.value <> "")
+       result.IsOK = (Not Me.IsEmpty)
     End If
     
     ValidateField = result
@@ -356,7 +393,7 @@ Public Function ValidateFieldCriteria() As CResult
     result.IsOK = True
     
     If Not Me.IsEmpty Then
-       result.IsOK = Me.value <> ""
+       result.IsOK = (Not Me.IsEmpty)
     End If
     
     ValidateFieldCriteria = result

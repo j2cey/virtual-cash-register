@@ -7,19 +7,22 @@
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 Option Explicit
 
+Private m_module_name As String
 Private m_user As CUser
 Private m_server_or_path As String
 Private m_database_or_file_name As String
 
 Private m_connection As CDatabaseConnection
 Private m_command As CDatabaseCommand
+Private m_request_recordset As New ADODB.Recordset
 
 Private m_integrated_security As Boolean
-Private m_module_name As String
+Private m_affected_record_id As Long
 
 Private m_inner_database As IDatabaseDS
 
 
+Implements IDataSource
 
 '***************************************************************************************************************************************************************
 '   Public Properties
@@ -126,6 +129,22 @@ Public Property Get Command() As CDatabaseCommand
 End Property
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+' Property      : RequestRecordset
+' Purpose       : The Request Recordset
+'
+' Date          Developer           Action
+' ---------------------------------------------------------------------------------------
+' 2025/01/21    Jude Parfait        Created
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Public Property Set RequestRecordset(oRequestRecordset As ADODB.Recordset)
+    Set m_request_recordset = oRequestRecordset
+End Property
+
+Public Property Get RequestRecordset() As ADODB.Recordset
+    Set RequestRecordset = m_request_recordset
+End Property
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 '   Property      : IntegratedSecurity
 '   Purpose       : Determine whether the Integrated security must be used
 '
@@ -139,6 +158,22 @@ End Property
 
 Public Property Get IntegratedSecurity() As Boolean
     IntegratedSecurity = m_integrated_security
+End Property
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'   Property      : AffectedRecordId
+'   Purpose       : Affected record id after command execution
+'
+'   Date            Developer           Action
+'   ---------------------------------------------------------------------------------------
+'   2025/01/28      Jude Parfait        Created
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Public Property Let AffectedRecordId(lngAffectedRecordId As Long)
+    Let m_affected_record_id = lngAffectedRecordId
+End Property
+
+Public Property Get AffectedRecordId() As Long
+    AffectedRecordId = m_affected_record_id
 End Property
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -179,7 +214,10 @@ Public Sub Init(ByVal oUser As CUser, ByVal strServerOrPath As String, ByVal str
     Set Me.User = oUser
     Me.ServerOrPath = strServerOrPath
     Me.DatabaseOrFileName = strDatabaseOrFileName
+    
     Set Me.InnerDatabase = oInnerDatabase
+    Set Me.InnerDatabase.UpperDatabase = Me
+    
     Me.IntegratedSecurity = blnIntegratedSecurity
 End Sub
 
@@ -232,7 +270,12 @@ End Sub
 '   2025/01/21  Jude Parfait        Set as funtion to return the connection string string
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 Public Function BuildConnectionString() As String
-    BuildConnectionString = InnerDatabase.BuildConnectionString(Me)
+    Dim rslt As CResult, strConnStr As String
+    
+    Set rslt = InnerDatabase.BuildConnectionString(strConnStr)
+    Me.Connection.ConnectionString = strConnStr
+    
+    BuildConnectionString = strConnStr
 End Function
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -264,29 +307,96 @@ End Function
 '   2025/01/20  Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 Public Function CloseDatabase() As Boolean
-    CloseDatabase = Me.Connection.CloseConnection()
+    If Me.Connection Is Nothing Then
+        CloseDatabase = False
+    Else
+        CloseDatabase = CloseDatabase = Me.Connection.CloseConnection()
+    End If
 End Function
 
 
 
+'***************************************************************************************************************************************************************
+'   Private Functions and Subs
+'***************************************************************************************************************************************************************
 
-
-
-
-Private Function ExecSelect()
+Private Function ExecSelect(ByVal dataAccess As CRecordableDA) As Variant
+    Dim result As CResult, strSelectStatement As String, lngCriteriaCount As Long
     
+    'StartNewSubProgressionFromParent "Exécution de la Requête SELECT", 1, selectProgr
+    
+    'Call PrepareDatabase
+    
+    'Call RsltListInit
+    
+    'BuildSelectCmdText oCriterionFields, lIdCriteria, lLimitLines
+    
+    ' Build Select Command Text
+    Set result = Me.InnerDatabase.BuildSelectStatement(dataAccess, strSelectStatement, lngCriteriaCount)
+    
+    If result.IsOK Then
+        ' Open Connection
+        Me.Connection.OpenConnection
+        
+        If Me.Connection.IsOpened Then
+            
+            'BuildRequestCommand True, oCriterionFields, Nothing, lIdCriteria
+            ' Build Request Command
+            Set result = Me.Command.BuildRequestCommand(dataAccess, strRequestString)
+            
+            Set Me.RequestRecordset = Me.Command.ExecuteCommand(Me.AffectedRecordId)
+            
+            ExecSelect = 1
+        Else
+            MsgBox "Erreur Ouverture de la Base de Donnees"
+            ExecSelect = -1
+        End If
+    
+    End If
+    
+    'AddDoneLastSubFromParent 1, True, selectProgr
+    
+    'MsgBox Me.RequestStr
 End Function
 
-Public Function SelectOneField()
-
+Public Function InsertValues(ByVal dataAccess As CRecordableDA) As Variant
 End Function
 
-Public Function SelectMultipleFields()
+Public Function UpdateValues(ByVal dataAccess As CRecordableDA) As Variant
+End Function
 
+Public Function DeleteValues(ByVal dataAccess As CRecordableDA) As Variant
 End Function
 
 
 
+'***************************************************************************************************************************************************************
+'   Interfaces Implementation
+'***************************************************************************************************************************************************************
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'   Function      : IAccessDB_UpperDatabase
+'   Purpose       : Get / Set the Upper Database
+'
+'   Date            Developer           Action
+'   ---------------------------------------------------------------------------------------
+'   2025/01/25      Jude Parfait        Created
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Public Function IDataSource_GetValues(ByVal dataAccess As CRecordableDA) As Variant
+    IDataSource_GetValues = ExecSelect(dataAccess)
+End Function
+
+Public Function IDataSource_AddValues(ByVal dataAccess As CRecordableDA) As Variant
+    IDataSource_AddValues = InsertValues(dataAccess)
+End Function
+
+Public Function IDataSource_UpdateValues(ByVal dataAccess As CRecordableDA) As Variant
+    IDataSource_UpdateValues = UpdateValues(dataAccess)
+End Function
+
+Public Function IDataSource_DeleteValues(ByVal dataAccess As CRecordableDA) As Variant
+    IDataSource_DeleteValues = DeleteValues(dataAccess)
+End Function
 
 
 
@@ -296,7 +406,12 @@ End Function
 
 Private Sub Class_Initialize()
     m_module_name = "CDatabaseDS"
+    Set m_connection = NewDatabaseConnection(Me)
+    Set m_command = NewDatabaseCommand(Me)
+    Set m_request_recordset = New ADODB.Recordset
+    m_affected_record_id = 0
 End Sub
 
 Private Sub Class_Terminate()
+    Me.CloseDatabase
 End Sub

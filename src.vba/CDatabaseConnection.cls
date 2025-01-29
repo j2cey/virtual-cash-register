@@ -14,8 +14,10 @@ Private m_connection_string As String
 Private m_connection_timeout As Long
 Private m_upper_database As CDatabaseDS
 
+Private m_is_opened As Boolean
 Private m_last_result As CResult
 
+Private Const DEFAULT_TIMEOUT As Long = 30
 
 
 '***************************************************************************************************************************************************************
@@ -122,11 +124,48 @@ Public Property Set LastResult(oLastResult As CResult)
     Set m_last_result = oLastResult
 End Property
 
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'   Function    : IsOpened
+'   Purpose     : Determine whether this database connection is opened or not
+'
+'   Date        Developer       Action
+'   ---------------------------------------------------------------------------------------
+'   2025/01/28  Jude Parfait        Created
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Public Property Let IsOpened(blnIsOpened As Boolean)
+    m_is_opened = blnIsOpened
+End Property
+
+Public Property Get IsOpened() As Boolean
+    IsOpened = m_is_opened
+End Property
+
 
 
 '***************************************************************************************************************************************************************
 '   Public Functions and Subs
 '***************************************************************************************************************************************************************
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'   Subroutine    : Init
+'   Purpose       : Initialize the Object
+'   Arguments     : oRecordDA           The Data Access object
+'                   oUser               The Performing User
+'   Returns       : Void
+'
+'   Date            Developer           Action
+'   ---------------------------------------------------------------------------------------
+'   2025/01/28      Jude Parfait        Created
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Public Sub Init(oUpperDatabase As CDatabaseDS, Optional lngConnectionTimeout As Long = -1)
+    
+    Set Me.UpperDatabase = oUpperDatabase
+    
+    If Not lngConnectionTimeout = -1 Then
+        Me.ConnectionTimeout = lngConnectionTimeout
+    End If
+    
+End Sub
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 '   Subroutine  : BuildConnectionString
@@ -158,10 +197,10 @@ End Sub
 '   2025/01/19  Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 Public Function OpenConnection() As Boolean
-    Dim blnNewConnect As Boolean, blnReturn As Boolean, strDataSource As String
+    Dim blnNewConnect As Boolean, strDataSource As String
     Dim strDB As String, strConn As String
     
-    blnReturn = True
+    'blnReturn = True
     blnNewConnect = True
     
     On Error GoTo ODError
@@ -185,13 +224,14 @@ Public Function OpenConnection() As Boolean
             Me.Connection.ConnectionString = Me.ConnectionString
             Me.Connection.ConnectionTimeout = Me.ConnectionTimeout
             Me.Connection.Open
+            Me.IsOpened = True
         End If
         
 ODResume:
-    OpenConnection = blnReturn
+    OpenConnection = Me.IsOpened
     Exit Function
 ODError:
-    blnReturn = False
+    Me.IsOpened = False
     UpperDatabase.ShowErrorMessages Err, Me.ModuleName, "OpenConnection"
     Resume ODResume
 End Function
@@ -227,7 +267,7 @@ End Function
 '***************************************************************************************************************************************************************
 
 Private Sub Class_Initialize()
-    m_connection_timeout = 30
+    m_connection_timeout = DEFAULT_TIMEOUT
     m_module_name = "CDatabaseConnection"
     Set Me.Connection = New ADODB.Connection
 End Sub
