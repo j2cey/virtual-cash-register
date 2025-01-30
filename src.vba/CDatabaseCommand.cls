@@ -158,9 +158,9 @@ End Sub
 '   2025/01/28      Jude Parfait            Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 Public Function BuildRequestCommand(ByVal dataAccess As CRecordableDA, ByVal strRequestString As String, Optional lngIdCriteria As Long = -1) As CResult
-    Dim itemColl As Variant, oField As clsDbField
+    Dim itemColl As Variant
     
-    Me.LastResult = NewResult("BuildRequestCommand", True)
+    Set Me.LastResult = NewResult("BuildRequestCommand", True)
     Set Me.RequestCommand = New ADODB.Command
     Set Me.CurrentRecordable = dataAccess
     Me.RequestString = strRequestString
@@ -205,7 +205,7 @@ End Function
 '***************************************************************************************************************************************************************
 
 Private Function AddCommandParameters() As CResult
-    Dim rslt As CResult, loopDone As Boolean, field As CField
+    Dim rslt As CResult, loopDone As Boolean, oField As CField
     
     Set rslt = NewResult("AddCommandParameters", True)
     loopDone = False
@@ -213,16 +213,16 @@ Private Function AddCommandParameters() As CResult
     If rslt.IsOK Then
         Me.CurrentRecordable.ResetFieldsPicked
         Do
-            Set field = Me.CurrentRecordable.GetNextFieldCriteria()
+            Set oField = Me.CurrentRecordable.GetNextFieldCriteria()
             
-            If Not field Is Nothing Then
+            If Not oField Is Nothing Then
                 
-                If CStr(field.Value) <> "" Then
+                If Not oField.IsEmpty Then
                     ' Try to Add INPUT Parameter
-                    Set rslt = field.FieldValue.SetInputParameter(Me.RequestCommand)
+                    Set rslt = oField.FieldValue.SetInputParameter(Me.RequestCommand)
                     
                     ' Try to Add OUTPUT Parameter
-                    Set rslt = field.FieldValue.SetOutputParameter(Me.RequestCommand)
+                    Set rslt = oField.FieldValue.SetOutputParameter(Me.RequestCommand)
                 End If
             End If
             
@@ -235,7 +235,7 @@ Private Function AddCommandParameters() As CResult
         Loop While (Not loopDone)
     End If
     
-    setAddCommandParameters = rslt
+    Set AddCommandParameters = rslt
 End Function
 
 Private Function AddInputParameter(ByVal oField As CField, ByRef oResult As CResult) As Boolean

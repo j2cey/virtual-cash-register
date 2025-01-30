@@ -201,7 +201,9 @@ End Function
 '   2025/01/22  Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 Public Function List() As CResult
-    Dim result As CResult
+    Dim result As CResult, vrnValues As Variant
+    
+    Set result = Me.DataSource.GetValues(Me, vrnValues)
     
     Set List = result
 End Function

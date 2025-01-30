@@ -320,8 +320,8 @@ End Function
 '   Private Functions and Subs
 '***************************************************************************************************************************************************************
 
-Private Function ExecSelect(ByVal dataAccess As CRecordableDA) As Variant
-    Dim result As CResult, strSelectStatement As String, lngCriteriaCount As Long
+Private Function ExecSelect(ByVal dataAccess As CRecordableDA, ByRef vrnValues As Variant) As CResult
+    Dim result As CResult, strRequestString As String, lngCriteriaCount As Long
     
     'StartNewSubProgressionFromParent "Exécution de la Requête SELECT", 1, selectProgr
     
@@ -332,7 +332,7 @@ Private Function ExecSelect(ByVal dataAccess As CRecordableDA) As Variant
     'BuildSelectCmdText oCriterionFields, lIdCriteria, lLimitLines
     
     ' Build Select Command Text
-    Set result = Me.InnerDatabase.BuildSelectStatement(dataAccess, strSelectStatement, lngCriteriaCount)
+    Set result = Me.InnerDatabase.BuildSelectStatement(dataAccess, strRequestString, lngCriteriaCount)
     
     If result.IsOK Then
         ' Open Connection
@@ -346,10 +346,11 @@ Private Function ExecSelect(ByVal dataAccess As CRecordableDA) As Variant
             
             Set Me.RequestRecordset = Me.Command.ExecuteCommand(Me.AffectedRecordId)
             
-            ExecSelect = 1
+            Set ExecSelect = result
         Else
+            result.IsOK = False
             MsgBox "Erreur Ouverture de la Base de Donnees"
-            ExecSelect = -1
+            Set ExecSelect = result
         End If
     
     End If
@@ -382,8 +383,8 @@ End Function
 '   ---------------------------------------------------------------------------------------
 '   2025/01/25      Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Function IDataSource_GetValues(ByVal dataAccess As CRecordableDA) As Variant
-    IDataSource_GetValues = ExecSelect(dataAccess)
+Public Function IDataSource_GetValues(ByVal dataAccess As CRecordableDA, ByRef vrnValues As Variant) As CResult
+    Set IDataSource_GetValues = ExecSelect(dataAccess, vrnValues)
 End Function
 
 Public Function IDataSource_AddValues(ByVal dataAccess As CRecordableDA) As Variant

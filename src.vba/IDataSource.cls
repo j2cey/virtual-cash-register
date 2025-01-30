@@ -13,7 +13,7 @@ Option Explicit
 '    Public Functions and Subs
 '***************************************************************************************************************************************************************
 
-Public Function GetValues(ByVal dataAccess As CRecordableDA) As Variant
+Public Function GetValues(ByVal dataAccess As CRecordableDA, ByRef vrnValues As Variant) As CResult
 End Function
 
 Public Function AddValues(ByVal dataAccess As CRecordableDA) As Variant

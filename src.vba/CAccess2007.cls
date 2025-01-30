@@ -193,11 +193,11 @@ End Function
 '   Purpose     : Construct a full SELECT statement, set local properties, and
 '                 return string to calling routine.
 '
-'   Arguments   : CDatabaseDS   currentDb   The relevant database to build connection string
+'   Arguments   : CRecordableDA     dataAccess   The relevant data access to build connection string
 '
-'   Returns     : String        The Build SELECT statement | empty string
+'   Returns     : String            The Build SELECT statement | empty string
 '
-'   Date        Developer       Action
+'   Date        Developer           Action
 '   ---------------------------------------------------------------------------------------
 '   2025/01/21  Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -210,11 +210,11 @@ Private Function GetSelectStatement(dataAccess As CRecordableDA, ByRef strSelect
     Set rslt = NewResult("GetConnectionString", True)
     
     ' If the Table Name is not given, we return empty string
-    If currentDb.RecordTable = "" Then
+    If dataAccess.RecordTable = "" Then
         rslt.IsOK = False
         rslt.Message = "The Table Name is not given"
     Else
-        Me.RequestString = "SELECT * FROM " & currentDb.RecordTable
+        Me.RequestString = "SELECT * FROM " & dataAccess.RecordTable
     End If
     
     If rslt.IsOK Then
