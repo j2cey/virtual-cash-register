@@ -167,7 +167,7 @@ Public Function RemoveFromSplitStr(sSplitted As String, sDelim As String, sElem 
     
 End Function
 
-Public Function AddToStringArray(arr() As String, elem As String, Optional posi As Integer = -1) As String()
+Public Function AddToStringArray(arr() As String, elem As String, Optional posi As Long = -1) As String()
     Dim i As Integer
     
     If Len(Join(arr)) = 0 Then

@@ -39,7 +39,7 @@ Public Property Let Value(strValue As String)
     m_value = strValue
 End Property
 
-Public Property Get Value() As Integer
+Public Property Get Value() As String
     Value = m_value
 End Property
 
@@ -52,7 +52,7 @@ End Property
 '   2025/01/28      Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 Public Property Let IsEmpty(blnIsEmpty As Boolean)
-    Set m_is_empty = blnIsEmpty
+    m_is_empty = blnIsEmpty
 End Property
 
 Public Property Get IsEmpty() As Boolean
@@ -101,7 +101,7 @@ End Property
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 '   Subroutine    : Init
 '   Purpose       : Initialize the Object
-'   Arguments     :
+'   Arguments     : oUpperField the Upper Field
 '
 '   Returns       : Void
 '
@@ -109,10 +109,11 @@ End Property
 '   ---------------------------------------------------------------------------------------
 '   2025/01/28      Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Sub Init()
-    
+Public Sub Init(Optional ByVal oUpperField As CField = Nothing)
+    If Not oUpperField Is Nothing Then
+        Set Me.UpperField = oUpperField
+    End If
 End Sub
-
 
 
 '***************************************************************************************************************************************************************
@@ -193,7 +194,7 @@ Private Function SetInputParameter(ByRef oRequestCommand As ADODB.Command) As CR
         End If
     End If
     
-    Set SetInputParameters = result
+    Set SetInputParameter = result
 End Function
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -224,6 +225,23 @@ End Function
 '***************************************************************************************************************************************************************
 '   Interfaces Implementation
 '***************************************************************************************************************************************************************
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'   Property      : IFieldValue_UpperField
+'   Purpose       : Get / Set the Upper Field
+'
+'   Date            Developer           Action
+'   ---------------------------------------------------------------------------------------
+'   2025/01/31      Jude Parfait        Created
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Public Property Set IFieldValue_UpperField(oUpperField As CField)
+    Set Me.UpperField = oUpperField
+End Property
+
+Public Property Get IFieldValue_UpperField() As CField
+    Set IFieldValue_UpperField = Me.UpperField
+End Property
+
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 '   Subroutine  : IFieldValue_SetValue
@@ -297,9 +315,9 @@ End Function
 '   ---------------------------------------------------------------------------------------
 '   2025/01/12  Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Property Get IFieldValue_SetInputParameter(ByRef oRequestCommand As ADODB.Command) As CResult
+Public Function IFieldValue_SetInputParameter(ByRef oRequestCommand As ADODB.Command) As CResult
     Set IFieldValue_SetInputParameter = SetInputParameter(oRequestCommand)
-End Property
+End Function
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 '   Property    : IFieldValue_SetOutputParameters
@@ -309,9 +327,9 @@ End Property
 '   ---------------------------------------------------------------------------------------
 '   2025/01/12  Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Property Get IFieldValue_SetOutputParameter(ByRef oRequestCommand As ADODB.Command) As CResult
+Public Function IFieldValue_SetOutputParameter(ByRef oRequestCommand As ADODB.Command) As CResult
     Set IFieldValue_SetOutputParameter = SetOutputParameter(oRequestCommand)
-End Property
+End Function
 
 
 

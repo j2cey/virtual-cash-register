@@ -21,18 +21,4 @@ End Property
 Public Property Get LastResult() As CResult
 End Property
 
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-' Property      : FieldsList
-' Purpose       : The Business Logic Fields List
-'
-' Date          Developer           Action
-' ---------------------------------------------------------------------------------------
-' 2025/01/08    Jude Parfait        Created
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Property Set FieldsList(oFieldsList As Collection)
-End Property
-
-Public Property Get FieldsList() As Collection
-End Property
-
 

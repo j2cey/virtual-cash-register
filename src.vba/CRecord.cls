@@ -7,11 +7,18 @@
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 Option Explicit
 
-Private m_record_da As CRecordDA
 Private m_user As CUser
-Private m_fields_list As Collection
+Private m_record_id As Long
+Private m_data_access As CRecordableDA
+
+Private m_field_list As CFieldList
+
 Private m_last_result As CResult
 Private m_value As Variant
+
+
+Private Const DEFAULT_ID As Long = 0
+
 
 Implements IRecordableBL
 
@@ -41,19 +48,35 @@ Public Property Get User() As CUser
 End Property
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-'   Property      : RecordDA
+' Property      : RecordId
+' Purpose       : The Record s Id
+'
+' Date          Developer           Action
+' ---------------------------------------------------------------------------------------
+' 2025/01/31    Jude Parfait        Created
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Public Property Let RecordId(lngRecordId As Long)
+    m_record_id = lngRecordId
+End Property
+
+Public Property Get RecordId() As Long
+    RecordId = m_record_id
+End Property
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'   Property      : DataAccess
 '   Purpose       : The Data Access object
 '
 '   Date            Developer           Action
 '   ---------------------------------------------------------------------------------------
 '   2025/01/12      Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Property Set RecordDA(oRecordDA As CRecordDA)
-    Set m_record_da = oRecordDA
+Public Property Set dataAccess(oDataAccess As CRecordableDA)
+    Set m_data_access = oDataAccess
 End Property
 
-Public Property Get RecordDA() As CRecordDA
-    Set RecordDA = m_record_da
+Public Property Get dataAccess() As CRecordableDA
+    Set dataAccess = m_data_access
 End Property
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -73,19 +96,20 @@ Public Property Get Value() As Variant
 End Property
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-' Property      : FieldsList
+' Property      : FieldList
 ' Purpose       : The Record Fields List
 '
 ' Date          Developer           Action
 ' ---------------------------------------------------------------------------------------
 ' 2025/01/08    Jude Parfait        Created
+' 2025/01/30    Jude Parfait        Change type to CFieldList
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Property Set FieldsList(oFieldsList As Collection)
-    Set m_fields_list = oFieldsList
+Public Property Set FieldList(oFieldList As CFieldList)
+    Set m_field_list = oFieldList
 End Property
 
-Public Property Get FieldsList() As Collection
-    Set FieldsList = m_fields_list
+Public Property Get FieldList() As CFieldList
+    Set FieldList = m_field_list
 End Property
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -121,30 +145,19 @@ End Property
 '   ---------------------------------------------------------------------------------------
 '   2025/01/12      Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Sub Init(Optional oRecordDA As CRecordDA = Nothing, Optional oUser As CUser = Nothing)
+Public Sub Init(Optional oDataAccess As CRecordableDA = Nothing, Optional oUser As CUser = Nothing, Optional ByVal lngRecordId As Long = -1)
     
-    If Not oRecordDA Is Nothing Then
-        Me.RecordDA = oRecordDA
+    If Not oDataAccess Is Nothing Then
+        Me.dataAccess = oDataAccess
     End If
     
     If Not oUser Is Nothing Then
         Me.User = oUser
     End If
-End Sub
-
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-'   Subroutine    : AddField
-'   Purpose       : Add a Filed to the fields list
-'   Arguments     : oField              The Field to be added
-'
-'   Returns       : Void
-'
-'   Date            Developer           Action
-'   ---------------------------------------------------------------------------------------
-'   2025/01/12      Jude Parfait        Created
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Sub AddField(oField As CField)
-    Me.FieldsList.Add oField
+    
+    If Not lngRecordId = -1 Then
+        Me.RecordId = lngRecordId
+    End If
 End Sub
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -232,23 +245,9 @@ End Function
 Public Function Reset() As CResult
     Dim result As CResult, itemColl As Variant, oField As clsUCTL
     
-    Set result = NewResut()
-    result.IsOK = True
-    
-    If Me.FieldsList Is Nothing Then
+    If Me.FieldList Is Nothing Then
     Else
-        For Each itemColl In Me.FieldsList
-            Dim currResult As CResult
-            
-            Set oField = itemColl
-            Set currResult = oField.Reset()
-            
-            If Not currResult.IsOK Then
-                Set result = currResult
-                Exit For
-            End If
-            
-        Next itemColl
+        Set result = Me.FieldList.Reset
     End If
     
     Set Reset = result
@@ -271,20 +270,9 @@ Public Function Clear() As CResult
     Set result = NewResut()
     result.IsOK = True
     
-    If Me.FieldsList Is Nothing Then
+    If Me.FieldList Is Nothing Then
     Else
-        For Each itemColl In Me.FieldsList
-            Dim currResult As CResult
-            
-            Set oField = itemColl
-            Set currResult = oField.Clear()
-            
-            If Not currResult.IsOK Then
-                Set result = currResult
-                Exit For
-            End If
-            
-        Next itemColl
+        Me.FieldList.Clear
     End If
     
     Set Clear = result
@@ -336,26 +324,9 @@ End Function
 Private Function ValidateFields() As CResult
     Dim result As CResult, itemColl As Variant, oField As CField
     
-    Set result = NewResut()
-    result.IsOK = True
-    
-    If Me.FieldsList Is Nothing Then
+    If Me.FieldList Is Nothing Then
     Else
-        For Each itemColl In Me.FieldsList
-            Dim currResult As CResult
-            
-            Set oField = itemColl
-            Set currResult = oField.Clear()
-            
-            If currResult.IsOK Then
-                Set currResult = oField.ValidateField()
-            End If
-            
-            ' Set the current result values to Function result
-            result.IsOK = currResult.IsOK
-            result.Message = result.Message & " - " & currResult.Message
-            
-        Next itemColl
+        Set result = Me.FieldList.ValidateFields
     End If
     
     Set ValidateFields = result
@@ -378,9 +349,9 @@ Private Function FillFields() As CResult
     Set result = NewResut()
     result.IsOK = True
     
-    If Me.FieldsList Is Nothing Then
+    If Me.FieldList Is Nothing Then
     Else
-        For Each itemColl In Me.FieldsList
+        For Each itemColl In Me.FieldList
             Dim currResult As CResult
             
             Set oField = itemColl
@@ -422,19 +393,19 @@ Public Property Set IRecordableBL_LastResult(RHS As CResult)
 End Property
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-'   Property    : IRecordableBL_FieldsList
+'   Property    : IRecordableBL_FieldList
 '   Purpose     : Get / Set Fields List
 '
 '   Date        Developer       Action
 '   ---------------------------------------------------------------------------------------
 '   2025/01/12  Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Property Get IRecordableBL_FieldsList() As Collection
-    Set IRecordableBL_FieldsList = Me.FieldsList
+Public Property Get IRecordableBL_FieldList() As Collection
+    Set IRecordableBL_FieldList = Me.FieldList
 End Property
 
-Public Property Set IRecordableBL_FieldsList(RHS As Collection)
-    Set Me.FieldsList = RHS
+Public Property Set IRecordableBL_FieldList(RHS As Collection)
+    Set Me.FieldList = RHS
 End Property
 
 
@@ -443,9 +414,10 @@ End Property
 '***************************************************************************************************************************************************************
 
 Private Sub Class_Initialize()
-    Set m_fields_list = New Collection
+    m_record_id = DEFAULT_ID
+    Set m_field_list = NewFieldList()
 End Sub
 
 Private Sub Class_Terminate()
-    Set m_fields_list = Nothing
+    Set m_field_list = Nothing
 End Sub

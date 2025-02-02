@@ -277,11 +277,13 @@ End Property
 Public Sub Init(ByVal oFieldValue As IFieldValue, strName As String, strLabel As String, Optional vrnValue As Variant = Null)
     
     Set Me.FieldValue = oFieldValue
+    Set oFieldValue.UpperField = Me
+    
     Me.Name = strName
     Me.Label = strLabel
     
     If Not vrnValue = Null Then
-        Me.Value = vrnValue
+        Me.SetValue vrnValue
     End If
 End Sub
 

@@ -90,22 +90,22 @@ Public Function NewAccess2007(Optional oUser As CUser = Nothing, Optional oRecor
 End Function
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-'   Function    : NewRecordableDA
+'   Function    : NewRecordable
 '   Purpose     : Create and Initialize a New Recordable Data Access
 '   Arguments   : oUser                     The user performing
 '                 oDataSource               The Data Source
 '                 strRecordTable            The Record Table
 '                 lngRecordId               The Record ID (if any)
 '
-'   Returns     : CAccess2007
+'   Returns     : CRecordableDA
 '
 '   Date        Developer           Action
 '   ---------------------------------------------------------------------------------------
 '   2025/01/25      Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Function NewRecordableDA(ByVal oUser As CUser, ByVal oDataSource As IDataSource, ByVal strRecordTable As String, Optional ByVal lngRecordId As Long = -1) As CRecordableDA
+Public Function NewRecordable(ByVal oUser As CUser, ByVal oDataSource As IDataSource, ByVal strRecordTable As String, Optional ByVal lngRecordId As Long = -1) As CRecordableDA
     With New CRecordableDA
         .Init oUser, oDataSource, strRecordTable, lngRecordId
-        Set NewRecordableDA = .Self 'returns the newly created instance
+        Set NewRecordable = .Self 'returns the newly created instance
     End With
 End Function

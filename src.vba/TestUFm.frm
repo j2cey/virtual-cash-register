@@ -8,9 +8,13 @@ Private Sub UserForm_Initialize()
     
     Set currentUser = NewUser()
     Set mainaccessdb = NewDatabase(currentUser, "D:\WorkPersoData\PersoData\J2CEY_DATA\WRK\GT\BUSINESS_APPS\CAISSEVIRTUELLECOMILOG\app\db", "comilogcashdb", NewAccess2007())
-    Set dataacess = NewRecordableDA(currentUser, mainaccessdb, "users")
+    Set dataacess = NewRecordable(currentUser, mainaccessdb, "users")
     
-    dataacess.List
+    dataacess.FieldList.AddField NewField(NewFieldValueString(), "userlogin", "Login")
+    
+    Dim oLoginField As CField
+    
+    Set oLoginField = dataacess.GetValue("userlogin", True)
     
     MsgBox Now_System() & ", MS: " & GetTodayMilliseconds() & ", CreateGUID: " & CreateGUID()
     

@@ -320,6 +320,76 @@ End Function
 '   Private Functions and Subs
 '***************************************************************************************************************************************************************
 
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'   Function    : CloseRecordset
+'   Purpose     : Close the recordset.
+'   Arguments   :
+'
+'   Returns     : Boolean
+'
+'   Date        Developer       Action
+'   ---------------------------------------------------------------------------------------
+'   2025/01/31  Jude Parfait        Created
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Public Function CloseRecordset() As Boolean
+    If Me.RequestRecordset Is Nothing Then
+        CloseRecordset = False
+    Else
+        Set Me.RequestRecordset = Nothing
+        CloseRecordset = True
+    End If
+End Function
+
+Private Function SetValueField() As CResult
+    
+End Function
+
+Private Function GetValue(ByVal dataAccess As CRecordableDA, ByRef oFieldValue As CField) As CResult
+    Dim result As CResult, emptyVar As Variant
+    
+    ' Execute the Select Command and Set The Relevant RecordSet
+    Set result = ExecSelect(dataAccess, emptyVar)
+    
+    If result.IsOK Then
+        If Not (Me.RequestRecordset Is Nothing) Then
+            If Not Me.RequestRecordset.EOF Then
+                With Me.RequestRecordset
+                    If Not IsNull(.fields(oFieldValue.Name).Value) Then
+                        oFieldValue.FieldValue.SetValue CVar(.fields(oFieldValue.Name).Value)
+                    Else
+                        oFieldValue.FieldValue.ClearValue
+                    End If
+                    .MoveNext
+                End With
+            End If
+        End If
+    End If
+    
+    Set GetValue = result
+End Function
+
+Private Function GetRecord(ByVal dataAccess As CRecordableDA, ByRef oRecordValue As CRecord) As CResult
+    Dim result As CResult, emptyVar As Variant
+    
+    ' Execute the Select Command and Set The Relevant RecordSet
+    Set result = ExecSelect(dataAccess, emptyVar)
+    
+    If result.IsOK Then
+        If Not (Me.RequestRecordset Is Nothing) Then
+            With Me.RequestRecordset
+                .MoveNext
+                If Not IsNull(.fields(oFieldValue.Name).Value) Then
+                    oFieldValue.FieldValue.SetValue CVar(.fields(oFieldValue.Name).Value)
+                Else
+                    oFieldValue.FieldValue.ClearValue
+                End If
+            End With
+        End If
+    End If
+    
+    Set GetValue = result
+End Function
+
 Private Function ExecSelect(ByVal dataAccess As CRecordableDA, ByRef vrnValues As Variant) As CResult
     Dim result As CResult, strRequestString As String, lngCriteriaCount As Long
     
@@ -376,16 +446,24 @@ End Function
 '***************************************************************************************************************************************************************
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-'   Function      : IAccessDB_UpperDatabase
-'   Purpose       : Get / Set the Upper Database
+'   Function      : IDataSource_GetValue
+'   Purpose       : Get a value from database (select scalar)
 '
 '   Date            Developer           Action
 '   ---------------------------------------------------------------------------------------
 '   2025/01/25      Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Function IDataSource_GetValues(ByVal dataAccess As CRecordableDA, ByRef vrnValues As Variant) As CResult
-    Set IDataSource_GetValues = ExecSelect(dataAccess, vrnValues)
+Public Function IDataSource_GetValue(ByVal dataAccess As CRecordableDA, ByRef oFieldValue As CField) As CResult
+    Set IDataSource_GetValue = GetValue(dataAccess, oFieldValue)
 End Function
+
+Public Function IDataSource_GetRecord(ByVal dataAccess As CRecordableDA, ByRef oRecordValue As CRecord) As CResult
+End Function
+
+Public Function IDataSource_GetRecordList(ByVal dataAccess As CRecordableDA, ByVal oRecordTemplate As CRecord, ByRef oRecordListValue As CRecordList) As CResult
+End Function
+
+
 
 Public Function IDataSource_AddValues(ByVal dataAccess As CRecordableDA) As Variant
     IDataSource_AddValues = InsertValues(dataAccess)
