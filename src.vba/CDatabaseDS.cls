@@ -344,23 +344,31 @@ Private Function SetValueField() As CResult
     
 End Function
 
+Private Function SetFieldValue(ByVal oFieldValue As CField)
+    Dim result As CResult
+    
+    With Me.RequestRecordset
+        If Not IsNull(.fields(oFieldValue.Name).Value) Then
+            oFieldValue.FieldValue.SetValue CVar(.fields(oFieldValue.Name).Value)
+        Else
+            oFieldValue.FieldValue.ClearValue
+        End If
+    End With
+    
+    Set SetFieldValue = result
+End Function
+
 Private Function GetValue(ByVal dataAccess As CRecordableDA, ByRef oFieldValue As CField) As CResult
     Dim result As CResult, emptyVar As Variant
     
-    ' Execute the Select Command and Set The Relevant RecordSet
+    ' Execute  the Select Command and Set The Relevant RecordSet
     Set result = ExecSelect(dataAccess, emptyVar)
     
     If result.IsOK Then
         If Not (Me.RequestRecordset Is Nothing) Then
             If Not Me.RequestRecordset.EOF Then
-                With Me.RequestRecordset
-                    If Not IsNull(.fields(oFieldValue.Name).Value) Then
-                        oFieldValue.FieldValue.SetValue CVar(.fields(oFieldValue.Name).Value)
-                    Else
-                        oFieldValue.FieldValue.ClearValue
-                    End If
-                    .MoveNext
-                End With
+                SetFieldValue oFieldValue
+                Me.RequestRecordset.MoveNext
             End If
         End If
     End If
@@ -376,14 +384,33 @@ Private Function GetRecord(ByVal dataAccess As CRecordableDA, ByRef oRecordValue
     
     If result.IsOK Then
         If Not (Me.RequestRecordset Is Nothing) Then
-            With Me.RequestRecordset
-                .MoveNext
-                If Not IsNull(.fields(oFieldValue.Name).Value) Then
-                    oFieldValue.FieldValue.SetValue CVar(.fields(oFieldValue.Name).Value)
-                Else
-                    oFieldValue.FieldValue.ClearValue
-                End If
-            End With
+            ' Clear Record values
+            oRecordValue.Clear
+            
+            If Not Me.RequestRecordset.EOF Then
+            
+                Do
+                    'AddToDoLastSubFromParent 1, selectProgr
+                    
+                    ' Reset Record field list's fields picked
+                    oRecordValue.FieldList.ResetFieldsPicked
+                    If Not oResultFields Is Nothing Then
+                        For Each itemColl In oResultFields.ListCtls
+                            Set oUctl = itemColl
+                            
+                            If Not IsNull(Me.reqstRecordset.fields(oUctl.field.Name).Value) Then
+                                oUctl.Text = CStr(Me.reqstRecordset.fields(oUctl.field.Name).Value)
+                            End If
+                        Next itemColl
+                    End If
+                    
+                    resultCount = resultCount + 1
+                    AddDoneLastSubFromParent 1, True, selectProgr
+                    
+                    Me.RequestRecordset.MoveNext
+                Loop Until Me.RequestRecordset.EOF
+                
+            End If
         End If
     End If
     
@@ -458,6 +485,7 @@ Public Function IDataSource_GetValue(ByVal dataAccess As CRecordableDA, ByRef oF
 End Function
 
 Public Function IDataSource_GetRecord(ByVal dataAccess As CRecordableDA, ByRef oRecordValue As CRecord) As CResult
+    Set IDataSource_GetRecord = GetRecord(dataAccess, oRecordValue)
 End Function
 
 Public Function IDataSource_GetRecordList(ByVal dataAccess As CRecordableDA, ByVal oRecordTemplate As CRecord, ByRef oRecordListValue As CRecordList) As CResult

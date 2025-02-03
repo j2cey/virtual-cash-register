@@ -482,13 +482,13 @@ Private Function GetNextFieldKey(Optional ByVal lngAtIndex = -1) As String
         currIndex = IncrementPreviousFieldIndexPicked()
         
         ' If the max Index is reached
-        If currIndex >= Me.FieldList.Count Then
+        If (currIndex + MIN_FIELD_INDEX) >= Me.FieldList.Count Then
             GetNextFieldKey = ""
             Exit Function
         End If
         
         GetNextFieldKey = m_fields_positions(currIndex)
-        Me.PreviousFieldIndexPicked = MIN_FIELD_INDEX
+        Me.PreviousFieldIndexPicked = currIndex ' MIN_FIELD_INDEX
     Else
         GetNextFieldKey = m_fields_positions(currIndex)
     End If

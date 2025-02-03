@@ -187,6 +187,8 @@ Public Function GetValue(ByVal strFieldName As String, Optional ByVal reloadFrom
     Set oFieldValue = Me.FieldList.GetFieldByName(strFieldName)
     Set result = Me.DataSource.GetValue(Me, oFieldValue)
     
+    MsgBox "User " & oFieldValue.Label & ": '" & CStr(oFieldValue.FieldValue.GetValue) & "'"
+    
     Set GetValue = result
 End Function
 

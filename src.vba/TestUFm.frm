@@ -11,10 +11,11 @@ Private Sub UserForm_Initialize()
     Set dataacess = NewRecordable(currentUser, mainaccessdb, "users")
     
     dataacess.FieldList.AddField NewField(NewFieldValueString(), "userlogin", "Login")
+    dataacess.FieldList.AddField NewField(NewFieldValueString(), "username", "User Name")
     
-    Dim oLoginField As CField
+    Dim result As CResult
     
-    Set oLoginField = dataacess.GetValue("userlogin", True)
+    Set result = dataacess.GetValue("username", True)
     
     MsgBox Now_System() & ", MS: " & GetTodayMilliseconds() & ", CreateGUID: " & CreateGUID()
     
