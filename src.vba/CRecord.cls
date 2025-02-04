@@ -148,11 +148,11 @@ End Property
 Public Sub Init(Optional oDataAccess As CRecordableDA = Nothing, Optional oUser As CUser = Nothing, Optional ByVal lngRecordId As Long = -1)
     
     If Not oDataAccess Is Nothing Then
-        Me.dataAccess = oDataAccess
+        Set Me.dataAccess = oDataAccess
     End If
     
     If Not oUser Is Nothing Then
-        Me.User = oUser
+        Set Me.User = oUser
     End If
     
     If Not lngRecordId = -1 Then
@@ -276,6 +276,31 @@ Public Function Clear() As CResult
     End If
     
     Set Clear = result
+End Function
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'   Function    : IsNew
+'   Purpose     : Determine whether the object is new
+'   Arguments   :
+'
+'   Returns     : CResult
+'
+'   Date        Developer       Action
+'   ---------------------------------------------------------------------------------------
+'   2025/01/12  Jude Parfait        Created
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Public Function IsNew() As Boolean
+    Dim result As Boolean
+    
+    Set result = True
+    
+    If Me.RecordId = DEFAULT_ID Then
+       result = True
+    Else
+        result = False
+    End If
+    
+    Set IsNew = result
 End Function
 
 

@@ -11,12 +11,8 @@ Private m_guid As String
 Private m_user As CUser
 Private m_data_source As IDataSource
 
-Private m_record_id As Long
 Private m_record_table As String
-
-Private m_field_list As CFieldList
-
-Private Const DEFAULT_ID As Long = 0
+Private m_record As CRecord
 
 
 
@@ -89,36 +85,22 @@ Public Property Get RecordTable() As String
 End Property
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-' Property      : RecordId
-' Purpose       : The Record s Id
+' Property      : Record
+' Purpose       : The Record
 '
 ' Date          Developer           Action
 ' ---------------------------------------------------------------------------------------
 ' 2025/01/21    Jude Parfait        Created
+' 2025/02/03    Jude Parfait        change name from RecordId to RecordId, and type from Long to CRecord
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Property Let RecordId(lngRecordId As Long)
-    m_record_id = lngRecordId
+Public Property Set Record(oRecord As CRecord)
+    Set m_record = oRecord
 End Property
 
-Public Property Get RecordId() As Long
-    RecordId = m_record_id
+Public Property Get Record() As CRecord
+    Set Record = m_record
 End Property
 
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-' Property      : FieldList
-' Purpose       : The Record s Fileds list
-'
-' Date          Developer           Action
-' ---------------------------------------------------------------------------------------
-' 2025/01/21    Jude Parfait        Created
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Property Set FieldList(oFieldList As CFieldList)
-    Set m_field_list = oFieldList
-End Property
-
-Public Property Get FieldList() As CFieldList
-    Set FieldList = m_field_list
-End Property
 
 
 '***************************************************************************************************************************************************************
@@ -136,14 +118,14 @@ End Property
 '   ---------------------------------------------------------------------------------------
 '   2025/01/25      Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Sub Init(ByVal oUser As CUser, ByVal oDataSource As IDataSource, ByVal strRecordTable As String, Optional ByVal lngRecordId As Long = -1)
+Public Sub Init(ByVal oUser As CUser, ByVal oDataSource As IDataSource, ByVal strRecordTable As String, Optional ByVal oRecord As CRecord = Nothing)
     
     Set Me.User = oUser
     Set Me.DataSource = oDataSource
     Me.RecordTable = strRecordTable
     
-    If Not lngRecordId = -1 Then
-        Me.RecordId = lngRecordId
+    If Not oRecord Is Nothing Then
+        Set Me.Record = oRecord
     End If
 End Sub
 
@@ -171,7 +153,7 @@ Public Function Save() As CResult
 End Function
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-'   Function    : List
+'   Function    : GetValue
 '   Purpose     : List or Fill values
 '   Arguments   :
 '
@@ -184,12 +166,39 @@ End Function
 Public Function GetValue(ByVal strFieldName As String, Optional ByVal reloadFromDataSource As Boolean = False) As CResult
     Dim result As CResult, oFieldValue As CField
     
-    Set oFieldValue = Me.FieldList.GetFieldByName(strFieldName)
-    Set result = Me.DataSource.GetValue(Me, oFieldValue)
+    Set oFieldValue = Me.DataSource.GetValue(Me, strFieldName, result)
     
     MsgBox "User " & oFieldValue.Label & ": '" & CStr(oFieldValue.FieldValue.GetValue) & "'"
     
     Set GetValue = result
+End Function
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'   Function    : GetRecord
+'   Purpose     : Get a record value
+'   Arguments   :
+'
+'   Returns     : CResult
+'
+'   Date        Developer       Action
+'   ---------------------------------------------------------------------------------------
+'   2025/02/03  Jude Parfait        Created
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Public Function GetRecord(Optional ByVal reloadFromDataSource As Boolean = False) As CRecord
+    Dim result As CResult, oRecordValue As CRecord, oFieldValue As CField
+    
+    Set result = NewResult("GetRecord")
+    Set oRecordValue = Me.DataSource.GetRecord(Me, result)
+    
+    If result.LastResult.IsOK Then
+        Set oFieldValue = oRecordValue.FieldList.GetFieldByName("username")
+        MsgBox "User " & oFieldValue.Label & ": '" & CStr(oFieldValue.FieldValue.GetValue) & "'"
+        
+        Set oFieldValue = oRecordValue.FieldList.GetFieldByName("userlogin")
+        MsgBox "User " & oFieldValue.Label & ": '" & CStr(oFieldValue.FieldValue.GetValue) & "'"
+        result.SetSuccess
+    End If
+    Set GetRecord = oRecordValue
 End Function
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -226,17 +235,7 @@ End Function
 '   2025/01/12  Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 Private Function IsNew() As Boolean
-    Dim result As Boolean
-    
-    Set result = True
-    
-    If Me.RecordId = DEFAULT_ID Then
-       result = True
-    Else
-        result = False
-    End If
-    
-    Set IsNew = result
+    Set IsNew = Me.Record.IsNew()
 End Function
 
 
@@ -247,10 +246,9 @@ End Function
 
 Private Sub Class_Initialize()
     m_guid = CreateGUID
-    m_record_id = DEFAULT_ID
-    Set m_field_list = NewFieldList()
+    Set m_record = NewRecord(Me.DataSource, Me.User)
 End Sub
 
 Private Sub Class_Terminate()
-    Set m_field_list = Nothing
+    Set m_record = Nothing
 End Sub

@@ -242,9 +242,9 @@ Private Function AddCriteriaToRequest() As CResult
     End If
     
     If rslt.IsOK Then
-        Me.CurrentRecordable.FieldList.ResetFieldsPicked
+        Me.CurrentRecordable.Record.FieldList.ResetFieldsPicked
         Do
-            Set field = Me.CurrentRecordable.FieldList.GetNextFieldCriteria()
+            Set field = Me.CurrentRecordable.Record.FieldList.GetNextFieldCriteria()
             
             If Not field Is Nothing Then
                 ' Set criterion values
@@ -253,7 +253,7 @@ Private Function AddCriteriaToRequest() As CResult
                 End If
             End If
             
-            If Me.CurrentRecordable.FieldList.LastFieldReached() Then
+            If Me.CurrentRecordable.Record.FieldList.LastFieldReached() Then
                 ' The end of list is reached
                 Exit Do
                 loopDone = True

@@ -12,6 +12,8 @@ Private m_code As Long
 Private m_message As String
 Private m_label As String
 
+Private m_sub_results As Collection
+
 
 
 '***************************************************************************************************************************************************************
@@ -86,6 +88,37 @@ Public Property Get Label() As String
     Label = m_label
 End Property
 
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+' Property      : SubResults
+' Purpose       : The Sub-Results List
+'
+' Date          Developer           Action
+' ---------------------------------------------------------------------------------------
+' 2025/02/03    Jude Parfait        Created
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Public Property Set SubResults(oSubResults As Collection)
+    Set m_sub_results = oSubResults
+End Property
+
+Public Property Get SubResults() As Collection
+    Set SubResults = m_sub_results
+End Property
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+' Property      : LastResult
+' Purpose       : Get the last result if any or self
+'
+' Date          Developer           Action
+' ---------------------------------------------------------------------------------------
+' 2025/02/03    Jude Parfait        Created
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Public Property Get LastResult() As CResult
+    If Me.SubResults.Count = 0 Then
+        Set LastResult = Self
+    Else
+        Set LastResult = Me.SubResults.Item(CStr(Me.SubResults.Count))
+    End If
+End Property
 
 
 '***************************************************************************************************************************************************************
@@ -132,6 +165,67 @@ Public Sub DisplayMessage()
     End If
 End Sub
 
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'   Subroutine    : AddSubResult
+'   Purpose       : Add a sub-result to this result
+'   Arguments     : oResult             The result to be added
+'
+'   Returns       : Void
+'
+'   Date            Developer           Action
+'   ---------------------------------------------------------------------------------------
+'   2025/02/03      Jude Parfait        Created
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Public Sub AddSubResult(ByVal oResult As CResult)
+    Dim lngCode As Long
+    
+    lngCode = Me.SubResults.Count + 1
+    oResult.Code = lngCode
+    
+    Me.SubResults.Add oResult, CStr(lngCode)
+    
+    'Set AddSubResult = oResult
+End Sub
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'   Subroutine    : SetSuccess
+'   Purpose       : Set this result as success
+'   Arguments     : strMessage          The result message, if any
+'
+'   Returns       : Void
+'
+'   Date            Developer           Action
+'   ---------------------------------------------------------------------------------------
+'   2025/02/03      Jude Parfait        Created
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Public Sub SetSuccess(Optional ByVal strMessage As String = "")
+    Me.IsOK = True
+    If strMessage = "" Then
+        Me.Message = "SUCCESS !"
+    Else
+        Me.Message = strMessage
+    End If
+End Sub
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'   Subroutine    : SetFailure
+'   Purpose       : Set this result as failure
+'   Arguments     : strMessage          The result message, if any
+'
+'   Returns       : Void
+'
+'   Date            Developer           Action
+'   ---------------------------------------------------------------------------------------
+'   2025/02/03      Jude Parfait        Created
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Public Sub SetFailure(Optional ByVal strMessage As String = "")
+    Me.IsOK = False
+    If strMessage = "" Then
+        Me.Message = "FAILURE !"
+    Else
+        Me.Message = strMessage
+    End If
+End Sub
 
 
 '***************************************************************************************************************************************************************
@@ -140,8 +234,10 @@ End Sub
 
 Private Sub Class_Initialize()
     m_code = 0
+    Set m_sub_results = New Collection
 End Sub
 
 Private Sub Class_Terminate()
+    Set m_sub_results = Nothing
 End Sub
 

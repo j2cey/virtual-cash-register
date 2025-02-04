@@ -344,80 +344,105 @@ Private Function SetValueField() As CResult
     
 End Function
 
-Private Function SetFieldValue(ByVal oFieldValue As CField)
+Private Function SetSelectableFieldValue(ByVal oFieldValue As CField) As CResult
     Dim result As CResult
     
-    With Me.RequestRecordset
-        If Not IsNull(.fields(oFieldValue.Name).Value) Then
-            oFieldValue.FieldValue.SetValue CVar(.fields(oFieldValue.Name).Value)
-        Else
-            oFieldValue.FieldValue.ClearValue
-        End If
-    End With
+    Set result = NewResult("SetSelectableFieldValue", False)
     
-    Set SetFieldValue = result
+    If Not oFieldValue Is Nothing Then
+        With Me.RequestRecordset
+            If Not IsNull(.fields(oFieldValue.Name).Value) Then
+                If oFieldValue.IsSelectable Then
+                    oFieldValue.FieldValue.SetValue CVar(.fields(oFieldValue.Name).Value)
+                    result.SetSuccess
+                Else
+                    result.SetFailure "field " & oFieldValue.Name & " Is NOT Selectable"
+                End If
+            Else
+                oFieldValue.FieldValue.ClearValue
+                result.SetFailure "field " & oFieldValue.Name & " NOT in Record"
+            End If
+        End With
+    Else
+        result.SetFailure "the field is NULL"
+    End If
+    
+    Set SetSelectableFieldValue = result
 End Function
 
-Private Function GetValue(ByVal dataAccess As CRecordableDA, ByRef oFieldValue As CField) As CResult
-    Dim result As CResult, emptyVar As Variant
+Private Function SetSelectableRecord(ByVal oRecordTemplate As CRecord, ByRef oRecordValue As CRecord) As CResult
+    Dim result As CResult, loopDone As Boolean, oField As CField
+    
+    ' Reset Record field list's fields picked
+    oRecordTemplate.FieldList.ResetFieldsPicked
+    loopDone = False
+                
+    Do
+        Set oField = oRecordTemplate.FieldList.GetNextField()
+        AddSubResult "SetSelectableRecord", result, SetSelectableFieldValue(oField)
+        
+        If result.LastResult.IsOK Then
+            oRecordValue.FieldList.AddField oField
+        End If
+        
+        If oRecordTemplate.FieldList.LastFieldReached() Then
+            ' The end of list is reached
+            Exit Do
+            loopDone = True
+        End If
+        
+    Loop While (Not loopDone)
+    
+    result.SetSuccess
+    Set SetSelectableRecord = result
+End Function
+
+Private Function GetValue(ByVal dataAccess As CRecordableDA, ByVal strFieldName As String, ByRef oResult As CResult) As CField
+    Dim oFieldValue As CField
+    
+    Set oFieldValue = dataAccess.Record.FieldList.GetFieldByName(strFieldName)
     
     ' Execute  the Select Command and Set The Relevant RecordSet
-    Set result = ExecSelect(dataAccess, emptyVar)
+    AddSubResult "GetValue", oResult, ExecSelect(dataAccess)
     
-    If result.IsOK Then
+    If oResult.LastResult.IsOK Then
         If Not (Me.RequestRecordset Is Nothing) Then
             If Not Me.RequestRecordset.EOF Then
-                SetFieldValue oFieldValue
-                Me.RequestRecordset.MoveNext
+                SetSelectableFieldValue oFieldValue
+                'Me.RequestRecordset.MoveNext
             End If
         End If
     End If
     
-    Set GetValue = result
+    Set GetValue = oFieldValue
 End Function
 
-Private Function GetRecord(ByVal dataAccess As CRecordableDA, ByRef oRecordValue As CRecord) As CResult
-    Dim result As CResult, emptyVar As Variant
+Private Function GetRecord(ByVal dataAccess As CRecordableDA, ByRef oResult As CResult) As CRecord
+    Dim oRecordValue As CRecord, loopDone As Boolean, oField As CField
     
     ' Execute the Select Command and Set The Relevant RecordSet
-    Set result = ExecSelect(dataAccess, emptyVar)
+    AddSubResult "GetRecord", oResult, ExecSelect(dataAccess)
     
-    If result.IsOK Then
+    ' Create the OUTPUT Record
+    Set oRecordValue = NewRecord(dataAccess, dataAccess.User)
+    
+    If oResult.LastResult.IsOK Then
         If Not (Me.RequestRecordset Is Nothing) Then
-            ' Clear Record values
-            oRecordValue.Clear
             
             If Not Me.RequestRecordset.EOF Then
-            
-                Do
-                    'AddToDoLastSubFromParent 1, selectProgr
-                    
-                    ' Reset Record field list's fields picked
-                    oRecordValue.FieldList.ResetFieldsPicked
-                    If Not oResultFields Is Nothing Then
-                        For Each itemColl In oResultFields.ListCtls
-                            Set oUctl = itemColl
-                            
-                            If Not IsNull(Me.reqstRecordset.fields(oUctl.field.Name).Value) Then
-                                oUctl.Text = CStr(Me.reqstRecordset.fields(oUctl.field.Name).Value)
-                            End If
-                        Next itemColl
-                    End If
-                    
-                    resultCount = resultCount + 1
-                    AddDoneLastSubFromParent 1, True, selectProgr
-                    
-                    Me.RequestRecordset.MoveNext
-                Loop Until Me.RequestRecordset.EOF
+                ' Loop through all the fields of the first recordset s record
+                'AddToDoLastSubFromParent 1, selectProgr
                 
+                ' Set record values
+                AddSubResult "GetRecord", oResult, SetSelectableRecord(dataAccess.Record, oRecordValue)
             End If
         End If
     End If
     
-    Set GetValue = result
+    Set GetRecord = oRecordValue
 End Function
 
-Private Function ExecSelect(ByVal dataAccess As CRecordableDA, ByRef vrnValues As Variant) As CResult
+Private Function ExecSelect(ByVal dataAccess As CRecordableDA) As CResult
     Dim result As CResult, strRequestString As String, lngCriteriaCount As Long
     
     'StartNewSubProgressionFromParent "Exécution de la Requête SELECT", 1, selectProgr
@@ -428,10 +453,11 @@ Private Function ExecSelect(ByVal dataAccess As CRecordableDA, ByRef vrnValues A
     
     'BuildSelectCmdText oCriterionFields, lIdCriteria, lLimitLines
     
+    'Set result = NewResult("ExecSelect")
     ' Build Select Command Text
-    Set result = Me.InnerDatabase.BuildSelectStatement(dataAccess, strRequestString, lngCriteriaCount)
+    AddSubResult "ExecSelect", result, Me.InnerDatabase.BuildSelectStatement(dataAccess, strRequestString, lngCriteriaCount)
     
-    If result.IsOK Then
+    If result.LastResult.IsOK Then
         ' Open Connection
         Me.Connection.OpenConnection
         
@@ -443,18 +469,20 @@ Private Function ExecSelect(ByVal dataAccess As CRecordableDA, ByRef vrnValues A
             
             Set Me.RequestRecordset = Me.Command.ExecuteCommand(Me.AffectedRecordId)
             
-            Set ExecSelect = result
+            'Set ExecSelect = result
         Else
             result.IsOK = False
             MsgBox "Erreur Ouverture de la Base de Donnees"
-            Set ExecSelect = result
+            'Set ExecSelect = result
         End If
-    
+    Else
+        result.SetFailure result.LastResult.Message
     End If
     
     'AddDoneLastSubFromParent 1, True, selectProgr
     
     'MsgBox Me.RequestStr
+    Set ExecSelect = result
 End Function
 
 Public Function InsertValues(ByVal dataAccess As CRecordableDA) As Variant
@@ -480,15 +508,15 @@ End Function
 '   ---------------------------------------------------------------------------------------
 '   2025/01/25      Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Function IDataSource_GetValue(ByVal dataAccess As CRecordableDA, ByRef oFieldValue As CField) As CResult
-    Set IDataSource_GetValue = GetValue(dataAccess, oFieldValue)
+Public Function IDataSource_GetValue(ByVal dataAccess As CRecordableDA, ByVal strFieldName As String, ByRef oResult As CResult) As CField
+    Set IDataSource_GetValue = GetValue(dataAccess, strFieldName, oResult)
 End Function
 
-Public Function IDataSource_GetRecord(ByVal dataAccess As CRecordableDA, ByRef oRecordValue As CRecord) As CResult
-    Set IDataSource_GetRecord = GetRecord(dataAccess, oRecordValue)
+Public Function IDataSource_GetRecord(ByVal dataAccess As CRecordableDA, ByRef oResult As CResult) As CRecord
+    Set IDataSource_GetRecord = GetRecord(dataAccess, oResult)
 End Function
 
-Public Function IDataSource_GetRecordList(ByVal dataAccess As CRecordableDA, ByVal oRecordTemplate As CRecord, ByRef oRecordListValue As CRecordList) As CResult
+Public Function IDataSource_GetRecordList(ByVal dataAccess As CRecordableDA, ByRef oRecordListValue As CRecordList) As CResult
 End Function
 
 

@@ -401,6 +401,13 @@ Public Function ValidateFieldCriteria() As CResult
     ValidateFieldCriteria = result
 End Function
 
+Public Function SetSelectable(Optional ByVal blnValue As Boolean = True) As CField
+    Me.IsSelectable = blnValue
+    
+    Set SetSelectable = Me
+End Function
+
+
 
 
 '***************************************************************************************************************************************************************

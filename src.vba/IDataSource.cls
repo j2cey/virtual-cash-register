@@ -13,13 +13,13 @@ Option Explicit
 '    Public Functions and Subs
 '***************************************************************************************************************************************************************
 
-Public Function GetValue(ByVal dataAccess As CRecordableDA, ByRef oFieldValue As CField) As CResult
+Public Function GetValue(ByVal dataAccess As CRecordableDA, ByVal strFieldName As String, ByRef oResult As CResult) As CField
 End Function
 
-Public Function GetRecord(ByVal dataAccess As CRecordableDA, ByRef oRecordValue As CRecord) As CResult
+Public Function GetRecord(ByVal dataAccess As CRecordableDA, ByRef oResult As CResult) As CRecord
 End Function
 
-Public Function GetRecordList(ByVal dataAccess As CRecordableDA, ByVal oRecordTemplate As CRecord, ByRef oRecordListValue As CRecordList) As CResult
+Public Function GetRecordList(ByVal dataAccess As CRecordableDA, ByRef oRecordListValue As CRecordList) As CResult
 End Function
 
 Public Function AddValues(ByVal dataAccess As CRecordableDA) As Variant

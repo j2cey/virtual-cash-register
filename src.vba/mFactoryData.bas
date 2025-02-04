@@ -103,9 +103,9 @@ End Function
 '   ---------------------------------------------------------------------------------------
 '   2025/01/25      Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Function NewRecordable(ByVal oUser As CUser, ByVal oDataSource As IDataSource, ByVal strRecordTable As String, Optional ByVal lngRecordId As Long = -1) As CRecordableDA
+Public Function NewRecordable(ByVal oUser As CUser, ByVal oDataSource As IDataSource, ByVal strRecordTable As String, Optional ByVal oRecord As CRecord = Nothing) As CRecordableDA
     With New CRecordableDA
-        .Init oUser, oDataSource, strRecordTable, lngRecordId
+        .Init oUser, oDataSource, strRecordTable, oRecord
         Set NewRecordable = .Self 'returns the newly created instance
     End With
 End Function

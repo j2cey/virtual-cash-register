@@ -400,7 +400,10 @@ Public Function GetNextFieldSavable(Optional ByVal lngAtIndex As Long = -1) As C
 End Function
 
 Public Function LastFieldReached() As Boolean
-    LastFieldReached = ((Me.PreviousFieldIndexPicked + FIELD_INDEX_INCREMENT) >= Me.FieldList.Count)
+    Dim lngFieldCount As Long
+    
+    lngFieldCount = Me.FieldList.Count
+    LastFieldReached = ((Me.PreviousFieldIndexPicked + FIELD_INDEX_INCREMENT) >= lngFieldCount)
 End Function
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''

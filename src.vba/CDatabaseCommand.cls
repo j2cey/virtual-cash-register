@@ -211,9 +211,9 @@ Private Function AddCommandParameters() As CResult
     loopDone = False
     
     If rslt.IsOK Then
-        Me.CurrentRecordable.FieldList.ResetFieldsPicked
+        Me.CurrentRecordable.Record.FieldList.ResetFieldsPicked
         Do
-            Set oField = Me.CurrentRecordable.FieldList.GetNextFieldCriteria()
+            Set oField = Me.CurrentRecordable.Record.FieldList.GetNextFieldCriteria()
             
             If Not oField Is Nothing Then
                 
@@ -226,7 +226,7 @@ Private Function AddCommandParameters() As CResult
                 End If
             End If
             
-            If Me.CurrentRecordable.FieldList.LastFieldReached() Then
+            If Me.CurrentRecordable.Record.FieldList.LastFieldReached() Then
                 ' The end of list is reached
                 Exit Do
                 loopDone = True
