@@ -11,6 +11,8 @@ Private m_guid As String
 Private m_value As IFieldValue
 Private m_previous_value As Variant
 Private m_name As String
+Private m_offset_start As Long
+Private m_offset_end As Long
 Private m_label As String
 
 Private m_is_required As Boolean
@@ -78,6 +80,38 @@ End Property
 
 Public Property Get Name() As String
     Name = m_name
+End Property
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'   Property      : OffsetStart
+'   Purpose       : The field offset start point, if any
+'
+'   Date            Developer           Action
+'   ---------------------------------------------------------------------------------------
+'   2025/02/03      Jude Parfait        Created
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Public Property Let OffsetStart(lngOffsetStart As Long)
+    m_offset_start = lngOffsetStart
+End Property
+
+Public Property Get OffsetStart() As Long
+    OffsetStart = m_offset_start
+End Property
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'   Property      : OffsetEnd
+'   Purpose       : The field offset end point, if any
+'
+'   Date            Developer           Action
+'   ---------------------------------------------------------------------------------------
+'   2025/02/03      Jude Parfait        Created
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Public Property Let OffsetEnd(lngOffsetEnd As Long)
+    m_offset_end = lngOffsetEnd
+End Property
+
+Public Property Get OffsetEnd() As Long
+    OffsetEnd = m_offset_end
 End Property
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -405,6 +439,12 @@ Public Function SetSelectable(Optional ByVal blnValue As Boolean = True) As CFie
     Me.IsSelectable = blnValue
     
     Set SetSelectable = Me
+End Function
+
+Public Function ResetCode() As CField
+    m_guid = CreateGUID
+    
+    Set ResetCode = Me
 End Function
 
 

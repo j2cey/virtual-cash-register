@@ -35,12 +35,12 @@ Public Property Get Self() As clsSaveForm
 End Property
 
 ' m_lId
-Public Property Let id(lId As Long)
+Public Property Let Id(lId As Long)
     m_lId = lId
 End Property
 
-Public Property Get id() As Long
-    id = m_lId
+Public Property Get Id() As Long
+    Id = m_lId
 End Property
 
 ' FieldList
@@ -222,7 +222,7 @@ Public Sub ExecEdit(vId As Variant)
     
     Set editProgr = StartNewProgression("Chargement Formulaire Edition ", 1)
     
-    Me.id = CLng(vId)
+    Me.Id = CLng(vId)
     ClearFields Update, editProgr
     FillFields vId, Update, editProgr
     
@@ -234,7 +234,7 @@ Public Sub ExecDelete(vId As Variant)
     
     Set delProgr = StartNewProgression("Suppression ", 1)
     
-    Me.id = CLng(vId)
+    Me.Id = CLng(vId)
     ClearFields Delete, delProgr
     
     DeleteFromId delProgr
@@ -286,10 +286,10 @@ Private Function ClearFields(Optional vSaveStatus As saveFormStatusType, Optiona
     ClearFields = fieldsCount
 End Function
 
-Private Function FillFields(id As Variant, Optional vSaveStatus As saveFormStatusType, Optional fillProgr As clsProgression) As Long
+Private Function FillFields(Id As Variant, Optional vSaveStatus As saveFormStatusType, Optional fillProgr As clsProgression) As Long
     Dim resultCount As Long, itemColl As Variant, oUctl As clsUCTL
     
-    resultCount = Me.SqlQuery.SelectToFieldsById(Me.FieldList.GetSavableUCtls, Me.id, fillProgr)
+    resultCount = Me.SqlQuery.SelectToFieldsById(Me.FieldList.GetSavableUCtls, Me.Id, fillProgr)
     
     If resultCount <= 0 Then
         MsgBox "Erreur Remplissage Formulaire !" & vbCrLf & "Aucune donnée trouvée !", vbCritical, GetAppName
@@ -318,7 +318,7 @@ Private Function UpdateFromId() As Boolean
     
     Set updProgr = StartNewProgression("Mise à Jour ", 1)
     
-    Me.LastResult = Me.SqlQuery.SaveToTable(Update, Me.FieldList.GetSavableUCtls, CLng(Me.id), updProgr)
+    Me.LastResult = Me.SqlQuery.SaveToTable(Update, Me.FieldList.GetSavableUCtls, CLng(Me.Id), updProgr)
     
     If Me.LastResult > 0 Then
         MsgBox "Mise a jour effectuée avec Succès" & vbCrLf & "(" & CStr(Me.LastResult) & ") Ligne(s) affectées !", vbInformation, GetAppName
@@ -332,7 +332,7 @@ End Function
 
 Private Function DeleteFromId(Optional delProgr As clsProgression) As Long
     
-    Me.LastResult = Me.SqlQuery.ExecDeleteFromId(CLng(Me.id), delProgr)
+    Me.LastResult = Me.SqlQuery.ExecDeleteFromId(CLng(Me.Id), delProgr)
     
     If Me.LastResult = 0 Then
         MsgBox "Aucune Ligne Affectée !", vbCritical, GetAppName

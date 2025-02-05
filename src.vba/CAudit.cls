@@ -35,12 +35,12 @@ Public Property Get User() As CUser
 End Property
 
 ' Id
-Public Property Let id(lId As Long)
+Public Property Let Id(lId As Long)
     m_id = lId
 End Property
 
-Public Property Get id() As Long
-    id = m_id
+Public Property Get Id() As Long
+    Id = m_id
 End Property
 
 ' Action
@@ -149,7 +149,7 @@ End Sub
 
 Public Sub StartAudit()
     Me.StartedAt = Now
-    Me.id = InsertNew
+    Me.Id = InsertNew
 End Sub
 
 Public Sub EndAudit(lActionResult As Long)
@@ -196,7 +196,7 @@ Private Function SaveAudit() As Boolean
     & "', action_result = " & CStr(Me.ActionResult) & ", host_name = '" & CStr(Me.AuditHostName) & "', host_ip = '" & CStr(Me.AuditHostIP) & "'" _
     & ", host_user = '" & CStr(Me.AuditHostUser) & "'" & ", host_model = '" & CStr(Me.AuditHostModel) & "'" _
     & ", host_os = '" & CStr(Me.AuditHostOS) & "'" & ", host_osversion = '" & CStr(Me.AuditHostOSVersion) & "'" _
-    & " WHERE Id = " & CStr(Me.id)
+    & " WHERE Id = " & CStr(Me.Id)
     
     Call PrepareDatabase
     SaveAudit = gobjDB.ExecuteActionQuery(sqlRst)

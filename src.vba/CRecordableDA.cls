@@ -163,14 +163,10 @@ End Function
 '   ---------------------------------------------------------------------------------------
 '   2025/01/22  Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Function GetValue(ByVal strFieldName As String, Optional ByVal reloadFromDataSource As Boolean = False) As CResult
-    Dim result As CResult, oFieldValue As CField
+Public Function GetValue(ByVal strFieldName As String, ByRef oResult As CResult, Optional ByVal reloadFromDataSource As Boolean = False) As CField
     
-    Set oFieldValue = Me.DataSource.GetValue(Me, strFieldName, result)
+    Set GetValue = Me.DataSource.GetValue(Me, strFieldName, oResult)
     
-    MsgBox "User " & oFieldValue.Label & ": '" & CStr(oFieldValue.FieldValue.GetValue) & "'"
-    
-    Set GetValue = result
 End Function
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -184,21 +180,27 @@ End Function
 '   ---------------------------------------------------------------------------------------
 '   2025/02/03  Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Function GetRecord(Optional ByVal reloadFromDataSource As Boolean = False) As CRecord
-    Dim result As CResult, oRecordValue As CRecord, oFieldValue As CField
+Public Function GetRecord(ByRef oResult As CResult, Optional ByVal reloadFromDataSource As Boolean = False) As CRecord
     
-    Set result = NewResult("GetRecord")
-    Set oRecordValue = Me.DataSource.GetRecord(Me, result)
+    Set GetRecord = Me.DataSource.GetRecord(Me, oResult)
     
-    If result.LastResult.IsOK Then
-        Set oFieldValue = oRecordValue.FieldList.GetFieldByName("username")
-        MsgBox "User " & oFieldValue.Label & ": '" & CStr(oFieldValue.FieldValue.GetValue) & "'"
-        
-        Set oFieldValue = oRecordValue.FieldList.GetFieldByName("userlogin")
-        MsgBox "User " & oFieldValue.Label & ": '" & CStr(oFieldValue.FieldValue.GetValue) & "'"
-        result.SetSuccess
-    End If
-    Set GetRecord = oRecordValue
+End Function
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'   Function    : GetRecordList
+'   Purpose     : Get a record value
+'   Arguments   :
+'
+'   Returns     : CResultList
+'
+'   Date        Developer       Action
+'   ---------------------------------------------------------------------------------------
+'   2025/02/04  Jude Parfait        Created
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Public Function GetRecordList(ByRef oResult As CResult, Optional ByVal reloadFromDataSource As Boolean = False) As CRecordList
+    
+    Set GetRecordList = Me.DataSource.GetRecordList(Me, oResult)
+    
 End Function
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''

@@ -139,6 +139,7 @@ End Property
 '   Purpose       : Initialize the Object
 '   Arguments     : oRecordDA           The Data Access object
 '                   oUser               The Performing User
+'
 '   Returns       : Void
 '
 '   Date            Developer           Action

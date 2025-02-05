@@ -35,7 +35,7 @@ End Type
 Private Declare PtrSafe Sub GetSystemTime Lib "kernel32" (lpSystemTime As SYSTEMTIME)
 
 #If VBA7 Then
-    Private Declare PtrSafe Function CoCreateGuid Lib "ole32" (id As Any) As Long
+    Private Declare PtrSafe Function CoCreateGuid Lib "ole32" (Id As Any) As Long
 #Else
     Private Declare Function CoCreateGuid Lib "ole32" (id As Any) As Long
 #End If
@@ -106,11 +106,11 @@ End Function
 ' ----------------------------------------------------------------
 Public Function CreateGUID() As String
     Const S_OK As Long = 0
-    Dim id(0 To 15) As Byte
+    Dim Id(0 To 15) As Byte
     Dim Cnt As Long, Guid As String
-    If CoCreateGuid(id(0)) = S_OK Then
+    If CoCreateGuid(Id(0)) = S_OK Then
         For Cnt = 0 To 15
-            CreateGUID = CreateGUID & IIf(id(Cnt) < 16, "0", "") + Hex$(id(Cnt))
+            CreateGUID = CreateGUID & IIf(Id(Cnt) < 16, "0", "") + Hex$(Id(Cnt))
         Next Cnt
         CreateGUID = Left$(CreateGUID, 8) & "-" & _
                      Mid$(CreateGUID, 9, 4) & "-" & _

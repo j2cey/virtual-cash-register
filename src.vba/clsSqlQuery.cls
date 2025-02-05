@@ -19,12 +19,12 @@ Public Property Get Self() As clsSqlQuery
 End Property
 
 ' m_lId
-Public Property Let id(lId As Long)
+Public Property Let Id(lId As Long)
     m_lId = lId
 End Property
 
-Public Property Get id() As Long
-    id = m_lId
+Public Property Get Id() As Long
+    Id = m_lId
 End Property
 
 ' RequestTable

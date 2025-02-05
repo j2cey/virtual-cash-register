@@ -19,7 +19,7 @@ End Function
 Public Function GetRecord(ByVal dataAccess As CRecordableDA, ByRef oResult As CResult) As CRecord
 End Function
 
-Public Function GetRecordList(ByVal dataAccess As CRecordableDA, ByRef oRecordListValue As CRecordList) As CResult
+Public Function GetRecordList(ByVal dataAccess As CRecordableDA, ByRef oResult As CResult) As CRecordList
 End Function
 
 Public Function AddValues(ByVal dataAccess As CRecordableDA) As Variant

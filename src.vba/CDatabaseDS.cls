@@ -344,6 +344,24 @@ Private Function SetValueField() As CResult
     
 End Function
 
+Private Function SetRecordIdValue(ByRef oRecordValue As CRecord) As CResult
+    Dim result As CResult, strIdName As String
+    
+    strIdName = "Id"
+    Set result = NewResult("SetIdFieldValue", False)
+    
+    With Me.RequestRecordset
+        If Not IsNull(.fields(strIdName).Value) Then
+            oRecordValue.RecordId = CLng(.fields(strIdName).Value)
+            result.SetSuccess
+        Else
+            result.SetFailure "field " & strIdName & " NOT in Record"
+        End If
+    End With
+    
+    Set SetRecordIdValue = result
+End Function
+
 Private Function SetSelectableFieldValue(ByVal oFieldValue As CField) As CResult
     Dim result As CResult
     
@@ -371,18 +389,27 @@ Private Function SetSelectableFieldValue(ByVal oFieldValue As CField) As CResult
 End Function
 
 Private Function SetSelectableRecord(ByVal oRecordTemplate As CRecord, ByRef oRecordValue As CRecord) As CResult
-    Dim result As CResult, loopDone As Boolean, oField As CField
+    Dim result As CResult, loopDone As Boolean
+    
+    ' create new Record, if not done yet
+    If oRecordValue Is Nothing Then
+        Set oRecordValue = NewRecord()
+    End If
     
     ' Reset Record field list's fields picked
     oRecordTemplate.FieldList.ResetFieldsPicked
     loopDone = False
+    
+    ' set record ID
+    AddSubResult "SetSelectableRecord", result, SetRecordIdValue(oRecordValue)
                 
     Do
-        Set oField = oRecordTemplate.FieldList.GetNextField()
-        AddSubResult "SetSelectableRecord", result, SetSelectableFieldValue(oField)
+        Dim currField As CField
+        Set currField = oRecordTemplate.FieldList.GetNextField().ResetCode()
+        AddSubResult "SetSelectableRecord", result, SetSelectableFieldValue(currField)
         
         If result.LastResult.IsOK Then
-            oRecordValue.FieldList.AddField oField
+            oRecordValue.FieldList.AddField currField
         End If
         
         If oRecordTemplate.FieldList.LastFieldReached() Then
@@ -440,6 +467,41 @@ Private Function GetRecord(ByVal dataAccess As CRecordableDA, ByRef oResult As C
     End If
     
     Set GetRecord = oRecordValue
+End Function
+
+Private Function GetRecordList(ByVal dataAccess As CRecordableDA, ByRef oResult As CResult) As CRecordList
+    Dim oRecordListValue As CRecordList, loopDone As Boolean
+    
+    ' Execute the Select Command and Set The Relevant RecordSet
+    AddSubResult "GetRecordList", oResult, ExecSelect(dataAccess)
+    
+    ' Create the OUTPUT RecordList
+    Set oRecordListValue = NewRecordList(dataAccess, dataAccess.User)
+    
+    If oResult.LastResult.IsOK Then
+        If Not (Me.RequestRecordset Is Nothing) Then
+            
+            If Not Me.RequestRecordset.EOF Then
+                
+                Do
+                    Dim currRecord As CRecord
+                    
+                    ' Set record values
+                    AddSubResult "GetRecordList", oResult, SetSelectableRecord(dataAccess.Record, currRecord)
+                    
+                    If oResult.LastResult.IsOK Then
+                        oRecordListValue.AddRecord currRecord
+                    End If
+                    
+                    ' Move to Next Record
+                    Me.RequestRecordset.MoveNext
+                Loop Until Me.RequestRecordset.EOF
+                
+            End If
+        End If
+    End If
+    
+    Set GetRecordList = oRecordListValue
 End Function
 
 Private Function ExecSelect(ByVal dataAccess As CRecordableDA) As CResult
@@ -516,7 +578,8 @@ Public Function IDataSource_GetRecord(ByVal dataAccess As CRecordableDA, ByRef o
     Set IDataSource_GetRecord = GetRecord(dataAccess, oResult)
 End Function
 
-Public Function IDataSource_GetRecordList(ByVal dataAccess As CRecordableDA, ByRef oRecordListValue As CRecordList) As CResult
+Public Function IDataSource_GetRecordList(ByVal dataAccess As CRecordableDA, ByRef oResult As CResult) As CRecordList
+    Set IDataSource_GetRecordList = GetRecordList(dataAccess, oResult)
 End Function
 
 

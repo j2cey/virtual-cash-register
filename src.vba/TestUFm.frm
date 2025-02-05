@@ -13,10 +13,11 @@ Private Sub UserForm_Initialize()
     dataacess.Record.FieldList.AddField NewField(NewFieldValueString(), "userlogin", "Login").SetSelectable(True)
     dataacess.Record.FieldList.AddField NewField(NewFieldValueString(), "username", "User Name").SetSelectable(True)
     
-    Dim result As CResult, oRec As CRecord
+    Dim result As CResult, oRec As CRecord, oRecList As CRecordList
     
     'Set result = dataacess.GetValue("username", True)
-    Set oRec = dataacess.GetRecord(True)
+    'Set oRec = dataacess.GetRecord(True)
+    Set oRecList = dataacess.GetRecordList(True)
     
     MsgBox Now_System() & ", MS: " & GetTodayMilliseconds() & ", CreateGUID: " & CreateGUID()
     

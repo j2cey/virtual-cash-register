@@ -7,11 +7,14 @@
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 Option Explicit
 
+Private m_user As CUser
+Private m_data_access As CRecordableDA
 
 Private m_list As Collection
 Private m_previous_record_index_picked As Long
 
 Private Const FIRST_INDEX As Long = 1
+Private Const RECORD_INDEX_INCREMENT As Long = 1
 
 
 
@@ -21,6 +24,38 @@ Private Const FIRST_INDEX As Long = 1
 
 Public Property Get Self() As CRecordList
     Set Self = Me
+End Property
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'   Property      : User
+'   Purpose       : The performing user
+'
+'   Date            Developer           Action
+'   ---------------------------------------------------------------------------------------
+'   2025/02/03      Jude Parfait        Created
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Public Property Set User(oUser As CUser)
+    Set m_user = oUser
+End Property
+
+Public Property Get User() As CUser
+    Set User = m_user
+End Property
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'   Property      : DataAccess
+'   Purpose       : The Data Access object
+'
+'   Date            Developer           Action
+'   ---------------------------------------------------------------------------------------
+'   2025/02/03      Jude Parfait        Created
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Public Property Set dataAccess(oDataAccess As CRecordableDA)
+    Set m_data_access = oDataAccess
+End Property
+
+Public Property Get dataAccess() As CRecordableDA
+    Set dataAccess = m_data_access
 End Property
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -96,7 +131,8 @@ End Property
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 '   Subroutine    : Init
 '   Purpose       : Initialize the Object
-'   Arguments     :
+'   Arguments     : oRecordDA           The Data Access object
+'                   oUser               The Performing User
 '
 '   Returns       : Void
 '
@@ -104,7 +140,16 @@ End Property
 '   ---------------------------------------------------------------------------------------
 '   2025/02/03      Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Sub Init()
+Public Sub Init(Optional oDataAccess As CRecordableDA = Nothing, Optional oUser As CUser = Nothing)
+    
+    If Not oDataAccess Is Nothing Then
+        Set Me.dataAccess = oDataAccess
+    End If
+    
+    If Not oUser Is Nothing Then
+        Set Me.User = oUser
+    End If
+    
 End Sub
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -148,11 +193,79 @@ Public Function ResetRecordsPicked() As CResult
     Set ResetRecordsPicked = result
 End Function
 
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'   Function    : GetNextRecord
+'   Purpose     : Get Next Record, or Record at Index (if given)
+'   Arguments   :
+'
+'   Returns     : CRecord        The Record | Nothing (if not found or anything wrong)
+'
+'   Date        Developer       Action
+'   ---------------------------------------------------------------------------------------
+'   2025/02/03  Jude Parfait        Created
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Public Function GetNextRecord() As CRecord
+    
+    If Me.LastRecordReached Then
+        Set GetNextRecord = Nothing
+    Else
+        
+        Dim lngAtIndex As Long, oRecord As CRecord
+        
+        lngAtIndex = Me.PreviousRecordIndexPicked + RECORD_INDEX_INCREMENT
+        Set oRecord = Me.GetRecordAt(lngAtIndex)
+        
+        If Not oRecord Is Nothing Then
+            Me.PreviousRecordIndexPicked = lngAtIndex
+        End If
+        
+        Set GetNextRecord = oRecord
+    End If
+End Function
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'   Function    : GetRecordAt
+'   Purpose     : Get Record at given index
+'   Arguments   : lngAtIndex    Index of Record
+'
+'   Returns     : CRecord        The Record | Nothing (if not found or anything wrong)
+'
+'   Date        Developer       Action
+'   ---------------------------------------------------------------------------------------
+'   2025/02/03  Jude Parfait        Created
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Public Function GetRecordAt(ByVal lngAtIndex As Long) As CRecord
+    If lngAtIndex < FIRST_INDEX Or lngAtIndex > (Me.List.Count + 1) Then
+        Set GetRecordAt = Nothing
+    Else
+        Set GetRecordAt = Me.List.Item(lngAtIndex)
+    End If
+End Function
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'   Function    : LastRecordReached
+'   Purpose     : Determine whether the last record has been picked
+'   Arguments   :
+'
+'   Returns     : Boolean
+'
+'   Date        Developer       Action
+'   ---------------------------------------------------------------------------------------
+'   2025/02/03  Jude Parfait        Created
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Public Function LastRecordReached() As Boolean
+    Dim lngRecordCount As Long
+    
+    lngRecordCount = Me.List.Count
+    LastRecordReached = ((Me.PreviousFieldIndexPicked + RECORD_INDEX_INCREMENT) >= lngRecordCount)
+End Function
+
 
 
 '***************************************************************************************************************************************************************
 '    Private Events
 '***************************************************************************************************************************************************************
+
 
 Private Sub Class_Initialize()
     Set m_list = New Collection

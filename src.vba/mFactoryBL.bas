@@ -29,6 +29,25 @@ Public Function NewRecord(Optional oDataAccess As CRecordableDA = Nothing, Optio
 End Function
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'   Function    : NewRecordList
+'   Purpose     : Create and Initialize a New Record List
+'   Arguments   : oDataAccess           The Data Access object
+'                 oUser                 The User
+'
+'   Returns     : CFieldList
+'
+'   Date        Developer               Action
+'   ---------------------------------------------------------------------------------------
+'   2025/01/31      Jude Parfait        Created
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Public Function NewRecordList(Optional oDataAccess As CRecordableDA = Nothing, Optional oUser As CUser = Nothing) As CRecordList
+    With New CRecordList
+        .Init oDataAccess, oUser
+        Set NewRecordList = .Self 'returns the newly created instance
+    End With
+End Function
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 '   Function    : NewField
 '   Purpose     : Create and Initialize a New Field
 '   Arguments   :
