@@ -201,7 +201,7 @@ End Property
 '    Public functions and subs
 '*****************************************************************************************************************************
 
-Public Sub Init(Optional ByVal lId As Long = -1, Optional ByVal oRecord As CRecord = Nothing, Optional ByVal sLogin As String = "", Optional ByVal sName As String = "")
+Public Sub Init(Optional ByVal lId As Long = -1, Optional ByVal oRecord As CRecord = Nothing, Optional ByVal sLogin As String = "", Optional ByVal sName As String = "", Optional ByVal sPwd As String = "")
     Me.Id = lId
     
     If Not oRecord Is Nothing Then
@@ -254,7 +254,7 @@ Public Function SavePwd(sPwd As String, Optional auditAction As Boolean = True) 
     Dim userData As Variant, sqlRst As String, recordCount As Long, i As Integer, audit As CAudit
     
     If auditAction Then
-        Set audit = loggedUser.StartNewAudit("Modification Mot de Passe Utilisateur (" & Me.Id & ") " & Me.Name)
+        Set audit = LoggedUser.StartNewAudit("Modification Mot de Passe Utilisateur (" & Me.Id & ") " & Me.Name)
     End If
     
     sqlRst = "UPDATE users SET userpwd = '" & encrypter.encrypt(sPwd) & "', userpwd_lastupdate_at = '" & Now & "' WHERE Id = " & CStr(Me.Id)
@@ -287,7 +287,7 @@ Public Function SaveLastLogin(Optional auditAction As Boolean = True) As Boolean
     Dim userData As Variant, sqlRst As String, recordCount As Long, i As Integer, audit As CAudit
     
     If auditAction Then
-        Set audit = loggedUser.StartNewAudit("Modification Derniere date Login Utilisateur (" & Me.Id & ") " & Me.Name)
+        Set audit = LoggedUser.StartNewAudit("Modification Derniere date Login Utilisateur (" & Me.Id & ") " & Me.Name)
     End If
     
     sqlRst = "UPDATE users SET user_lastlogin_at = '" & Now & "' WHERE Id = " & CStr(Me.Id)

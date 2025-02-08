@@ -1,6 +1,6 @@
 'Build 000
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-' Module    : CDatabaseDS
+' Module    : CDataSourceDatabase
 ' Author    : Jude Parfait NGOM NZE (jud10parfait@gmail.com)
 ' Created   : 2025/01/18
 ' Purpose   : Database Data Source
@@ -19,7 +19,7 @@ Private m_request_recordset As New ADODB.Recordset
 Private m_integrated_security As Boolean
 Private m_affected_record_id As Long
 
-Private m_inner_database As IDatabaseDS
+Private m_inner_database As IDataSourceDatabase
 
 
 Implements IDataSource
@@ -28,7 +28,7 @@ Implements IDataSource
 '   Public Properties
 '***************************************************************************************************************************************************************
 
-Public Property Get Self() As CDatabaseDS
+Public Property Get Self() As CDataSourceDatabase
     Set Self = Me
 End Property
 
@@ -40,11 +40,11 @@ End Property
 '   ---------------------------------------------------------------------------------------
 '   2025/01/18      Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Property Set InnerDatabase(oInnerDatabase As IDatabaseDS)
+Public Property Set InnerDatabase(oInnerDatabase As IDataSourceDatabase)
     Set m_inner_database = oInnerDatabase
 End Property
 
-Public Property Get InnerDatabase() As IDatabaseDS
+Public Property Get InnerDatabase() As IDataSourceDatabase
     Set InnerDatabase = m_inner_database
 End Property
 
@@ -209,18 +209,34 @@ End Property
 '   ---------------------------------------------------------------------------------------
 '   2025/01/25      Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Sub Init(ByVal oUser As CUser, ByVal strServerOrPath As String, ByVal strDatabaseOrFileName As String, ByVal oInnerDatabase As IDatabaseDS, Optional ByVal blnIntegratedSecurity As Boolean = True)
+Public Sub Init(ByVal oUser As CUser, ByVal strServerOrPath As String, ByVal strDatabaseOrFileName As String, Optional ByVal eDatabaseClass As enuDatabaseClass = none, Optional ByVal blnIntegratedSecurity As Boolean = True)
     
     Set Me.User = oUser
     Me.ServerOrPath = strServerOrPath
     Me.DatabaseOrFileName = strDatabaseOrFileName
     
+    Me.IntegratedSecurity = blnIntegratedSecurity
+    
+    If Not eDatabaseClass = none Then
+        Me.SetInnerDatabase eDatabaseClass
+    End If
+End Sub
+
+Public Function SetInnerDatabase(ByVal eDatabaseClass As enuDatabaseClass) As CDataSourceDatabase
+    Dim oInnerDatabase As IDataSourceDatabase
+    
+    Select Case eDatabaseClass
+        Case access2007
+          Set oInnerDatabase = New CDatabaseAccess2007
+        Case sqlserver2014
+          Set oInnerDatabase = New CDatabaseSqlServer2014
+    End Select
+    
     Set Me.InnerDatabase = oInnerDatabase
     Set Me.InnerDatabase.UpperDatabase = Me
     
-    Me.IntegratedSecurity = blnIntegratedSecurity
-End Sub
-
+    Set SetInnerDatabase = Me
+End Function
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 '   Subroutine    : ShowErrorMessages
@@ -393,7 +409,7 @@ Private Function SetSelectableRecord(ByVal oRecordTemplate As CRecord, ByRef oRe
     
     ' create new Record, if not done yet
     If oRecordValue Is Nothing Then
-        Set oRecordValue = NewRecord()
+        Set oRecordValue = NewRecord(oRecordTemplate.DataAccess, oRecordTemplate.User)
     End If
     
     ' Reset Record field list's fields picked
@@ -424,13 +440,13 @@ Private Function SetSelectableRecord(ByVal oRecordTemplate As CRecord, ByRef oRe
     Set SetSelectableRecord = result
 End Function
 
-Private Function GetValue(ByVal dataAccess As CRecordableDA, ByVal strFieldName As String, ByRef oResult As CResult) As CField
+Private Function GetValue(ByVal oDataAccess As CDataAccess, ByVal strFieldName As String, ByRef oResult As CResult) As CField
     Dim oFieldValue As CField
     
-    Set oFieldValue = dataAccess.Record.FieldList.GetFieldByName(strFieldName)
+    Set oFieldValue = oDataAccess.Record.FieldList.GetFieldByName(strFieldName)
     
     ' Execute  the Select Command and Set The Relevant RecordSet
-    AddSubResult "GetValue", oResult, ExecSelect(dataAccess)
+    AddSubResult "GetValue", oResult, ExecSelect(oDataAccess)
     
     If oResult.LastResult.IsOK Then
         If Not (Me.RequestRecordset Is Nothing) Then
@@ -444,14 +460,14 @@ Private Function GetValue(ByVal dataAccess As CRecordableDA, ByVal strFieldName 
     Set GetValue = oFieldValue
 End Function
 
-Private Function GetRecord(ByVal dataAccess As CRecordableDA, ByRef oResult As CResult) As CRecord
+Private Function GetRecord(ByVal oDataAccess As CDataAccess, ByRef oResult As CResult) As CRecord
     Dim oRecordValue As CRecord, loopDone As Boolean, oField As CField
     
     ' Execute the Select Command and Set The Relevant RecordSet
-    AddSubResult "GetRecord", oResult, ExecSelect(dataAccess)
+    AddSubResult "GetRecord", oResult, ExecSelect(oDataAccess)
     
     ' Create the OUTPUT Record
-    Set oRecordValue = NewRecord(dataAccess, dataAccess.User)
+    Set oRecordValue = NewRecord(oDataAccess, oDataAccess.User)
     
     If oResult.LastResult.IsOK Then
         If Not (Me.RequestRecordset Is Nothing) Then
@@ -461,7 +477,7 @@ Private Function GetRecord(ByVal dataAccess As CRecordableDA, ByRef oResult As C
                 'AddToDoLastSubFromParent 1, selectProgr
                 
                 ' Set record values
-                AddSubResult "GetRecord", oResult, SetSelectableRecord(dataAccess.Record, oRecordValue)
+                AddSubResult "GetRecord", oResult, SetSelectableRecord(oDataAccess.Record, oRecordValue)
             End If
         End If
     End If
@@ -469,14 +485,14 @@ Private Function GetRecord(ByVal dataAccess As CRecordableDA, ByRef oResult As C
     Set GetRecord = oRecordValue
 End Function
 
-Private Function GetRecordList(ByVal dataAccess As CRecordableDA, ByRef oResult As CResult) As CRecordList
+Private Function GetRecordList(ByVal oDataAccess As CDataAccess, ByRef oResult As CResult) As CRecordList
     Dim oRecordListValue As CRecordList, loopDone As Boolean
     
     ' Execute the Select Command and Set The Relevant RecordSet
-    AddSubResult "GetRecordList", oResult, ExecSelect(dataAccess)
+    AddSubResult "GetRecordList", oResult, ExecSelect(oDataAccess)
     
     ' Create the OUTPUT RecordList
-    Set oRecordListValue = NewRecordList(dataAccess, dataAccess.User)
+    Set oRecordListValue = NewRecordList(oDataAccess, oDataAccess.User)
     
     If oResult.LastResult.IsOK Then
         If Not (Me.RequestRecordset Is Nothing) Then
@@ -487,7 +503,7 @@ Private Function GetRecordList(ByVal dataAccess As CRecordableDA, ByRef oResult 
                     Dim currRecord As CRecord
                     
                     ' Set record values
-                    AddSubResult "GetRecordList", oResult, SetSelectableRecord(dataAccess.Record, currRecord)
+                    AddSubResult "GetRecordList", oResult, SetSelectableRecord(oDataAccess.Record, currRecord)
                     
                     If oResult.LastResult.IsOK Then
                         oRecordListValue.AddRecord currRecord
@@ -504,7 +520,7 @@ Private Function GetRecordList(ByVal dataAccess As CRecordableDA, ByRef oResult 
     Set GetRecordList = oRecordListValue
 End Function
 
-Private Function ExecSelect(ByVal dataAccess As CRecordableDA) As CResult
+Private Function ExecSelect(ByVal oDataAccess As CDataAccess) As CResult
     Dim result As CResult, strRequestString As String, lngCriteriaCount As Long
     
     'StartNewSubProgressionFromParent "Exécution de la Requête SELECT", 1, selectProgr
@@ -517,7 +533,7 @@ Private Function ExecSelect(ByVal dataAccess As CRecordableDA) As CResult
     
     'Set result = NewResult("ExecSelect")
     ' Build Select Command Text
-    AddSubResult "ExecSelect", result, Me.InnerDatabase.BuildSelectStatement(dataAccess, strRequestString, lngCriteriaCount)
+    AddSubResult "ExecSelect", result, Me.InnerDatabase.BuildSelectStatement(oDataAccess, strRequestString, lngCriteriaCount)
     
     If result.LastResult.IsOK Then
         ' Open Connection
@@ -527,7 +543,7 @@ Private Function ExecSelect(ByVal dataAccess As CRecordableDA) As CResult
             
             'BuildRequestCommand True, oCriterionFields, Nothing, lIdCriteria
             ' Build Request Command
-            Set result = Me.Command.BuildRequestCommand(dataAccess, strRequestString)
+            Set result = Me.Command.BuildRequestCommand(oDataAccess, strRequestString)
             
             Set Me.RequestRecordset = Me.Command.ExecuteCommand(Me.AffectedRecordId)
             
@@ -547,13 +563,13 @@ Private Function ExecSelect(ByVal dataAccess As CRecordableDA) As CResult
     Set ExecSelect = result
 End Function
 
-Public Function InsertValues(ByVal dataAccess As CRecordableDA) As Variant
+Public Function InsertValues(ByVal oDataAccess As CDataAccess) As CResult
 End Function
 
-Public Function UpdateValues(ByVal dataAccess As CRecordableDA) As Variant
+Public Function UpdateValues(ByVal oDataAccess As CDataAccess) As CResult
 End Function
 
-Public Function DeleteValues(ByVal dataAccess As CRecordableDA) As Variant
+Public Function DeleteValues(ByVal oDataAccess As CDataAccess) As CResult
 End Function
 
 
@@ -563,6 +579,70 @@ End Function
 '***************************************************************************************************************************************************************
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+' Property      : IDataSource_User
+' Purpose       : The Record Name
+'
+' Date          Developer           Action
+' ---------------------------------------------------------------------------------------
+' 2025/02/05    Jude Parfait        Created
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Public Property Set IDataSource_User(oUser As CUser)
+    Set Me.User = oUser
+End Property
+
+Public Property Get IDataSource_User() As CUser
+    Set IDataSource_User = Me.User
+End Property
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+' Property      : ServerOrPath
+' Purpose       : The Record Name
+'
+' Date          Developer           Action
+' ---------------------------------------------------------------------------------------
+' 2025/02/05    Jude Parfait        Created
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Public Property Let IDataSource_ServerOrPath(strServerOrPath As String)
+    Me.ServerOrPath = strServerOrPath
+End Property
+
+Public Property Get IDataSource_ServerOrPath() As String
+    IDataSource_ServerOrPath = Me.ServerOrPath
+End Property
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+' Property      : DatabaseOrFileName
+' Purpose       : The Record Name
+'
+' Date          Developer           Action
+' ---------------------------------------------------------------------------------------
+' 2025/02/05    Jude Parfait        Created
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Public Property Let IDataSource_DatabaseOrFileName(strDatabaseOrFileName As String)
+    Me.DatabaseOrFileName = strDatabaseOrFileName
+End Property
+
+Public Property Get IDataSource_DatabaseOrFileName() As String
+    IDataSource_DatabaseOrFileName = Me.DatabaseOrFileName
+End Property
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+' Property      : IntegratedSecurity
+' Purpose       : The Record Name
+'
+' Date          Developer           Action
+' ---------------------------------------------------------------------------------------
+' 2025/02/05    Jude Parfait        Created
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Public Property Let IDataSource_IntegratedSecurity(blnIntegratedSecurity As Boolean)
+    Me.IntegratedSecurity = blnIntegratedSecurity
+End Property
+
+Public Property Get IDataSource_IntegratedSecurity() As Boolean
+    IDataSource_IntegratedSecurity = Me.IntegratedSecurity
+End Property
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 '   Function      : IDataSource_GetValue
 '   Purpose       : Get a value from database (select scalar)
 '
@@ -570,30 +650,30 @@ End Function
 '   ---------------------------------------------------------------------------------------
 '   2025/01/25      Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Function IDataSource_GetValue(ByVal dataAccess As CRecordableDA, ByVal strFieldName As String, ByRef oResult As CResult) As CField
-    Set IDataSource_GetValue = GetValue(dataAccess, strFieldName, oResult)
+Public Function IDataSource_GetValue(ByVal oDataAccess As CDataAccess, ByVal strFieldName As String, ByRef oResult As CResult) As CField
+    Set IDataSource_GetValue = GetValue(oDataAccess, strFieldName, oResult)
 End Function
 
-Public Function IDataSource_GetRecord(ByVal dataAccess As CRecordableDA, ByRef oResult As CResult) As CRecord
-    Set IDataSource_GetRecord = GetRecord(dataAccess, oResult)
+Public Function IDataSource_GetRecord(ByVal oDataAccess As CDataAccess, ByRef oResult As CResult) As CRecord
+    Set IDataSource_GetRecord = GetRecord(oDataAccess, oResult)
 End Function
 
-Public Function IDataSource_GetRecordList(ByVal dataAccess As CRecordableDA, ByRef oResult As CResult) As CRecordList
-    Set IDataSource_GetRecordList = GetRecordList(dataAccess, oResult)
+Public Function IDataSource_GetRecordList(ByVal oDataAccess As CDataAccess, ByRef oResult As CResult) As CRecordList
+    Set IDataSource_GetRecordList = GetRecordList(oDataAccess, oResult)
 End Function
 
 
 
-Public Function IDataSource_AddValues(ByVal dataAccess As CRecordableDA) As Variant
-    IDataSource_AddValues = InsertValues(dataAccess)
+Public Function IDataSource_AddValues(ByVal oDataAccess As CDataAccess) As CResult
+    IDataSource_AddValues = InsertValues(oDataAccess)
 End Function
 
-Public Function IDataSource_UpdateValues(ByVal dataAccess As CRecordableDA) As Variant
-    IDataSource_UpdateValues = UpdateValues(dataAccess)
+Public Function IDataSource_UpdateValues(ByVal oDataAccess As CDataAccess) As CResult
+    IDataSource_UpdateValues = UpdateValues(oDataAccess)
 End Function
 
-Public Function IDataSource_DeleteValues(ByVal dataAccess As CRecordableDA) As Variant
-    IDataSource_DeleteValues = DeleteValues(dataAccess)
+Public Function IDataSource_DeleteValues(ByVal oDataAccess As CDataAccess) As CResult
+    IDataSource_DeleteValues = DeleteValues(oDataAccess)
 End Function
 
 
@@ -603,7 +683,7 @@ End Function
 '***************************************************************************************************************************************************************
 
 Private Sub Class_Initialize()
-    m_module_name = "CDatabaseDS"
+    m_module_name = "CDataSourceDatabase"
     Set m_connection = NewDatabaseConnection(Me)
     Set m_command = NewDatabaseCommand(Me)
     Set m_request_recordset = New ADODB.Recordset

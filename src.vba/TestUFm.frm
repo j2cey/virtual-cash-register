@@ -1,14 +1,12 @@
 Option Explicit
 
-Dim mainaccessdb As CDatabaseDS
-Dim dataacess As CRecordableDA
-Dim currentUser As CUser
+Dim mainaccessdb As CDataSourceDatabase
+Dim dataacess As CDataAccess
 
 Private Sub UserForm_Initialize()
     
-    Set currentUser = NewUser()
-    Set mainaccessdb = NewDatabase(currentUser, "D:\WorkPersoData\PersoData\J2CEY_DATA\WRK\GT\BUSINESS_APPS\CAISSEVIRTUELLECOMILOG\app\db", "comilogcashdb", NewAccess2007())
-    Set dataacess = NewRecordable(currentUser, mainaccessdb, "users")
+    Set mainaccessdb = NewDatabase(GetLoggedUser, "D:\WorkPersoData\PersoData\J2CEY_DATA\WRK\GT\BUSINESS_APPS\CAISSEVIRTUELLECOMILOG\app\db", "comilogcashdb", access2007)
+    Set dataacess = NewDataAccess(GetLoggedUser, mainaccessdb, "users")
     
     dataacess.Record.FieldList.AddField NewField(NewFieldValueString(), "userlogin", "Login").SetSelectable(True)
     dataacess.Record.FieldList.AddField NewField(NewFieldValueString(), "username", "User Name").SetSelectable(True)
@@ -16,8 +14,10 @@ Private Sub UserForm_Initialize()
     Dim result As CResult, oRec As CRecord, oRecList As CRecordList
     
     'Set result = dataacess.GetValue("username", True)
-    'Set oRec = dataacess.GetRecord(True)
-    Set oRecList = dataacess.GetRecordList(True)
+    'Set oRec = dataacess.GetRecord(result,True)
+    Set oRecList = dataacess.GetRecordList(result, True)
+    
+    GetMainDataSource
     
     MsgBox Now_System() & ", MS: " & GetTodayMilliseconds() & ", CreateGUID: " & CreateGUID()
     

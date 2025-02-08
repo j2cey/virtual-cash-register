@@ -23,8 +23,16 @@ Option Explicit
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 Public Sub AddSubResult(ByVal strLabel As String, ByRef oResult As CResult, ByVal oSubResult As CResult)
     If oResult Is Nothing Then
-        Set oResult = NewResult(strLabel)
+        If oSubResult Is Nothing Then
+            Set oResult = NewResult(strLabel)
+        ElseIf strLabel = oSubResult.Label Then
+            Set oResult = oSubResult
+        Else
+            Set oResult = NewResult(strLabel)
+        End If
     End If
     
-    oResult.AddSubResult oSubResult
+    If Not strLabel = oResult.Label Then
+        oResult.AddSubResult oSubResult
+    End If
 End Sub

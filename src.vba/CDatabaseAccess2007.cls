@@ -1,6 +1,6 @@
 'Build 000
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-' Module    : CAccess2007
+' Module    : CDatabaseAccess2007
 ' Author    : Jude Parfait NGOM NZE (jud10parfait@gmail.com)
 ' Created   : 2025/01/19
 ' Purpose   : Access 2007 Class
@@ -8,21 +8,21 @@
 Option Explicit
 
 Private m_user As CUser
-Private m_upper_database As CDatabaseDS
-Private m_current_recordable As CRecordableDA
+Private m_upper_database As CDataSourceDatabase
+Private m_current_recordable As CDataAccess
 
 Private m_request_string As String
 Private m_criteria_count As Long
 
 
-Implements IDatabaseDS
+Implements IDataSourceDatabase
 
 
 '***************************************************************************************************************************************************************
 '   Public Properties
 '***************************************************************************************************************************************************************
 
-Public Property Get Self() As CAccess2007
+Public Property Get Self() As CDatabaseAccess2007
     Set Self = Me
 End Property
 
@@ -50,28 +50,28 @@ End Property
 '   ---------------------------------------------------------------------------------------
 '   2025/01/19      Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Property Set UpperDatabase(oUpperDatabase As CDatabaseDS)
+Public Property Set UpperDatabase(oUpperDatabase As CDataSourceDatabase)
     Set m_upper_database = oUpperDatabase
 End Property
 
-Public Property Get UpperDatabase() As CDatabaseDS
+Public Property Get UpperDatabase() As CDataSourceDatabase
     Set UpperDatabase = m_upper_database
 End Property
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-'   Property      : CurrentRecordable
-'   Purpose       : The current Recordable Object
+'   Property      : CurrentDataAccess
+'   Purpose       : The current DataAccess Object
 '
 '   Date            Developer           Action
 '   ---------------------------------------------------------------------------------------
 '   2025/01/25      Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Property Set CurrentRecordable(oCurrentRecordable As CRecordableDA)
-    Set m_current_recordable = oCurrentRecordable
+Public Property Set CurrentDataAccess(oCurrentDataAccess As CDataAccess)
+    Set m_current_recordable = oCurrentDataAccess
 End Property
 
-Public Property Get CurrentRecordable() As CRecordableDA
-    Set CurrentRecordable = m_current_recordable
+Public Property Get CurrentDataAccess() As CDataAccess
+    Set CurrentDataAccess = m_current_recordable
 End Property
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -122,10 +122,10 @@ End Property
 '   ---------------------------------------------------------------------------------------
 '   2025/01/12      Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Sub Init(Optional oUser As CUser = Nothing, Optional oRecordableDA As CRecordableDA = Nothing)
+Public Sub Init(Optional oUser As CUser = Nothing, Optional oDataAccess As CDataAccess = Nothing)
     
-    If Not oRecordableDA Is Nothing Then
-        Me.CurrentRecordable = oRecordableDA
+    If Not oDataAccess Is Nothing Then
+        Me.CurrentDataAccess = oDataAccess
     End If
     
     If Not oUser Is Nothing Then
@@ -193,7 +193,7 @@ End Function
 '   Purpose     : Construct a full SELECT statement, set local properties, and
 '                 return string to calling routine.
 '
-'   Arguments   : CRecordableDA     dataAccess   The relevant data access to build connection string
+'   Arguments   : CDataAccess     dataAccess   The relevant data access to build connection string
 '
 '   Returns     : String            The Build SELECT statement | empty string
 '
@@ -201,20 +201,20 @@ End Function
 '   ---------------------------------------------------------------------------------------
 '   2025/01/21  Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Private Function GetSelectStatement(dataAccess As CRecordableDA, ByRef strSelectStatement As String, ByRef lngCriteriaCount As Long) As CResult
+Private Function GetSelectStatement(oDataAccess As CDataAccess, ByRef strSelectStatement As String, ByRef lngCriteriaCount As Long) As CResult
     Dim finalRqstStr As String, criterionDone As Boolean, rslt As CResult
     
     Me.RequestString = ""
     Me.CriteriaCount = 0
-    Set Me.CurrentRecordable = dataAccess
+    Set Me.CurrentDataAccess = oDataAccess
     Set rslt = NewResult("GetConnectionString", True)
     
     ' If the Table Name is not given, we return empty string
-    If dataAccess.RecordTable = "" Then
+    If oDataAccess.RecordTable = "" Then
         rslt.IsOK = False
         rslt.Message = "The Table Name is not given"
     Else
-        Me.RequestString = "SELECT * FROM " & dataAccess.RecordTable
+        Me.RequestString = "SELECT * FROM " & oDataAccess.RecordTable
     End If
     
     If rslt.IsOK Then
@@ -236,15 +236,15 @@ Private Function AddCriteriaToRequest() As CResult
     Set rslt = NewResult("AddCriteriaToRequest", True)
     loopDone = False
     
-    If Me.CurrentRecordable Is Nothing Then
+    If Me.CurrentDataAccess Is Nothing Then
         rslt.IsOK = False
-        rslt.Message = "The Current Recordable is not set"
+        rslt.Message = "The Current DataAccess is not set"
     End If
     
     If rslt.IsOK Then
-        Me.CurrentRecordable.Record.FieldList.ResetFieldsPicked
+        Me.CurrentDataAccess.Record.FieldList.ResetFieldsPicked
         Do
-            Set field = Me.CurrentRecordable.Record.FieldList.GetNextFieldCriteria()
+            Set field = Me.CurrentDataAccess.Record.FieldList.GetNextFieldCriteria()
             
             If Not field Is Nothing Then
                 ' Set criterion values
@@ -253,7 +253,7 @@ Private Function AddCriteriaToRequest() As CResult
                 End If
             End If
             
-            If Me.CurrentRecordable.Record.FieldList.LastFieldReached() Then
+            If Me.CurrentDataAccess.Record.FieldList.LastFieldReached() Then
                 ' The end of list is reached
                 Exit Do
                 loopDone = True
@@ -287,7 +287,7 @@ End Sub
 '   Purpose     : Construct a full INSERT statement, set local properties, and
 '                 return string to calling routine.
 '
-'   Arguments   : CDatabaseDS   currentDb   The relevant database to build connection string
+'   Arguments   : CDataSourceDatabase   currentDb   The relevant database to build connection string
 '
 '   Returns     : String
 '
@@ -295,7 +295,7 @@ End Sub
 '   ---------------------------------------------------------------------------------------
 '   2025/01/21  Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Private Function GetInsertStatement(dataAccess As CRecordableDA, ByRef strInsertStatement As String) As CResult
+Private Function GetInsertStatement(oDataAccess As CDataAccess, ByRef strInsertStatement As String) As CResult
     Dim finalRqstStr As String, rslt As CResult
     
     rslt = NewResult("GetInsertStatement", True)
@@ -308,7 +308,7 @@ End Function
 '   Purpose     : Construct a full UPDATE statement, set local properties, and
 '                 return string to calling routine.
 '
-'   Arguments   : CDatabaseDS   currentDb   The relevant database to build connection string
+'   Arguments   : CDataSourceDatabase   currentDb   The relevant database to build connection string
 '
 '   Returns     : String
 '
@@ -316,7 +316,7 @@ End Function
 '   ---------------------------------------------------------------------------------------
 '   2025/01/21  Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Private Function GetUpdateStatement(dataAccess As CDatabaseDS, ByRef strUpdateStatement As String) As CResult
+Private Function GetUpdateStatement(oDataAccess As CDataSourceDatabase, ByRef strUpdateStatement As String) As CResult
     Dim finalRqstStr As String, rslt As CResult
     
     rslt = NewResult("GetUpdateStatement", True)
@@ -327,7 +327,7 @@ End Function
 
 
 '***************************************************************************************************************************************************************
-'   Interfaces Implementation
+'   Interfaces Implementation  -   IDataSourceDatabase
 '***************************************************************************************************************************************************************
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -338,28 +338,28 @@ End Function
 '   ---------------------------------------------------------------------------------------
 '   2025/01/25      Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Property Set IDatabaseDS_UpperDatabase(oUpperDatabase As CDatabaseDS)
+Public Property Set IDataSourceDatabase_UpperDatabase(oUpperDatabase As CDataSourceDatabase)
     Set Me.UpperDatabase = oUpperDatabase
 End Property
 
-Public Property Get IDatabaseDS_UpperDatabase() As CDatabaseDS
-    Set IDatabaseDS_UpperDatabase = Me.UpperDatabase
+Public Property Get IDataSourceDatabase_UpperDatabase() As CDataSourceDatabase
+    Set IDataSourceDatabase_UpperDatabase = Me.UpperDatabase
 End Property
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-'   Property      : IAccessDB_CurrentRecordable
-'   Purpose       : The current Recordable Object
+'   Property      : IAccessDB_CurrentDataAccess
+'   Purpose       : The current DataAccess Object
 '
 '   Date            Developer           Action
 '   ---------------------------------------------------------------------------------------
 '   2025/01/25      Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Property Set IDatabaseDS_CurrentRecordable(oCurrentRecordable As CRecordableDA)
-    Set Me.CurrentRecordable = oCurrentRecordable
+Public Property Set IDataSourceDatabase_CurrentDataAccess(oCurrentDataAccess As CDataAccess)
+    Set Me.CurrentDataAccess = oCurrentDataAccess
 End Property
 
-Public Property Get IDatabaseDS_CurrentRecordable() As CRecordableDA
-    Set IDatabaseDS_CurrentRecordable = Me.CurrentRecordable
+Public Property Get IDataSourceDatabase_CurrentDataAccess() As CDataAccess
+    Set IDataSourceDatabase_CurrentDataAccess = Me.CurrentDataAccess
 End Property
 
 
@@ -371,17 +371,17 @@ End Property
 '   ---------------------------------------------------------------------------------------
 '   2025/01/28      Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Property Let IDatabaseDS_RequestString(strRequestString As String)
+Public Property Let IDataSourceDatabase_RequestString(strRequestString As String)
     Me.RequestString = strRequestString
 End Property
 
-Public Property Get IDatabaseDS_RequestString() As String
-    IDatabaseDS_RequestString = Me.RequestString
+Public Property Get IDataSourceDatabase_RequestString() As String
+    IDataSourceDatabase_RequestString = Me.RequestString
 End Property
 
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-'   Function    : IDatabaseDS_BuildConnectionString
+'   Function    : IDataSourceDatabase_BuildConnectionString
 '   Purpose     : Construct a full connection string, set local properties, and
 '                 return string to calling routine.
 '
@@ -393,12 +393,12 @@ End Property
 '   ---------------------------------------------------------------------------------------
 '   2025/01/19  Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Function IDatabaseDS_BuildConnectionString(ByRef strConnectionString As String) As CResult
-    Set IDatabaseDS_BuildConnectionString = GetConnectionString(strConnectionString)
+Public Function IDataSourceDatabase_BuildConnectionString(ByRef strConnectionString As String) As CResult
+    Set IDataSourceDatabase_BuildConnectionString = GetConnectionString(strConnectionString)
 End Function
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-'   Function    : IDatabaseDS_BuildSelectStatement
+'   Function    : IDataSourceDatabase_BuildSelectStatement
 '   Purpose     : Construct a full SELECT statement, set local properties, and
 '                 return string to calling routine.
 '
@@ -411,12 +411,12 @@ End Function
 '   2025/01/21  Jude Parfait        Created
 '   2025/01/24  Jude Parfait        Add ByRef Arguments: strSelectStatement, lngCriteriaCount; Change Return Type: CResult
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Function IDatabaseDS_BuildSelectStatement(dataAccess As CRecordableDA, ByRef strSelectStatement As String, ByRef lngCriteriaCount As Long) As CResult
-    Set IDatabaseDS_BuildSelectStatement = GetSelectStatement(dataAccess, strSelectStatement, lngCriteriaCount)
+Public Function IDataSourceDatabase_BuildSelectStatement(oDataAccess As CDataAccess, ByRef strSelectStatement As String, ByRef lngCriteriaCount As Long) As CResult
+    Set IDataSourceDatabase_BuildSelectStatement = GetSelectStatement(oDataAccess, strSelectStatement, lngCriteriaCount)
 End Function
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-'   Function    : IDatabaseDS_BuildInsertStatement
+'   Function    : IDataSourceDatabase_BuildInsertStatement
 '   Purpose     : Construct a full INSERT statement, set local properties, and
 '                 return string to calling routine.
 '
@@ -430,16 +430,16 @@ End Function
 '   2025/01/21  Jude Parfait            Created
 '   2025/01/24  Jude Parfait            Add ByRef Arguments: strInsertStatement; Change Return Type: CResult
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Function IDatabaseDS_BuildInsertStatement(dataAccess As CRecordableDA, ByRef strInsertStatement As String) As CResult
-    Set IDatabaseDS_BuildInsertStatement = GetInsertStatement(dataAccess, strInsertStatement)
+Public Function IDataSourceDatabase_BuildInsertStatement(oDataAccess As CDataAccess, ByRef strInsertStatement As String) As CResult
+    Set IDataSourceDatabase_BuildInsertStatement = GetInsertStatement(oDataAccess, strInsertStatement)
 End Function
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-'   Function    : IDatabaseDS_BuildUpdateStatement
+'   Function    : IDataSourceDatabase_BuildUpdateStatement
 '   Purpose     : Construct a full UPDATE statement, set local properties, and
 '                 return string to calling routine.
 '
-'   Arguments   : CDatabaseDS           currentDb   The relevant database to build connection string
+'   Arguments   : CDataSourceDatabase           currentDb   The relevant database to build connection string
 '                 strUpdateStatement    The returned Update Statement, if any
 '
 '   Returns     : String
@@ -449,7 +449,6 @@ End Function
 '   2025/01/21  Jude Parfait            Created
 '   2025/01/24  Jude Parfait            Add ByRef Arguments: strUpdateStatement; Change Return Type: CResult
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Function IDatabaseDS_BuildUpdateStatement(dataAccess As CDatabaseDS, ByRef strUpdateStatement As String) As CResult
-    Set IDatabaseDS_BuildUpdateStatement = GetUpdateStatement(dataAccess, strUpdateStatement)
+Public Function IDataSourceDatabase_BuildUpdateStatement(oDataAccess As CDataSourceDatabase, ByRef strUpdateStatement As String) As CResult
+    Set IDataSourceDatabase_BuildUpdateStatement = GetUpdateStatement(oDataAccess, strUpdateStatement)
 End Function
-

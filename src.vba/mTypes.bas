@@ -6,3 +6,7 @@
 '   Purpose   : All the User defined types
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 Option Explicit
+
+Public Type typeDataSourceClass
+    fdfd As String
+End Type

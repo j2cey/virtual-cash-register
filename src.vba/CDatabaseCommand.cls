@@ -11,9 +11,9 @@ Private m_module_name As String
 
 Private m_request_command As ADODB.Command
 
-Private m_upper_database As CDatabaseDS
+Private m_upper_database As CDataSourceDatabase
 Private m_request_string As String
-Private m_current_recordable As CRecordableDA
+Private m_current_recordable As CDataAccess
 
 Private m_last_result As CResult
 
@@ -35,11 +35,11 @@ End Property
 '   ---------------------------------------------------------------------------------------
 '   2025/01/21      Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Property Set UpperDatabase(oUpperDatabase As CDatabaseDS)
+Public Property Set UpperDatabase(oUpperDatabase As CDataSourceDatabase)
     Set m_upper_database = oUpperDatabase
 End Property
 
-Public Property Get UpperDatabase() As CDatabaseDS
+Public Property Get UpperDatabase() As CDataSourceDatabase
     Set UpperDatabase = m_upper_database
 End Property
 
@@ -76,19 +76,19 @@ Public Property Get RequestString() As String
 End Property
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-'   Property      : CurrentRecordable
-'   Purpose       : The current Recordable Object
+'   Property      : CurrentDataAccess
+'   Purpose       : The current DataAccess Object
 '
 '   Date            Developer           Action
 '   ---------------------------------------------------------------------------------------
 '   2025/01/28      Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Property Set CurrentRecordable(oCurrentRecordable As CRecordableDA)
-    Set m_current_recordable = oCurrentRecordable
+Public Property Set CurrentDataAccess(oCurrentDataAccess As CDataAccess)
+    Set m_current_recordable = oCurrentDataAccess
 End Property
 
-Public Property Get CurrentRecordable() As CRecordableDA
-    Set CurrentRecordable = m_current_recordable
+Public Property Get CurrentDataAccess() As CDataAccess
+    Set CurrentDataAccess = m_current_recordable
 End Property
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -140,7 +140,7 @@ End Property
 '   ---------------------------------------------------------------------------------------
 '   2025/01/28      Jude Parfait            Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Sub Init(oUpperDatabase As CDatabaseDS)
+Public Sub Init(oUpperDatabase As CDataSourceDatabase)
     
     Set Me.UpperDatabase = oUpperDatabase
     
@@ -157,12 +157,12 @@ End Sub
 '   ---------------------------------------------------------------------------------------
 '   2025/01/28      Jude Parfait            Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Function BuildRequestCommand(ByVal dataAccess As CRecordableDA, ByVal strRequestString As String, Optional lngIdCriteria As Long = -1) As CResult
+Public Function BuildRequestCommand(ByVal oDataAccess As CDataAccess, ByVal strRequestString As String, Optional lngIdCriteria As Long = -1) As CResult
     Dim itemColl As Variant
     
     Set Me.LastResult = NewResult("BuildRequestCommand", True)
     Set Me.RequestCommand = New ADODB.Command
-    Set Me.CurrentRecordable = dataAccess
+    Set Me.CurrentDataAccess = oDataAccess
     Me.RequestString = strRequestString
     
     If Me.UpperDatabase Is Nothing Then
@@ -211,9 +211,9 @@ Private Function AddCommandParameters() As CResult
     loopDone = False
     
     If rslt.IsOK Then
-        Me.CurrentRecordable.Record.FieldList.ResetFieldsPicked
+        Me.CurrentDataAccess.Record.FieldList.ResetFieldsPicked
         Do
-            Set oField = Me.CurrentRecordable.Record.FieldList.GetNextFieldCriteria()
+            Set oField = Me.CurrentDataAccess.Record.FieldList.GetNextFieldCriteria()
             
             If Not oField Is Nothing Then
                 
@@ -226,7 +226,7 @@ Private Function AddCommandParameters() As CResult
                 End If
             End If
             
-            If Me.CurrentRecordable.Record.FieldList.LastFieldReached() Then
+            If Me.CurrentDataAccess.Record.FieldList.LastFieldReached() Then
                 ' The end of list is reached
                 Exit Do
                 loopDone = True

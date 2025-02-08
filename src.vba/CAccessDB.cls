@@ -16,7 +16,7 @@ Private m_current_database As String
 Private m_upper_database As DatabaseDS
 Private m_inner_database As IAccessDB
 
-Implements IDatabaseDS
+Implements IDataSourceDatabase
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 '   Property      : User
@@ -236,39 +236,39 @@ End Function
 '***************************************************************************************************************************************************************
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-'   Function    : IDatabaseDS_ServerOrPath
+'   Function    : IDataSourceDatabase_ServerOrPath
 '   Purpose     : Get / Set The Server IP/Name or folder Path
 '
 '   Date        Developer       Action
 '   ---------------------------------------------------------------------------------------
 '   2025/01/12  Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Property Get IDatabaseDS_ServerOrPath() As CResult
+Public Property Get IDataSourceDatabase_ServerOrPath() As CResult
     IRecordableBL_LastResult = Me.CurrentServer
 End Property
 
-Public Property Let IDatabaseDS_ServerOrPath(RHS As String)
+Public Property Let IDataSourceDatabase_ServerOrPath(RHS As String)
     Me.CurrentServer = RHS
 End Property
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-'   Function    : IDatabaseDS_Name
+'   Function    : IDataSourceDatabase_Name
 '   Purpose     : Get / Set The Database Name
 '
 '   Date        Developer       Action
 '   ---------------------------------------------------------------------------------------
 '   2025/01/12  Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Property Get IDatabaseDS_Name() As String
+Public Property Get IDataSourceDatabase_Name() As String
     IRecordableBL_FieldsList = Me.CurrentDatabase
 End Property
 
-Public Property Let IDatabaseDS_Name(RHS As String)
+Public Property Let IDataSourceDatabase_Name(RHS As String)
     Me.CurrentDatabase = RHS
 End Property
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-'   Function    : IDatabaseDS_OpenDatabase
+'   Function    : IDataSourceDatabase_OpenDatabase
 '   Purpose     : Open a connection to the specified server and database, if not already open.
 '                 If the parameters are not specified, then just re-use the last connection string that was created.
 '   Arguments   :
@@ -279,6 +279,6 @@ End Property
 '   ---------------------------------------------------------------------------------------
 '   2025/01/19  Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Function IDatabaseDS_OpenDatabase() As Boolean
-    IDatabaseDS_OpenDatabase = Me.OpenDatabase
+Public Function IDataSourceDatabase_OpenDatabase() As Boolean
+    IDataSourceDatabase_OpenDatabase = Me.OpenDatabase
 End Function

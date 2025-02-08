@@ -20,9 +20,9 @@ Option Explicit
 '   ---------------------------------------------------------------------------------------
 '   2025/01/12      Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Function NewUser(Optional ByVal lId As Long = -1, Optional ByVal oRecord As CRecord = Nothing, Optional ByVal sLogin As String = "", Optional ByVal sName As String = "") As CUser
+Public Function NewUser(Optional ByVal lId As Long = -1, Optional ByVal oRecord As CRecord = Nothing, Optional ByVal sLogin As String = "", Optional ByVal sName As String = "", Optional ByVal sPwd As String = "") As CUser
     With New CUser
-        .Init lId, oRecord, sLogin, sName
+        .Init lId, oRecord, sLogin, sName, sPwd
         Set NewUser = .Self 'returns the newly created instance
     End With
 End Function
@@ -40,7 +40,7 @@ End Function
 '   ---------------------------------------------------------------------------------------
 '   2025/01/12      Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Function NewResult(Optional ByVal strLabel As String = "", Optional ByVal blnIsOK As Boolean = False, Optional ByVal lngCode As Long = 0, Optional ByVal strMessage As String = "") As CResult
+Public Function NewResult(Optional ByVal strLabel As String = "", Optional ByVal blnIsOK As Boolean = True, Optional ByVal lngCode As Long = 0, Optional ByVal strMessage As String = "") As CResult
     With New CResult
         .Init strLabel, blnIsOK, lngCode, strMessage
         Set NewResult = .Self 'returns the newly created instance

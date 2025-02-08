@@ -120,7 +120,7 @@ End Function
 
 Public Sub ExecuteAction(oUIControlAction As IUIControlAction)
     If Not IsEmpty(oUIControlAction.ActionPermissions) Then
-        If Not loggedUser.Can(Me.IUCTLACTION_ActionPermissions) Then
+        If Not LoggedUser.Can(Me.IUCTLACTION_ActionPermissions) Then
             Exit Sub
         End If
     End If

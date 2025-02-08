@@ -12,7 +12,7 @@ Private m_connection As ADODB.Connection
 Private m_connection_string As String
 
 Private m_connection_timeout As Long
-Private m_upper_database As CDatabaseDS
+Private m_upper_database As CDataSourceDatabase
 
 Private m_is_opened As Boolean
 Private m_last_result As CResult
@@ -36,11 +36,11 @@ End Property
 '   ---------------------------------------------------------------------------------------
 '   2025/01/21      Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Property Set UpperDatabase(oUpperDatabase As CDatabaseDS)
+Public Property Set UpperDatabase(oUpperDatabase As CDataSourceDatabase)
     Set m_upper_database = oUpperDatabase
 End Property
 
-Public Property Get UpperDatabase() As CDatabaseDS
+Public Property Get UpperDatabase() As CDataSourceDatabase
     Set UpperDatabase = m_upper_database
 End Property
 
@@ -157,7 +157,7 @@ End Property
 '   ---------------------------------------------------------------------------------------
 '   2025/01/28      Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Sub Init(oUpperDatabase As CDatabaseDS, Optional lngConnectionTimeout As Long = -1)
+Public Sub Init(oUpperDatabase As CDataSourceDatabase, Optional lngConnectionTimeout As Long = -1)
     
     Set Me.UpperDatabase = oUpperDatabase
     

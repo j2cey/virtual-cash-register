@@ -72,7 +72,7 @@ End Sub
 Private Sub IUCTLACTION_Execute()
     
     If Not IsEmpty(Me.IUCTLACTION_ActionPermissions) Then
-        If Not loggedUser.Can(Me.IUCTLACTION_ActionPermissions) Then
+        If Not LoggedUser.Can(Me.IUCTLACTION_ActionPermissions) Then
             Exit Sub
         End If
     End If

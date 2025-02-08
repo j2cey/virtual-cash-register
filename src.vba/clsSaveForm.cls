@@ -157,7 +157,7 @@ Public Sub Init(sRequestTable As String, oSaveTitle As MSForms.Control, oSaveBtn
         Set Me.NewBtn = NewUCTL(oNewBtn)
     End If
     
-    Me.Status = None
+    Me.Status = none
     Set Me.SqlQuery = NewSqlQuery(sRequestTable)
 End Sub
 

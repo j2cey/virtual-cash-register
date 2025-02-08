@@ -1,9 +1,9 @@
 'Build 000
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-' Module    : CRecordableDA
+' Module    : CDataAccess
 ' Author    : Jude Parfait NGOM NZE (jud10parfait@gmail.com)
 ' Created   : 2025/01/12
-' Purpose   : The Data Access Recordable Object
+' Purpose   : The Data Access DataAccess Object
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 Option Explicit
 
@@ -20,7 +20,7 @@ Private m_record As CRecord
 '   Public Properties
 '***************************************************************************************************************************************************************
 
-Public Property Get Self() As CRecordableDA
+Public Property Get Self() As CDataAccess
     Set Self = Me
 End Property
 
@@ -163,7 +163,7 @@ End Function
 '   ---------------------------------------------------------------------------------------
 '   2025/01/22  Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Function GetValue(ByVal strFieldName As String, ByRef oResult As CResult, Optional ByVal reloadFromDataSource As Boolean = False) As CField
+Public Function GetValue(ByRef oResult As CResult, ByVal strFieldName As String, Optional ByVal reloadFromDataSource As Boolean = False) As CField
     
     Set GetValue = Me.DataSource.GetValue(Me, strFieldName, oResult)
     
@@ -237,7 +237,7 @@ End Function
 '   2025/01/12  Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 Private Function IsNew() As Boolean
-    Set IsNew = Me.Record.IsNew()
+    IsNew = Me.Record.IsNew()
 End Function
 
 

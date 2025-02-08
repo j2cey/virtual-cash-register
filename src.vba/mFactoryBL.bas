@@ -21,7 +21,7 @@ Option Explicit
 '   ---------------------------------------------------------------------------------------
 '   2025/01/31      Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Function NewRecord(Optional oDataAccess As CRecordableDA = Nothing, Optional oUser As CUser = Nothing, Optional ByVal lngRecordId As Long = -1) As CRecord
+Public Function NewRecord(Optional oDataAccess As CDataAccess = Nothing, Optional oUser As CUser = Nothing, Optional ByVal lngRecordId As Long = -1) As CRecord
     With New CRecord
         .Init oDataAccess, oUser, lngRecordId
         Set NewRecord = .Self 'returns the newly created instance
@@ -40,7 +40,7 @@ End Function
 '   ---------------------------------------------------------------------------------------
 '   2025/01/31      Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Function NewRecordList(Optional oDataAccess As CRecordableDA = Nothing, Optional oUser As CUser = Nothing) As CRecordList
+Public Function NewRecordList(Optional oDataAccess As CDataAccess = Nothing, Optional oUser As CUser = Nothing) As CRecordList
     With New CRecordList
         .Init oDataAccess, oUser
         Set NewRecordList = .Self 'returns the newly created instance
@@ -116,5 +116,23 @@ Public Function NewFieldValueString(Optional ByVal oUpperField As CField = Nothi
     With New CFieldValueString
         .Init oUpperField
         Set NewFieldValueString = .Self 'returns the newly created instance
+    End With
+End Function
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'   Function    : NewFieldValueBoolean
+'   Purpose     : Create and Initialize a New Boolean Field Value
+'   Arguments   :
+'
+'   Returns     : CFieldValueBoolean
+'
+'   Date        Developer           Action
+'   ---------------------------------------------------------------------------------------
+'   2025/01/31      Jude Parfait        Created
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Public Function NewFieldValueBoolean(Optional ByVal oUpperField As CField = Nothing) As CFieldValueBoolean
+    With New CFieldValueBoolean
+        .Init oUpperField
+        Set NewFieldValueBoolean = .Self 'returns the newly created instance
     End With
 End Function

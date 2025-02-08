@@ -9,18 +9,15 @@ Option Explicit
 
 Private m_user As CUser
 Private m_record_id As Long
-Private m_data_access As CRecordableDA
+Private m_data_access As CDataAccess
 
 Private m_field_list As CFieldList
 
-Private m_last_result As CResult
+' TODO: remove m_value ?
 Private m_value As Variant
 
 
 Private Const DEFAULT_ID As Long = 0
-
-
-Implements IRecordableBL
 
 
 '***************************************************************************************************************************************************************
@@ -48,6 +45,22 @@ Public Property Get User() As CUser
 End Property
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'   Property      : DataAccess
+'   Purpose       : The Data Access object
+'
+'   Date            Developer           Action
+'   ---------------------------------------------------------------------------------------
+'   2025/01/12      Jude Parfait        Created
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Public Property Set DataAccess(oDataAccess As CDataAccess)
+    Set m_data_access = oDataAccess
+End Property
+
+Public Property Get DataAccess() As CDataAccess
+    Set DataAccess = m_data_access
+End Property
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 ' Property      : RecordId
 ' Purpose       : The Record s Id
 '
@@ -61,22 +74,6 @@ End Property
 
 Public Property Get RecordId() As Long
     RecordId = m_record_id
-End Property
-
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-'   Property      : DataAccess
-'   Purpose       : The Data Access object
-'
-'   Date            Developer           Action
-'   ---------------------------------------------------------------------------------------
-'   2025/01/12      Jude Parfait        Created
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Property Set dataAccess(oDataAccess As CRecordableDA)
-    Set m_data_access = oDataAccess
-End Property
-
-Public Property Get dataAccess() As CRecordableDA
-    Set dataAccess = m_data_access
 End Property
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -146,10 +143,10 @@ End Property
 '   ---------------------------------------------------------------------------------------
 '   2025/01/12      Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Sub Init(Optional oDataAccess As CRecordableDA = Nothing, Optional oUser As CUser = Nothing, Optional ByVal lngRecordId As Long = -1)
+Public Sub Init(Optional oDataAccess As CDataAccess = Nothing, Optional oUser As CUser = Nothing, Optional ByVal lngRecordId As Long = -1)
     
     If Not oDataAccess Is Nothing Then
-        Set Me.dataAccess = oDataAccess
+        Set Me.DataAccess = oDataAccess
     End If
     
     If Not oUser Is Nothing Then
@@ -293,7 +290,7 @@ End Function
 Public Function IsNew() As Boolean
     Dim result As Boolean
     
-    Set result = True
+    result = True
     
     If Me.RecordId = DEFAULT_ID Then
        result = True
@@ -301,7 +298,7 @@ Public Function IsNew() As Boolean
         result = False
     End If
     
-    Set IsNew = result
+    IsNew = result
 End Function
 
 
@@ -402,37 +399,8 @@ End Function
 '   Interfaces Implementation
 '***************************************************************************************************************************************************************
 
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-'   Property    : IRecordableBL_LastResult
-'   Purpose     : Get / Set The Last Result
-'
-'   Date        Developer       Action
-'   ---------------------------------------------------------------------------------------
-'   2025/01/12  Jude Parfait        Created
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Property Get IRecordableBL_LastResult() As CResult
-    Set IRecordableBL_LastResult = Me.LastResult
-End Property
 
-Public Property Set IRecordableBL_LastResult(RHS As CResult)
-    Set Me.LastResult = RHS
-End Property
 
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-'   Property    : IRecordableBL_FieldList
-'   Purpose     : Get / Set Fields List
-'
-'   Date        Developer       Action
-'   ---------------------------------------------------------------------------------------
-'   2025/01/12  Jude Parfait        Created
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Property Get IRecordableBL_FieldList() As Collection
-    Set IRecordableBL_FieldList = Me.FieldList
-End Property
-
-Public Property Set IRecordableBL_FieldList(RHS As Collection)
-    Set Me.FieldList = RHS
-End Property
 
 
 '***************************************************************************************************************************************************************

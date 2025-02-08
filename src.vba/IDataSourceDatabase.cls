@@ -1,6 +1,6 @@
 'Build 000
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-' Module    : IDatabaseDS
+' Module    : IDataSourceDatabase
 ' Author    : Jude Parfait NGOM NZE (jud10parfait@gmail.com)
 ' Created   : 2025/01/19
 ' Purpose   : Database Data Source Interface
@@ -16,24 +16,24 @@ Option Explicit
 '   ---------------------------------------------------------------------------------------
 '   2025/01/25      Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Property Set UpperDatabase(oUpperDatabase As CDatabaseDS)
+Public Property Set UpperDatabase(oUpperDatabase As CDataSourceDatabase)
 End Property
 
-Public Property Get UpperDatabase() As CDatabaseDS
+Public Property Get UpperDatabase() As CDataSourceDatabase
 End Property
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-'   Property      : CurrentRecordable
-'   Purpose       : The current Recordable Object
+'   Property      : CurrentDataAccess
+'   Purpose       : The current DataAccess Object
 '
 '   Date            Developer           Action
 '   ---------------------------------------------------------------------------------------
 '   2025/01/25      Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Property Set CurrentRecordable(oCurrentRecordable As CRecordableDA)
+Public Property Set CurrentDataAccess(oCurrentDataAccess As CDataAccess)
 End Property
 
-Public Property Get CurrentRecordable() As CRecordableDA
+Public Property Get CurrentDataAccess() As CDataAccess
 End Property
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -61,7 +61,7 @@ End Property
 '   Purpose     : Construct a full connection string, set local properties, and
 '                 return string to calling routine.
 '
-'   Arguments   : CDatabaseDS   currentDb   The relevant database to build connection string
+'   Arguments   : CDataSourceDatabase   currentDb   The relevant database to build connection string
 '
 '   Returns     : String
 '
@@ -87,7 +87,7 @@ End Function
 '   2025/01/21  Jude Parfait        Created
 '   2025/01/24  Jude Parfait        Add ByRef Arguments: strSelectStatement, lngCriteriaCount; Change Return Type: CResult
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Function BuildSelectStatement(dataAccess As CRecordableDA, ByRef strSelectStatement As String, ByRef lngCriteriaCount As Long) As CResult
+Public Function BuildSelectStatement(oDataAccess As CDataAccess, ByRef strSelectStatement As String, ByRef lngCriteriaCount As Long) As CResult
 End Function
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -95,7 +95,7 @@ End Function
 '   Purpose     : Construct a full INSERT statement, set local properties, and
 '                 return string to calling routine.
 '
-'   Arguments   : CDatabaseDS           currentDb   The relevant database to build connection string
+'   Arguments   : CDataSourceDatabase           currentDb   The relevant database to build connection string
 '                 strInsertStatement    The Returned Insert Statement
 '
 '   Returns     : String
@@ -105,7 +105,7 @@ End Function
 '   2025/01/21  Jude Parfait            Created
 '   2025/01/24  Jude Parfait            Add ByRef Arguments: strInsertStatement; Change Return Type: CResult
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Function BuildInsertStatement(dataAccess As CRecordableDA, ByRef strInsertStatement As String) As CResult
+Public Function BuildInsertStatement(oDataAccess As CDataAccess, ByRef strInsertStatement As String) As CResult
 End Function
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -113,7 +113,7 @@ End Function
 '   Purpose     : Construct a full UPDATE statement, set local properties, and
 '                 return string to calling routine.
 '
-'   Arguments   : CDatabaseDS           currentDb   The relevant database to build connection string
+'   Arguments   : CDataSourceDatabase           currentDb   The relevant database to build connection string
 '                 strUpdateStatement    The returned Update Statement, if any
 '
 '   Returns     : String
@@ -123,5 +123,5 @@ End Function
 '   2025/01/21  Jude Parfait            Created
 '   2025/01/24  Jude Parfait            Add ByRef Arguments: strUpdateStatement; Change Return Type: CResult
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Function BuildUpdateStatement(dataAccess As CDatabaseDS, ByRef strUpdateStatement As String) As CResult
+Public Function BuildUpdateStatement(oDataAccess As CDataSourceDatabase, ByRef strUpdateStatement As String) As CResult
 End Function

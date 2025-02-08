@@ -16,3 +16,15 @@ Public Enum enuResultCode
     Default = 0
     Active = 1
 End Enum
+
+Public Enum enuDataSourceClass
+  fileSource = 1
+  sheetSource = 2
+  databaseSource = 3
+End Enum
+
+Public Enum enuDatabaseClass
+  none = 1
+  access2007 = 2
+  sqlserver2014 = 3
+End Enum

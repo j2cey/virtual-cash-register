@@ -9,7 +9,7 @@ Option Explicit
 
 Private m_guid As String
 Private m_value As IFieldValue
-Private m_previous_value As Variant
+Private m_previous_value As IFieldValue
 Private m_name As String
 Private m_offset_start As Long
 Private m_offset_end As Long
@@ -22,12 +22,6 @@ Private m_is_selectable As Boolean
 Private m_is_savable As Boolean
 Private m_is_input_parameter As Boolean
 Private m_is_output_parameter As Boolean
-
-Private m_fields_list As Collection
-Private m_last_result As CResult
-
-
-Implements IRecordableBL
 
 
 '***************************************************************************************************************************************************************
@@ -142,8 +136,8 @@ End Property
 '    m_previous_value = vrnPreviousValue
 'End Property
 
-Public Property Get PreviousValue() As Variant
-    PreviousValue = m_previous_value
+Public Property Get PreviousValue() As IFieldValue
+    Set PreviousValue = m_previous_value
 End Property
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -258,38 +252,6 @@ Public Property Get IsOutputParameter() As Boolean
     IsOutputParameter = m_is_output_parameter
 End Property
 
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-' Property      : FieldsList
-' Purpose       : The Record Fields List
-'
-' Date          Developer           Action
-' ---------------------------------------------------------------------------------------
-' 2025/01/18    Jude Parfait        Created
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Property Set FieldsList(oFieldsList As Collection)
-    Set m_fields_list = oFieldsList
-End Property
-
-Public Property Get FieldsList() As Collection
-    Set FieldsList = m_fields_list
-End Property
-
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-'   Function    : LastResult
-'   Purpose     : Get / Set The Last Result
-'
-'   Date        Developer       Action
-'   ---------------------------------------------------------------------------------------
-'   2025/01/18  Jude Parfait        Created
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Property Get LastResult() As CResult
-    Set LastResult = m_last_result
-End Property
-
-Public Property Set LastResult(oLastResult As CResult)
-    Set m_last_result = oLastResult
-End Property
-
 
 '***************************************************************************************************************************************************************
 '    Public Functions and Subs
@@ -323,7 +285,7 @@ End Sub
 
 Public Sub SetValue(vrnValue As Variant)
     Me.Reset
-    m_previous_value = Me.FieldValue.GetValue
+    Set m_previous_value = Me.FieldValue
     
     Me.FieldValue.SetValue (vrnValue)
 End Sub
@@ -342,17 +304,16 @@ End Sub
 Public Function Reset() As CResult
     Dim result As CResult
     
-    Set result = NewResut()
-    result.IsOK = True
+    Set result = NewResult("Reset Field", True)
     
-    If Me.PreviousValue = Null Then
+    If Me.PreviousValue Is Nothing Then
        result.Message = "Pas de valeure précédente"
     Else
-        Me.FieldValue.SetValue (Me.PreviousValue)
+        Me.FieldValue.SetValue (Me.PreviousValue.GetValue)
         result.Message = "Valeur du Champs " & Me.Label & " réinitialisée avec succès !"
     End If
     
-    Reset = result
+    Set Reset = result
 End Function
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -441,6 +402,18 @@ Public Function SetSelectable(Optional ByVal blnValue As Boolean = True) As CFie
     Set SetSelectable = Me
 End Function
 
+Public Function SetOffsetStart(ByVal lngOffsetStart As Long) As CField
+    Me.OffsetStart = lngOffsetStart
+    
+    Set SetOffsetStart = Me
+End Function
+
+Public Function SetOffsetEnd(ByVal lngOffsetEnd As Long) As CField
+    Me.OffsetEnd = lngOffsetEnd
+    
+    Set SetOffsetEnd = Me
+End Function
+
 Public Function ResetCode() As CField
     m_guid = CreateGUID
     
@@ -454,37 +427,7 @@ End Function
 '   Interfaces Implementation
 '***************************************************************************************************************************************************************
 
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-'   Function    : IRecordableBL_LastResult
-'   Purpose     : Get / Set The Last Result
-'
-'   Date        Developer       Action
-'   ---------------------------------------------------------------------------------------
-'   2025/01/18  Jude Parfait        Created
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Property Get IRecordableBL_LastResult() As CResult
-    Set IRecordableBL_LastResult = Me.LastResult
-End Property
 
-Public Property Set IRecordableBL_LastResult(RHS As CResult)
-    Set Me.LastResult = RHS
-End Property
-
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-'   Function    : IRecordableBL_FieldsList
-'   Purpose     : Get / Set Fields List
-'
-'   Date        Developer       Action
-'   ---------------------------------------------------------------------------------------
-'   2025/01/18  Jude Parfait        Created
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Property Get IRecordableBL_FieldsList() As Collection
-    Set IRecordableBL_FieldsList = Me.FieldsList
-End Property
-
-Public Property Set IRecordableBL_FieldsList(RHS As Collection)
-    Set Me.FieldsList = RHS
-End Property
 
 
 '***************************************************************************************************************************************************************
@@ -493,10 +436,8 @@ End Property
 
 Private Sub Class_Initialize()
     m_guid = CreateGUID
-    m_previous_value = Null
-    Set m_fields_list = New Collection
+    'Set m_previous_value = New IFieldValue
 End Sub
 
 Private Sub Class_Terminate()
-    Set m_fields_list = Nothing
 End Sub

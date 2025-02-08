@@ -8,7 +8,7 @@
 Option Explicit
 
 Private m_user As CUser
-Private m_data_access As CRecordableDA
+Private m_data_access As CDataAccess
 
 Private m_list As Collection
 Private m_previous_record_index_picked As Long
@@ -50,12 +50,12 @@ End Property
 '   ---------------------------------------------------------------------------------------
 '   2025/02/03      Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Property Set dataAccess(oDataAccess As CRecordableDA)
+Public Property Set DataAccess(oDataAccess As CDataAccess)
     Set m_data_access = oDataAccess
 End Property
 
-Public Property Get dataAccess() As CRecordableDA
-    Set dataAccess = m_data_access
+Public Property Get DataAccess() As CDataAccess
+    Set DataAccess = m_data_access
 End Property
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -140,10 +140,10 @@ End Property
 '   ---------------------------------------------------------------------------------------
 '   2025/02/03      Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Sub Init(Optional oDataAccess As CRecordableDA = Nothing, Optional oUser As CUser = Nothing)
+Public Sub Init(Optional oDataAccess As CDataAccess = Nothing, Optional oUser As CUser = Nothing)
     
     If Not oDataAccess Is Nothing Then
-        Set Me.dataAccess = oDataAccess
+        Set Me.DataAccess = oDataAccess
     End If
     
     If Not oUser Is Nothing Then

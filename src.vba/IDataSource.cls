@@ -9,24 +9,80 @@ Option Explicit
 
 
 
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+' Property      : User
+' Purpose       : The Record Name
+'
+' Date          Developer           Action
+' ---------------------------------------------------------------------------------------
+' 2025/02/05    Jude Parfait        Created
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Public Property Set User(oUser As CUser)
+End Property
+
+Public Property Get User() As CUser
+End Property
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+' Property      : ServerOrPath
+' Purpose       : The Record Name
+'
+' Date          Developer           Action
+' ---------------------------------------------------------------------------------------
+' 2025/02/05    Jude Parfait        Created
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Public Property Let ServerOrPath(strServerOrPath As String)
+End Property
+
+Public Property Get ServerOrPath() As String
+End Property
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+' Property      : DatabaseOrFileName
+' Purpose       : The Record Name
+'
+' Date          Developer           Action
+' ---------------------------------------------------------------------------------------
+' 2025/02/05    Jude Parfait        Created
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Public Property Let DatabaseOrFileName(strDatabaseOrFileName As String)
+End Property
+
+Public Property Get DatabaseOrFileName() As String
+End Property
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+' Property      : IntegratedSecurity
+' Purpose       : The Record Name
+'
+' Date          Developer           Action
+' ---------------------------------------------------------------------------------------
+' 2025/02/05    Jude Parfait        Created
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Public Property Let IntegratedSecurity(blnIntegratedSecurity As Boolean)
+End Property
+
+Public Property Get IntegratedSecurity() As Boolean
+End Property
+
 '***************************************************************************************************************************************************************
 '    Public Functions and Subs
 '***************************************************************************************************************************************************************
 
-Public Function GetValue(ByVal dataAccess As CRecordableDA, ByVal strFieldName As String, ByRef oResult As CResult) As CField
+Public Function GetValue(ByVal oDataAccess As CDataAccess, ByVal strFieldName As String, ByRef oResult As CResult) As CField
 End Function
 
-Public Function GetRecord(ByVal dataAccess As CRecordableDA, ByRef oResult As CResult) As CRecord
+Public Function GetRecord(ByVal oDataAccess As CDataAccess, ByRef oResult As CResult) As CRecord
 End Function
 
-Public Function GetRecordList(ByVal dataAccess As CRecordableDA, ByRef oResult As CResult) As CRecordList
+Public Function GetRecordList(ByVal oDataAccess As CDataAccess, ByRef oResult As CResult) As CRecordList
 End Function
 
-Public Function AddValues(ByVal dataAccess As CRecordableDA) As Variant
+Public Function AddValues(ByVal oDataAccess As CDataAccess) As CResult
 End Function
 
-Public Function UpdateValues(ByVal dataAccess As CRecordableDA) As Variant
+Public Function UpdateValues(ByVal oDataAccess As CDataAccess) As CResult
 End Function
 
-Public Function DeleteValues(ByVal dataAccess As CRecordableDA) As Variant
+Public Function DeleteValues(ByVal oDataAccess As CDataAccess) As CResult
 End Function

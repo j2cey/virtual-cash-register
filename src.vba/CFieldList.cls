@@ -3,7 +3,7 @@
 ' Module    : CFieldList
 ' Author    : Jude Parfait NGOM NZE (jud10parfait@gmail.com)
 ' Created   : 2025/01/30
-' Purpose   : The Data Access Recordable Object
+' Purpose   : The Data Access DataAccess Object
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 Option Explicit
 
