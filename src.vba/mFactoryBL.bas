@@ -11,6 +11,25 @@ Option Explicit
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 '   Function    : NewRecord
 '   Purpose     : Create and Initialize a New Record
+'   Arguments   : oUser             The User
+'                 oDataAccess       The Data Access object
+'
+'   Returns     : CBusinessLogic
+'
+'   Date        Developer           Action
+'   ---------------------------------------------------------------------------------------
+'   2025/01/31      Jude Parfait        Created
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Public Function NewBusinessLogic(ByVal oUser As CUser, ByVal oDataAccess As CDataAccess) As CBusinessLogic
+    With New CBusinessLogic
+        .Init oUser, oDataAccess
+        Set NewBusinessLogic = .Self 'returns the newly created instance
+    End With
+End Function
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'   Function    : NewRecord
+'   Purpose     : Create and Initialize a New Record
 '   Arguments   : oDataAccess       The Data Access object
 '                 oUser             The User
 '                 lngRecordId       The Record ID, in case already saved

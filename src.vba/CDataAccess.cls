@@ -3,7 +3,7 @@
 ' Module    : CDataAccess
 ' Author    : Jude Parfait NGOM NZE (jud10parfait@gmail.com)
 ' Created   : 2025/01/12
-' Purpose   : The Data Access DataAccess Object
+' Purpose   : The Data Access Object
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 Option Explicit
 
@@ -126,30 +126,38 @@ Public Sub Init(ByVal oUser As CUser, ByVal oDataSource As IDataSource, ByVal st
     
     If Not oRecord Is Nothing Then
         Set Me.Record = oRecord
+        Set Me.Record.DataAccess = Me
     End If
 End Sub
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-'   Function    : Save
-'   Purpose     : Save the Record
+'   Function    : Create
+'   Purpose     : Create the Record
 '   Arguments   :
 '
 '   Returns     : CResult
 '
 '   Date        Developer       Action
 '   ---------------------------------------------------------------------------------------
-'   2025/01/21  Jude Parfait        Created
+'   2025/02/08  Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Function Save() As CResult
-    Dim result As CResult
-    
-    If IsNew Then
-        Me.DataSource.AddValues Me
-    Else
-        Me.DataSource.UpdateValues Me
-    End If
-    
-    Set Save = result
+Public Function Create() As CResult
+    Set Create = Me.DataSource.StoreRecord(Me)
+End Function
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'   Function    : Update
+'   Purpose     : Update the Record
+'   Arguments   :
+'
+'   Returns     : CResult
+'
+'   Date        Developer       Action
+'   ---------------------------------------------------------------------------------------
+'   2025/02/08  Jude Parfait        Created
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Public Function Update() As CResult
+    Set Update = Me.DataSource.UpdateRecord(Me)
 End Function
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -212,12 +220,10 @@ End Function
 '
 '   Date        Developer       Action
 '   ---------------------------------------------------------------------------------------
-'   2025/01/22  Jude Parfait        Created
+'   2025/01/22  Jude Parfait    Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 Public Function Delete() As CResult
-    Dim result As CResult
-    
-    Set Delete = result
+    Set Delete = Me.DataSource.DeleteRecord(Me)
 End Function
 
 

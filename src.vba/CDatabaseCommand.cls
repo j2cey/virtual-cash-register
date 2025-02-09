@@ -7,8 +7,6 @@
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 Option Explicit
 
-Private m_module_name As String
-
 Private m_request_command As ADODB.Command
 
 Private m_upper_database As CDataSourceDatabase
@@ -17,6 +15,7 @@ Private m_current_recordable As CDataAccess
 
 Private m_last_result As CResult
 
+Private Const MODULE_NAME As String = "Database Command"
 
 
 '***************************************************************************************************************************************************************
@@ -99,12 +98,8 @@ End Property
 '   ---------------------------------------------------------------------------------------
 '   2025/01/21      Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Property Let ModuleName(strModuleName As String)
-    Let m_module_name = strModuleName
-End Property
-
 Public Property Get ModuleName() As String
-    ModuleName = m_module_name
+    ModuleName = MODULE_NAME
 End Property
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -160,7 +155,7 @@ End Sub
 Public Function BuildRequestCommand(ByVal oDataAccess As CDataAccess, ByVal strRequestString As String, Optional lngIdCriteria As Long = -1) As CResult
     Dim itemColl As Variant
     
-    Set Me.LastResult = NewResult("BuildRequestCommand", True)
+    Set Me.LastResult = NewResult(MODULE_NAME, "BuildRequestCommand", True)
     Set Me.RequestCommand = New ADODB.Command
     Set Me.CurrentDataAccess = oDataAccess
     Me.RequestString = strRequestString
@@ -207,7 +202,7 @@ End Function
 Private Function AddCommandParameters() As CResult
     Dim rslt As CResult, loopDone As Boolean, oField As CField
     
-    Set rslt = NewResult("AddCommandParameters", True)
+    Set rslt = NewResult(MODULE_NAME, "AddCommandParameters", True)
     loopDone = False
     
     If rslt.IsOK Then
@@ -239,7 +234,7 @@ Private Function AddCommandParameters() As CResult
 End Function
 
 Private Function AddInputParameter(ByVal oField As CField, ByRef oResult As CResult) As Boolean
-    Set oResult = NewResult("AddInputParameter for field " & oField.Name, True)
+    Set oResult = NewResult(MODULE_NAME, "AddInputParameter for field " & oField.Name, True)
     
     Set oResult = oField.FieldValue.SetInputParameter(Me.RequestCommand)
 End Function
@@ -250,7 +245,6 @@ End Function
 '***************************************************************************************************************************************************************
 
 Private Sub Class_Initialize()
-    m_module_name = "CDatabaseCommand"
     Set m_request_command = New ADODB.Command
 End Sub
 

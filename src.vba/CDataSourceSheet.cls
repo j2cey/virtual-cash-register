@@ -7,13 +7,14 @@
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 Option Explicit
 
-Private m_module_name As String
 Private m_user As CUser
 
 Private m_workbook_source As Workbook
 Private m_current_sheet As Worksheet
 Private m_current_cell_rownum As Long
 Private m_current_cell_colnum As Long
+
+Private Const MODULE_NAME As String = "Data-Source Sheet"
 
 Implements IDataSource
 
@@ -150,22 +151,6 @@ Public Property Get IntegratedSecurity() As Boolean
     IntegratedSecurity = True
 End Property
 
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-'   Property      : ModuleName
-'   Purpose       : The Name of this Module
-'
-'   Date            Developer           Action
-'   ---------------------------------------------------------------------------------------
-'   2025/02/05      Jude Parfait        Created
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Property Let ModuleName(strModuleName As String)
-    Let m_module_name = strModuleName
-End Property
-
-Public Property Get ModuleName() As String
-    ModuleName = m_module_name
-End Property
-
 
 
 '***************************************************************************************************************************************************************
@@ -199,7 +184,7 @@ End Sub
 Private Function ValidateDataAccessSheetParams(ByVal oDataAccess As CDataAccess, Optional ByVal blnSaveCurrentSheet As Boolean = False) As CResult
     Dim result As CResult
     
-    Set result = NewResult("ValidateDataAccessSheetParams", True)
+    Set result = NewResult(MODULE_NAME, "ValidateDataAccessSheetParams", True)
     
     If oDataAccess Is Nothing Then
         result.SetFailure "Data Access not set yet !"
@@ -225,7 +210,7 @@ End Function
 Private Function SetCurrentCellParamsFromField(ByVal oField As CField) As CResult
     Dim result As CResult
     
-    Set result = NewResult("SetCurrentCellParamsFromField", True)
+    Set result = NewResult(MODULE_NAME, "SetCurrentCellParamsFromField", True)
     
     ' Assign the current Cell row number
     If oField.OffsetStart < 0 Then
@@ -253,9 +238,9 @@ End Function
 Private Function SetCellValueToField(ByVal oField As CField) As CResult
     Dim result As CResult
     
-    Set result = NewResult("SetCellValueToField", True)
+    Set result = NewResult(MODULE_NAME, "SetCellValueToField", True)
     
-    AddSubResult "SetCellValueToField", result, SetCurrentCellParamsFromField(oField)
+    AddSubResult MODULE_NAME, "SetCellValueToField", result, SetCurrentCellParamsFromField(oField)
     
     ' Set the cell value to Field
     If Me.CurrentSheet Is Nothing Then
@@ -275,9 +260,9 @@ End Function
 Private Function SetFieldValueToCell(ByVal oField As CField) As CResult
     Dim result As CResult
     
-    Set result = NewResult("SetFieldValueToCell", True)
+    Set result = NewResult(MODULE_NAME, "SetFieldValueToCell", True)
     
-    AddSubResult "SetFieldValueToCell", result, SetCurrentCellParamsFromField(oField)
+    AddSubResult MODULE_NAME, "SetFieldValueToCell", result, SetCurrentCellParamsFromField(oField)
     
     If Not result.LastResult.IsOK Then
         result.SetFailure result.LastResult.Message
@@ -304,7 +289,7 @@ End Function
 Private Function SetSelectableRecord(ByVal oRecordTemplate As CRecord, ByRef oRecordValue As CRecord) As CResult
     Dim result As CResult, loopDone As Boolean
     
-    Set result = NewResult("SetSelectableRecord", True)
+    Set result = NewResult(MODULE_NAME, "SetSelectableRecord", True)
     
     ' create new Record, if not done yet
     If oRecordValue Is Nothing Then
@@ -318,7 +303,7 @@ Private Function SetSelectableRecord(ByVal oRecordTemplate As CRecord, ByRef oRe
     Do
         Dim currField As CField
         Set currField = oRecordTemplate.FieldList.GetNextField().ResetCode()
-        AddSubResult "SetSelectableRecord", result, SetCellValueToField(currField)
+        AddSubResult MODULE_NAME, "SetSelectableRecord", result, SetCellValueToField(currField)
         
         If result.LastResult.IsOK Then
             oRecordValue.FieldList.AddField currField
@@ -351,7 +336,7 @@ Private Function GetValue(ByVal oDataAccess As CDataAccess, ByVal strFieldName A
     Dim lngRowNum As Long, lngColNum As Long, oField As CField
     
     ' Validate Data Access Sheet parameters
-    AddSubResult "GetValue", oResult, ValidateDataAccessSheetParams(oDataAccess, True)
+    AddSubResult MODULE_NAME, "GetValue", oResult, ValidateDataAccessSheetParams(oDataAccess, True)
     If Not oResult.LastResult.IsOK Then
         Set GetValue = Nothing
         Exit Function
@@ -362,7 +347,7 @@ Private Function GetValue(ByVal oDataAccess As CDataAccess, ByVal strFieldName A
     oField.ResetCode
     
     ' Set Current CEll value
-    AddSubResult "GetValue", oResult, SetCellValueToField(oField)
+    AddSubResult MODULE_NAME, "GetValue", oResult, SetCellValueToField(oField)
     If Not oResult.LastResult.IsOK Then
         Set GetValue = Nothing
         Exit Function
@@ -376,10 +361,10 @@ Private Function GetRecord(ByVal oDataAccess As CDataAccess, ByRef oResult As CR
     Dim result As CResult, oRecordValue As CRecord, loopDone As Boolean, oField As CField
     
     ' Initialize the result object
-    AddSubResult "GetRecord", result, oResult
+    AddSubResult MODULE_NAME, "GetRecord", result, oResult
     
     ' Validate Data Access Sheet parameters
-    AddSubResult "GetRecord", result, ValidateDataAccessSheetParams(oDataAccess, True)
+    AddSubResult MODULE_NAME, "GetRecord", result, ValidateDataAccessSheetParams(oDataAccess, True)
     If Not result.LastResult.IsOK Then
         Set GetRecord = Nothing
         Exit Function
@@ -389,7 +374,7 @@ Private Function GetRecord(ByVal oDataAccess As CDataAccess, ByRef oResult As CR
     'Set oRecordValue = NewRecord(dataAccess, dataAccess.User)
     
     If result.LastResult.IsOK Then
-        AddSubResult "GetRecord", oResult, SetSelectableRecord(oDataAccess.Record, oRecordValue)
+        AddSubResult MODULE_NAME, "GetRecord", oResult, SetSelectableRecord(oDataAccess.Record, oRecordValue)
     End If
     
     If result.LastResult.IsOK Then
@@ -406,7 +391,7 @@ Public Function InsertValues(ByVal oDataAccess As CDataAccess) As CResult
     Dim result As CResult, loopDone As Boolean
     
     ' Validate Data Access Sheet parameters
-    AddSubResult "InsertValues", result, ValidateDataAccessSheetParams(oDataAccess, True)
+    AddSubResult MODULE_NAME, "InsertValues", result, ValidateDataAccessSheetParams(oDataAccess, True)
     If Not result.LastResult.IsOK Then
         result.SetFailure "Last Operation Failed: " & result.LastResult.Message
         Set InsertValues = result
@@ -421,7 +406,7 @@ Public Function InsertValues(ByVal oDataAccess As CDataAccess) As CResult
         Dim currField As CField
         Set currField = oDataAccess.Record.FieldList.GetNextField()
         
-        AddSubResult "InsertValues", result, SetFieldValueToCell(currField)
+        AddSubResult MODULE_NAME, "InsertValues", result, SetFieldValueToCell(currField)
         
         If oDataAccess.Record.FieldList.LastFieldReached() Then
             ' The end of list is reached
@@ -435,11 +420,11 @@ Public Function InsertValues(ByVal oDataAccess As CDataAccess) As CResult
     Set InsertValues = result
 End Function
 
-Public Function UpdateValues(ByVal oDataAccess As CDataAccess) As CResult
-    Set UpdateValues = InsertValues(oDataAccess)
+Public Function UpdateRecord(ByVal oDataAccess As CDataAccess) As CResult
+    Set UpdateRecord = InsertValues(oDataAccess)
 End Function
 
-Public Function DeleteValues(ByVal oDataAccess As CDataAccess) As CResult
+Public Function DeleteRecord(ByVal oDataAccess As CDataAccess) As CResult
 End Function
 
 
@@ -534,16 +519,16 @@ End Function
 
 
 
-Public Function IDataSource_AddValues(ByVal oDataAccess As CDataAccess) As CResult
-    Set IDataSource_AddValues = InsertValues(oDataAccess)
+Public Function IDataSource_StoreRecord(ByVal oDataAccess As CDataAccess) As CResult
+    Set IDataSource_StoreRecord = InsertValues(oDataAccess)
 End Function
 
-Public Function IDataSource_UpdateValues(ByVal oDataAccess As CDataAccess) As CResult
-    Set IDataSource_UpdateValues = UpdateValues(oDataAccess)
+Public Function IDataSource_UpdateRecord(ByVal oDataAccess As CDataAccess) As CResult
+    Set IDataSource_UpdateRecord = UpdateRecord(oDataAccess)
 End Function
 
-Public Function IDataSource_DeleteValues(ByVal oDataAccess As CDataAccess) As CResult
-    Set IDataSource_DeleteValues = DeleteValues(oDataAccess)
+Public Function IDataSource_DeleteRecord(ByVal oDataAccess As CDataAccess) As CResult
+    Set IDataSource_DeleteRecord = DeleteRecord(oDataAccess)
 End Function
 
 
@@ -553,8 +538,6 @@ End Function
 '***************************************************************************************************************************************************************
 
 Private Sub Class_Initialize()
-    m_module_name = "CDataSourceSheet"
-    
     Set m_workbook_source = ActiveWorkbook
 End Sub
 

@@ -78,11 +78,11 @@ End Function
 Public Function GetRecordList(ByVal oDataAccess As CDataAccess, ByRef oResult As CResult) As CRecordList
 End Function
 
-Public Function AddValues(ByVal oDataAccess As CDataAccess) As CResult
+Public Function StoreRecord(ByVal oDataAccess As CDataAccess) As CResult
 End Function
 
-Public Function UpdateValues(ByVal oDataAccess As CDataAccess) As CResult
+Public Function UpdateRecord(ByVal oDataAccess As CDataAccess) As CResult
 End Function
 
-Public Function DeleteValues(ByVal oDataAccess As CDataAccess) As CResult
+Public Function DeleteRecord(ByVal oDataAccess As CDataAccess) As CResult
 End Function

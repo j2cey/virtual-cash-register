@@ -23,6 +23,9 @@ Private m_is_savable As Boolean
 Private m_is_input_parameter As Boolean
 Private m_is_output_parameter As Boolean
 
+Private Const MODULE_NAME As String = "Field Class"
+
+
 
 '***************************************************************************************************************************************************************
 '   Public Properties
@@ -304,7 +307,7 @@ End Sub
 Public Function Reset() As CResult
     Dim result As CResult
     
-    Set result = NewResult("Reset Field", True)
+    Set result = NewResult(MODULE_NAME, "Reset Field", True)
     
     If Me.PreviousValue Is Nothing Then
        result.Message = "Pas de valeure précédente"

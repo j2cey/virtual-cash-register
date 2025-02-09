@@ -40,9 +40,9 @@ End Function
 '   ---------------------------------------------------------------------------------------
 '   2025/01/12      Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Function NewResult(Optional ByVal strLabel As String = "", Optional ByVal blnIsOK As Boolean = True, Optional ByVal lngCode As Long = 0, Optional ByVal strMessage As String = "") As CResult
+Public Function NewResult(Optional ByVal strModuleName As String = "", Optional ByVal strLabel As String = "", Optional ByVal blnIsOK As Boolean = True, Optional ByVal lngCode As Long = 0, Optional ByVal strMessage As String = "") As CResult
     With New CResult
-        .Init strLabel, blnIsOK, lngCode, strMessage
+        .Init strModuleName, strLabel, blnIsOK, lngCode, strMessage
         Set NewResult = .Self 'returns the newly created instance
     End With
 End Function

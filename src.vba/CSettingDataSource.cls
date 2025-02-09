@@ -7,9 +7,10 @@
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 Option Explicit
 
-Private m_record As CRecord
-Private m_data_access As CDataAccess
+Private m_business_logic As CBusinessLogic
+Private m_last_result As CResult
 
+Private Const MODULE_NAME As String = "Setting Data Source Class"
 Private Const USER_LOGIN_FIELD_KEY As String = "UserLogin"
 Private Const USER_PWD_FIELD_KEY As String = "UserPwd"
 
@@ -25,6 +26,38 @@ Private Const INTEGRATED_SECURITY_KEY As String = "IntegratedSecurity"
 
 Public Property Get Self() As CSettingDataSource
     Set Self = Me
+End Property
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'   Property      : BusinessLogic
+'   Purpose       : The Business Logic object
+'
+'   Date            Developer           Action
+'   ---------------------------------------------------------------------------------------
+'   2025/02/09      Jude Parfait        Created
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Public Property Set BusinessLogic(oBusinessLogic As CBusinessLogic)
+    Set m_business_logic = oBusinessLogic
+End Property
+
+Public Property Get BusinessLogic() As CBusinessLogic
+    Set BusinessLogic = m_business_logic
+End Property
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'   Property      : LastResult
+'   Purpose       : The Last Result
+'
+'   Date            Developer           Action
+'   ---------------------------------------------------------------------------------------
+'   2025/02/08      Jude Parfait        Created
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Public Property Set LastResult(oLastResult As CResult)
+    Set m_last_result = oLastResult
+End Property
+
+Public Property Get LastResult() As CResult
+    Set LastResult = m_last_result
 End Property
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -139,38 +172,6 @@ Public Property Get IntegratedSecurity() As Boolean
     IntegratedSecurity = CStr(GetFieldValue(INTEGRATED_SECURITY_KEY))
 End Property
 
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-'   Property      : DataAccess
-'   Purpose       : The Data Access object
-'
-'   Date            Developer           Action
-'   ---------------------------------------------------------------------------------------
-'   2025/01/12      Jude Parfait        Created
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Property Set DataAccess(oDataAccess As CDataAccess)
-    Set m_data_access = oDataAccess
-End Property
-
-Public Property Get DataAccess() As CDataAccess
-    Set DataAccess = m_data_access
-End Property
-
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-' Property      : Record
-' Purpose       : The Record
-'
-' Date          Developer           Action
-' ---------------------------------------------------------------------------------------
-' 2025/02/05    Jude Parfait        Created
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Property Set Record(oRecord As CRecord)
-    Set m_record = oRecord
-End Property
-
-Public Property Get Record() As CRecord
-    Set Record = m_record
-End Property
-
 
 '***************************************************************************************************************************************************************
 '    Public Functions and Subs
@@ -191,44 +192,49 @@ End Property
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 Public Sub Init(ByVal oUser As CUser, ByVal oDataSource As IDataSource, ByVal strRecordTable As String)
     
-    Call InitRecord(oUser, oDataSource, strRecordTable)
+    Call InitBusinessLogic(oUser, oDataSource, strRecordTable)
 End Sub
 
 Public Sub LoadValues()
     Dim result As CResult, oRecordValue As CRecord
     
-    Set oRecordValue = Me.DataAccess.GetRecord(result, True)
+    Set result = Me.BusinessLogic.ReadValues(False)
     
-    If result.IsOK Then
-        Dim fdCount As Long
-        
-        ' TODO: Set The get record to the DataAccess s Record
-        Set Me.DataAccess.Record.FieldList = oRecordValue.FieldList
-        
-        fdCount = Me.DataAccess.Record.FieldList.FieldList.Count
+    If Not result.IsOK Then
+        result.Notify
     End If
 End Sub
 
 Public Sub SaveValues()
     Dim result As CResult, oRecordValue As CRecord
     
-    Set result = Me.DataAccess.Save()
+    Set result = Me.BusinessLogic.Save(False)
     
+    If Not result.IsOK Then
+        result.Notify
+    End If
 End Sub
 
 Public Function IsComplete() As Boolean
     Dim blnAnyImportantFieldIsEmpty As Boolean
     
-    blnAnyImportantFieldIsEmpty = _
-        GetField(SERVER_OR_PATH_KEY).FieldValue.IsEmpty Or _
-        GetField(DATABASE_OR_FILE_NAME_KEY).FieldValue.IsEmpty Or _
-        GetField(DATA_SOURCE_CLASS_KEY).FieldValue.IsEmpty Or _
-        GetField(DATABASE_CLASS_KEY).FieldValue.IsEmpty Or _
-        GetField(USER_LOGIN_FIELD_KEY).FieldValue.IsEmpty Or _
-        GetField(USER_PWD_FIELD_KEY).FieldValue.IsEmpty Or _
-        GetField(INTEGRATED_SECURITY_KEY).FieldValue.IsEmpty
-
-    IsComplete = Not blnAnyImportantFieldIsEmpty
+    Set Me.LastResult = SetNewResult("Check Is Complete", MODULE_NAME)
+    
+    If Not Me.BusinessLogic Is Nothing Then
+        blnAnyImportantFieldIsEmpty = _
+            Me.BusinessLogic.GetField(SERVER_OR_PATH_KEY).FieldValue.IsEmpty Or _
+            Me.BusinessLogic.GetField(DATABASE_OR_FILE_NAME_KEY).FieldValue.IsEmpty Or _
+            Me.BusinessLogic.GetField(DATA_SOURCE_CLASS_KEY).FieldValue.IsEmpty Or _
+            Me.BusinessLogic.GetField(DATABASE_CLASS_KEY).FieldValue.IsEmpty Or _
+            Me.BusinessLogic.GetField(USER_LOGIN_FIELD_KEY).FieldValue.IsEmpty Or _
+            Me.BusinessLogic.GetField(USER_PWD_FIELD_KEY).FieldValue.IsEmpty Or _
+            Me.BusinessLogic.GetField(INTEGRATED_SECURITY_KEY).FieldValue.IsEmpty
+    
+        IsComplete = Not blnAnyImportantFieldIsEmpty
+    Else
+        Me.LastResult.SetFailure "The Business Logic Object not set yet !", True
+        IsComplete = False
+    End If
 End Function
 
 
@@ -237,36 +243,43 @@ End Function
 '    Private Functions and Subs
 '***************************************************************************************************************************************************************
 
-Private Sub InitRecord(ByVal oUser As CUser, ByVal oDataSource As IDataSource, ByVal strRecordTable As String)
-    'Set Me.Record = NewRecord(NewDataAccess(oUser, oDataSource, strRecordTable), oUser)
-    Set Me.DataAccess = NewDataAccess(oUser, oDataSource, strRecordTable)
+Private Sub InitBusinessLogic(ByVal oUser As CUser, ByVal oDataSource As IDataSource, ByVal strRecordTable As String)
+    Set Me.BusinessLogic = NewBusinessLogic(oUser, NewDataAccess(oUser, oDataSource, strRecordTable))
     
     ' UserLogin
-    Me.DataAccess.Record.FieldList.AddField NewField(NewFieldValueString, USER_LOGIN_FIELD_KEY, "User Login").SetOffsetStart(2).SetOffsetEnd(2)
+    Me.BusinessLogic.AddField(NewFieldValueString, USER_LOGIN_FIELD_KEY, "User Login").SetOffsetStart(2).SetOffsetEnd (2)
     ' UserPwd
-    Me.DataAccess.Record.FieldList.AddField NewField(NewFieldValueString, USER_PWD_FIELD_KEY, "User Pwd").SetOffsetStart(3).SetOffsetEnd(2)
+    Me.BusinessLogic.AddField(NewFieldValueString, USER_PWD_FIELD_KEY, "User Pwd").SetOffsetStart(3).SetOffsetEnd (2)
     ' Data Source Class
-    Me.DataAccess.Record.FieldList.AddField NewField(NewFieldValueString, DATA_SOURCE_CLASS_KEY, "Data Source Class Name").SetOffsetStart(4).SetOffsetEnd(2)
+    Me.BusinessLogic.AddField(NewFieldValueString, DATA_SOURCE_CLASS_KEY, "Data Source Class Name").SetOffsetStart(4).SetOffsetEnd (2)
     ' Database Class
-    Me.DataAccess.Record.FieldList.AddField NewField(NewFieldValueString, DATABASE_CLASS_KEY, "Data Source Class Name").SetOffsetStart(5).SetOffsetEnd(2)
+    Me.BusinessLogic.AddField(NewFieldValueString, DATABASE_CLASS_KEY, "Data Source Class Name").SetOffsetStart(5).SetOffsetEnd (2)
     ' Server or Path
-    Me.DataAccess.Record.FieldList.AddField NewField(NewFieldValueString, SERVER_OR_PATH_KEY, "Server or Path").SetOffsetStart(6).SetOffsetEnd(2)
+    Me.BusinessLogic.AddField(NewFieldValueString, SERVER_OR_PATH_KEY, "Server or Path").SetOffsetStart(6).SetOffsetEnd (2)
     ' Database or File Name
-    Me.DataAccess.Record.FieldList.AddField NewField(NewFieldValueString, DATABASE_OR_FILE_NAME_KEY, "Database or File Name").SetOffsetStart(7).SetOffsetEnd(2)
+    Me.BusinessLogic.AddField(NewFieldValueString, DATABASE_OR_FILE_NAME_KEY, "Database or File Name").SetOffsetStart(7).SetOffsetEnd (2)
     ' Integrated Security
-    Me.DataAccess.Record.FieldList.AddField NewField(NewFieldValueBoolean, INTEGRATED_SECURITY_KEY, "Integrated Security").SetOffsetStart(8).SetOffsetEnd(2)
+    Me.BusinessLogic.AddField(NewFieldValueBoolean, INTEGRATED_SECURITY_KEY, "Integrated Security").SetOffsetStart(8).SetOffsetEnd (2)
 End Sub
 
 Private Sub SetFieldValue(ByVal strFieldKey As String, ByVal varFieldValue As Variant)
-    Me.DataAccess.Record.FieldList.GetFieldByName(strFieldKey).SetValue (varFieldValue)
+    Set Me.LastResult = SetNewResult("Set Field Value", MODULE_NAME)
+    
+    If Not Me.BusinessLogic Is Nothing Then
+        Set Me.LastResult = Me.BusinessLogic.SetFieldValue(strFieldKey, varFieldValue)
+    Else
+        Me.LastResult.SetFailure "The Business Logic Object not set yet !", True
+    End If
 End Sub
 
-Private Function GetField(ByVal strFieldKey As String) As CField
-    Set GetField = Me.DataAccess.Record.FieldList.GetFieldByName(strFieldKey)
-End Function
-
 Private Function GetFieldValue(ByVal strFieldKey As String) As Variant
-    GetFieldValue = GetField(strFieldKey).FieldValue.GetValue()
+    Set Me.LastResult = SetNewResult("Get Field Value", MODULE_NAME)
+    
+    If Not Me.BusinessLogic Is Nothing Then
+        GetFieldValue = Me.BusinessLogic.GetFieldValue(strFieldKey).GetValue()
+    Else
+        Me.LastResult.SetFailure "The Business Logic Object not set yet !", True
+    End If
 End Function
 
 

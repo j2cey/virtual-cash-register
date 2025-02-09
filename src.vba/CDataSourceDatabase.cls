@@ -7,7 +7,6 @@
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 Option Explicit
 
-Private m_module_name As String
 Private m_user As CUser
 Private m_server_or_path As String
 Private m_database_or_file_name As String
@@ -21,6 +20,7 @@ Private m_affected_record_id As Long
 
 Private m_inner_database As IDataSourceDatabase
 
+Private Const MODULE_NAME As String = "Data-Source Database"
 
 Implements IDataSource
 
@@ -174,22 +174,6 @@ End Property
 
 Public Property Get AffectedRecordId() As Long
     AffectedRecordId = m_affected_record_id
-End Property
-
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-'   Property      : ModuleName
-'   Purpose       : The Name of this Module
-'
-'   Date            Developer           Action
-'   ---------------------------------------------------------------------------------------
-'   2025/01/20      Jude Parfait        Created
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Property Let ModuleName(strModuleName As String)
-    Let m_module_name = strModuleName
-End Property
-
-Public Property Get ModuleName() As String
-    ModuleName = m_module_name
 End Property
 
 
@@ -364,7 +348,7 @@ Private Function SetRecordIdValue(ByRef oRecordValue As CRecord) As CResult
     Dim result As CResult, strIdName As String
     
     strIdName = "Id"
-    Set result = NewResult("SetIdFieldValue", False)
+    Set result = NewResult(MODULE_NAME, "SetIdFieldValue", False)
     
     With Me.RequestRecordset
         If Not IsNull(.fields(strIdName).Value) Then
@@ -381,7 +365,7 @@ End Function
 Private Function SetSelectableFieldValue(ByVal oFieldValue As CField) As CResult
     Dim result As CResult
     
-    Set result = NewResult("SetSelectableFieldValue", False)
+    Set result = NewResult(MODULE_NAME, "SetSelectableFieldValue", False)
     
     If Not oFieldValue Is Nothing Then
         With Me.RequestRecordset
@@ -417,12 +401,12 @@ Private Function SetSelectableRecord(ByVal oRecordTemplate As CRecord, ByRef oRe
     loopDone = False
     
     ' set record ID
-    AddSubResult "SetSelectableRecord", result, SetRecordIdValue(oRecordValue)
+    AddSubResult MODULE_NAME, "SetSelectableRecord", result, SetRecordIdValue(oRecordValue)
                 
     Do
         Dim currField As CField
         Set currField = oRecordTemplate.FieldList.GetNextField().ResetCode()
-        AddSubResult "SetSelectableRecord", result, SetSelectableFieldValue(currField)
+        AddSubResult MODULE_NAME, "SetSelectableRecord", result, SetSelectableFieldValue(currField)
         
         If result.LastResult.IsOK Then
             oRecordValue.FieldList.AddField currField
@@ -446,7 +430,7 @@ Private Function GetValue(ByVal oDataAccess As CDataAccess, ByVal strFieldName A
     Set oFieldValue = oDataAccess.Record.FieldList.GetFieldByName(strFieldName)
     
     ' Execute  the Select Command and Set The Relevant RecordSet
-    AddSubResult "GetValue", oResult, ExecSelect(oDataAccess)
+    AddSubResult MODULE_NAME, "GetValue", oResult, ExecSelect(oDataAccess)
     
     If oResult.LastResult.IsOK Then
         If Not (Me.RequestRecordset Is Nothing) Then
@@ -464,7 +448,7 @@ Private Function GetRecord(ByVal oDataAccess As CDataAccess, ByRef oResult As CR
     Dim oRecordValue As CRecord, loopDone As Boolean, oField As CField
     
     ' Execute the Select Command and Set The Relevant RecordSet
-    AddSubResult "GetRecord", oResult, ExecSelect(oDataAccess)
+    AddSubResult MODULE_NAME, "GetRecord", oResult, ExecSelect(oDataAccess)
     
     ' Create the OUTPUT Record
     Set oRecordValue = NewRecord(oDataAccess, oDataAccess.User)
@@ -477,7 +461,7 @@ Private Function GetRecord(ByVal oDataAccess As CDataAccess, ByRef oResult As CR
                 'AddToDoLastSubFromParent 1, selectProgr
                 
                 ' Set record values
-                AddSubResult "GetRecord", oResult, SetSelectableRecord(oDataAccess.Record, oRecordValue)
+                AddSubResult MODULE_NAME, "GetRecord", oResult, SetSelectableRecord(oDataAccess.Record, oRecordValue)
             End If
         End If
     End If
@@ -489,7 +473,7 @@ Private Function GetRecordList(ByVal oDataAccess As CDataAccess, ByRef oResult A
     Dim oRecordListValue As CRecordList, loopDone As Boolean
     
     ' Execute the Select Command and Set The Relevant RecordSet
-    AddSubResult "GetRecordList", oResult, ExecSelect(oDataAccess)
+    AddSubResult MODULE_NAME, "GetRecordList", oResult, ExecSelect(oDataAccess)
     
     ' Create the OUTPUT RecordList
     Set oRecordListValue = NewRecordList(oDataAccess, oDataAccess.User)
@@ -503,7 +487,7 @@ Private Function GetRecordList(ByVal oDataAccess As CDataAccess, ByRef oResult A
                     Dim currRecord As CRecord
                     
                     ' Set record values
-                    AddSubResult "GetRecordList", oResult, SetSelectableRecord(oDataAccess.Record, currRecord)
+                    AddSubResult MODULE_NAME, "GetRecordList", oResult, SetSelectableRecord(oDataAccess.Record, currRecord)
                     
                     If oResult.LastResult.IsOK Then
                         oRecordListValue.AddRecord currRecord
@@ -533,7 +517,7 @@ Private Function ExecSelect(ByVal oDataAccess As CDataAccess) As CResult
     
     'Set result = NewResult("ExecSelect")
     ' Build Select Command Text
-    AddSubResult "ExecSelect", result, Me.InnerDatabase.BuildSelectStatement(oDataAccess, strRequestString, lngCriteriaCount)
+    AddSubResult MODULE_NAME, "ExecSelect", result, Me.InnerDatabase.BuildSelectStatement(oDataAccess, strRequestString, lngCriteriaCount)
     
     If result.LastResult.IsOK Then
         ' Open Connection
@@ -563,13 +547,13 @@ Private Function ExecSelect(ByVal oDataAccess As CDataAccess) As CResult
     Set ExecSelect = result
 End Function
 
-Public Function InsertValues(ByVal oDataAccess As CDataAccess) As CResult
+Public Function StoreRecord(ByVal oDataAccess As CDataAccess) As CResult
 End Function
 
-Public Function UpdateValues(ByVal oDataAccess As CDataAccess) As CResult
+Public Function UpdateRecord(ByVal oDataAccess As CDataAccess) As CResult
 End Function
 
-Public Function DeleteValues(ByVal oDataAccess As CDataAccess) As CResult
+Public Function DeleteRecord(ByVal oDataAccess As CDataAccess) As CResult
 End Function
 
 
@@ -664,16 +648,16 @@ End Function
 
 
 
-Public Function IDataSource_AddValues(ByVal oDataAccess As CDataAccess) As CResult
-    IDataSource_AddValues = InsertValues(oDataAccess)
+Public Function IDataSource_StoreRecord(ByVal oDataAccess As CDataAccess) As CResult
+    IDataSource_StoreRecord = StoreRecord(oDataAccess)
 End Function
 
-Public Function IDataSource_UpdateValues(ByVal oDataAccess As CDataAccess) As CResult
-    IDataSource_UpdateValues = UpdateValues(oDataAccess)
+Public Function IDataSource_UpdateRecord(ByVal oDataAccess As CDataAccess) As CResult
+    IDataSource_UpdateRecord = UpdateRecord(oDataAccess)
 End Function
 
-Public Function IDataSource_DeleteValues(ByVal oDataAccess As CDataAccess) As CResult
-    IDataSource_DeleteValues = DeleteValues(oDataAccess)
+Public Function IDataSource_DeleteRecord(ByVal oDataAccess As CDataAccess) As CResult
+    IDataSource_DeleteRecord = DeleteRecord(oDataAccess)
 End Function
 
 
@@ -683,7 +667,6 @@ End Function
 '***************************************************************************************************************************************************************
 
 Private Sub Class_Initialize()
-    m_module_name = "CDataSourceDatabase"
     Set m_connection = NewDatabaseConnection(Me)
     Set m_command = NewDatabaseCommand(Me)
     Set m_request_recordset = New ADODB.Recordset

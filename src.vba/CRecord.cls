@@ -147,6 +147,7 @@ Public Sub Init(Optional oDataAccess As CDataAccess = Nothing, Optional oUser As
     
     If Not oDataAccess Is Nothing Then
         Set Me.DataAccess = oDataAccess
+        Set Me.DataAccess.Record = Me
     End If
     
     If Not oUser Is Nothing Then

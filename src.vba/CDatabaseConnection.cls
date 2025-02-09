@@ -7,7 +7,6 @@
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 Option Explicit
 
-Private m_module_name As String
 Private m_connection As ADODB.Connection
 Private m_connection_string As String
 
@@ -17,6 +16,7 @@ Private m_upper_database As CDataSourceDatabase
 Private m_is_opened As Boolean
 Private m_last_result As CResult
 
+Private Const MODULE_NAME As String = "Databas Connection"
 Private Const DEFAULT_TIMEOUT As Long = 30
 
 
@@ -99,13 +99,8 @@ End Property
 '   Date            Developer           Action
 '   ---------------------------------------------------------------------------------------
 '   2025/01/21      Jude Parfait        Created
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Property Let ModuleName(strModuleName As String)
-    Let m_module_name = strModuleName
-End Property
-
 Public Property Get ModuleName() As String
-    ModuleName = m_module_name
+    ModuleName = MODULE_NAME
 End Property
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -268,7 +263,6 @@ End Function
 
 Private Sub Class_Initialize()
     m_connection_timeout = DEFAULT_TIMEOUT
-    m_module_name = "CDatabaseConnection"
     Set Me.Connection = New ADODB.Connection
 End Sub
 

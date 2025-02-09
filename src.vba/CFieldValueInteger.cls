@@ -9,8 +9,9 @@ Option Explicit
 
 Private m_value As Long
 Private m_upper_field As CField
-Private m_module_name As String
 Private m_is_empty As Boolean
+
+Private Const MODULE_NAME As String = "Field-Value Integer"
 
 Implements IFieldValue
 
@@ -79,12 +80,8 @@ End Property
 '   ---------------------------------------------------------------------------------------
 '   2025/01/28      Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Property Let ModuleName(strModuleName As String)
-    Let m_module_name = strModuleName
-End Property
-
 Public Property Get ModuleName() As String
-    ModuleName = m_module_name
+    ModuleName = MODULE_NAME
 End Property
 
 
@@ -179,7 +176,7 @@ End Sub
 Private Function SetInputParameter(ByRef oRequestCommand As ADODB.Command) As CResult
     Dim result As CResult
     
-    Set result = NewResult(Me.ModuleName & " - SetInputParameter", True)
+    Set result = NewResult(MODULE_NAME, "SetInputParameter", True)
     
     If Me.UpperField.Value <> "" Then
         If Me.UpperField.SearchCriteriaMustMatchExact Then
@@ -206,7 +203,7 @@ End Function
 Private Function SetOutputParameter(ByRef oRequestCommand As ADODB.Command) As CResult
     Dim result As CResult
     
-    Set result = NewResult(Me.ModuleName & " - SetOutputParameter", True)
+    Set result = NewResult(MODULE_NAME, "SetOutputParameter", True)
     
     If Me.UpperField.Value <> "" Then
         oRequestCommand.Parameters.Append oRequestCommand.CreateParameter("@" & Me.UpperField.Name, adNumeric, adParamOutput, 255, CInt(Me.Value))
@@ -334,7 +331,6 @@ End Function
 
 Private Sub Class_Initialize()
     m_is_empty = True
-    m_module_name = "CFieldValueInteger"
 End Sub
 
 Private Sub Class_Terminate()

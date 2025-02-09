@@ -13,6 +13,7 @@ Private m_data_access As CDataAccess
 Private m_list As Collection
 Private m_previous_record_index_picked As Long
 
+Private Const MODULE_NAME As String = "Record-List Class"
 Private Const FIRST_INDEX As Long = 1
 Private Const RECORD_INDEX_INCREMENT As Long = 1
 
@@ -187,7 +188,7 @@ End Sub
 Public Function ResetRecordsPicked() As CResult
     Dim result As CResult
     
-    Set result = NewResult("ResetRecordsPicked", True)
+    Set result = NewResult(MODULE_NAME, "ResetRecordsPicked", True)
     Me.ResetRecordsPicked = FIRST_INDEX - 1
     
     Set ResetRecordsPicked = result

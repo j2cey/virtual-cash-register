@@ -11,6 +11,7 @@ Private m_field_list As Collection
 Private m_fields_positions() As String
 Private m_previous_field_index_picked As Long
 
+Private Const MODULE_NAME As String = "Field-List Class"
 Private Const RESET_FIELD_INDEX As Long = -1
 Private Const MIN_FIELD_INDEX As Long = 0
 Private Const FIELD_INDEX_INCREMENT As Long = 1
@@ -156,7 +157,7 @@ End Function
 Public Function AddField(ByVal oField As CField, Optional ByVal lngAtIndex = -1) As CResult
     Dim result As CResult, lngFieldIndex As Long
     
-    Set result = NewResult("Addfield", True)
+    Set result = NewResult(MODULE_NAME, "Addfield", True)
     
     If lngAtIndex = -1 Then
         lngFieldIndex = Me.FieldList.Count + 1
@@ -184,7 +185,7 @@ End Function
 Public Function ResetFieldsPicked() As CResult
     Dim result As CResult
     
-    Set result = NewResult("ResetFieldsPicked", True)
+    Set result = NewResult(MODULE_NAME, "ResetFieldsPicked", True)
     Me.PreviousFieldIndexPicked = RESET_FIELD_INDEX
     
     Set ResetFieldsPicked = result

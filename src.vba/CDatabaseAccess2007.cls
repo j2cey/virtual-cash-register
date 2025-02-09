@@ -14,6 +14,8 @@ Private m_current_recordable As CDataAccess
 Private m_request_string As String
 Private m_criteria_count As Long
 
+Private Const MODULE_NAME As String = "Database Access 2007"
+
 
 Implements IDataSourceDatabase
 
@@ -155,7 +157,7 @@ Private Function GetConnectionString(ByRef strConnectionString As String) As CRe
     Dim targetDbFullPath As String, rslt As CResult
     
     strConnectionString = ""
-    Set rslt = NewResult("GetConnectionString", True)
+    Set rslt = NewResult(MODULE_NAME, "GetConnectionString", True)
     
     If Not Me.UpperDatabase Is Nothing Then
         'Build connection string
@@ -207,7 +209,7 @@ Private Function GetSelectStatement(oDataAccess As CDataAccess, ByRef strSelectS
     Me.RequestString = ""
     Me.CriteriaCount = 0
     Set Me.CurrentDataAccess = oDataAccess
-    Set rslt = NewResult("GetConnectionString", True)
+    Set rslt = NewResult(MODULE_NAME, "GetConnectionString", True)
     
     ' If the Table Name is not given, we return empty string
     If oDataAccess.RecordTable = "" Then
@@ -233,7 +235,7 @@ End Function
 Private Function AddCriteriaToRequest() As CResult
     Dim rslt As CResult, loopDone As Boolean, field As CField
     
-    Set rslt = NewResult("AddCriteriaToRequest", True)
+    Set rslt = NewResult(MODULE_NAME, "AddCriteriaToRequest", True)
     loopDone = False
     
     If Me.CurrentDataAccess Is Nothing Then
@@ -298,7 +300,7 @@ End Sub
 Private Function GetInsertStatement(oDataAccess As CDataAccess, ByRef strInsertStatement As String) As CResult
     Dim finalRqstStr As String, rslt As CResult
     
-    rslt = NewResult("GetInsertStatement", True)
+    rslt = NewResult(MODULE_NAME, "GetInsertStatement", True)
     
     Set GetInsertStatement = rslt
 End Function
@@ -319,7 +321,7 @@ End Function
 Private Function GetUpdateStatement(oDataAccess As CDataSourceDatabase, ByRef strUpdateStatement As String) As CResult
     Dim finalRqstStr As String, rslt As CResult
     
-    rslt = NewResult("GetUpdateStatement", True)
+    rslt = NewResult(MODULE_NAME, "GetUpdateStatement", True)
     
     Set GetUpdateStatement = rslt
 End Function

@@ -21,14 +21,14 @@ Option Explicit
 '   ---------------------------------------------------------------------------------------
 '   2025/02/03    Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Sub AddSubResult(ByVal strLabel As String, ByRef oResult As CResult, ByVal oSubResult As CResult)
+Public Sub AddSubResult(ByVal strModuleName As String, ByVal strLabel As String, ByRef oResult As CResult, ByVal oSubResult As CResult)
     If oResult Is Nothing Then
         If oSubResult Is Nothing Then
-            Set oResult = NewResult(strLabel)
+            Set oResult = NewResult(strModuleName, strLabel)
         ElseIf strLabel = oSubResult.Label Then
             Set oResult = oSubResult
         Else
-            Set oResult = NewResult(strLabel)
+            Set oResult = NewResult(strModuleName, strLabel)
         End If
     End If
     
@@ -36,3 +36,7 @@ Public Sub AddSubResult(ByVal strLabel As String, ByRef oResult As CResult, ByVa
         oResult.AddSubResult oSubResult
     End If
 End Sub
+
+Public Function SetNewResult(ByVal strOperationName As String, Optional ByVal strModuleName As String = "") As CResult
+    Set SetNewResult = NewResult(strOperationName & IIf(strModuleName = "", "", " from " & strModuleName), True)
+End Function

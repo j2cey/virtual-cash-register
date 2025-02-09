@@ -11,6 +11,7 @@ Private m_is_ok As Boolean
 Private m_code As Long
 Private m_message As String
 Private m_label As String
+Private m_module_name As String
 
 Private m_sub_results As Collection
 
@@ -70,6 +71,22 @@ End Property
 
 Public Property Get Message() As String
     Message = m_message
+End Property
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+' Property      : ModuleName
+' Purpose       : The Result Module Name
+'
+' Date          Developer           Action
+' ---------------------------------------------------------------------------------------
+' 2025/02/09    Jude Parfait        Created
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Public Property Let ModuleName(strModuleName As String)
+    m_module_name = strModuleName
+End Property
+
+Public Property Get ModuleName() As String
+    ModuleName = m_module_name
 End Property
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -138,12 +155,16 @@ End Property
 '   ---------------------------------------------------------------------------------------
 '   2025/01/12      Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Sub Init(Optional strLabel As String = "", Optional blnIsOK As Boolean = False, Optional lngCode As Long = 0, Optional strMessage As String = "")
+Public Sub Init(Optional ByVal strModuleName As String = "", Optional ByVal strLabel As String = "", Optional ByVal blnIsOK As Boolean = False, Optional ByVal lngCode As Long = 0, Optional ByVal strMessage As String = "")
     
     Me.Label = strLabel
     Me.IsOK = blnIsOK
     Me.Code = lngCode
     Me.Message = strMessage
+    
+    If Not strModuleName = "" Then
+        Me.ModuleName = strModuleName
+    End If
 End Sub
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -198,12 +219,16 @@ End Sub
 '   ---------------------------------------------------------------------------------------
 '   2025/02/03      Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Sub SetSuccess(Optional ByVal strMessage As String = "")
+Public Sub SetSuccess(Optional ByVal strMessage As String = "", Optional ByVal blnNotify As Boolean = False)
     Me.IsOK = True
     If strMessage = "" Then
         Me.Message = "SUCCESS !"
     Else
         Me.Message = strMessage
+    End If
+    
+    If blnNotify Then
+        Me.Notify
     End If
 End Sub
 
@@ -218,13 +243,29 @@ End Sub
 '   ---------------------------------------------------------------------------------------
 '   2025/02/03      Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Sub SetFailure(Optional ByVal strMessage As String = "")
+Public Sub SetFailure(Optional ByVal strMessage As String = "", Optional ByVal blnNotify As Boolean = False)
     Me.IsOK = False
     If strMessage = "" Then
         Me.Message = "FAILURE !"
     Else
         Me.Message = strMessage
     End If
+    
+    If blnNotify Then
+        Me.Notify
+    End If
+End Sub
+
+Public Sub Notify()
+    
+    If Not Me.Message = "" Then
+        If Me.IsOK Then
+            MsgBox Me.Message, vbInformation, Me.ModuleName
+        Else
+            MsgBox Me.Message, vbCritical, Me.ModuleName
+        End If
+    End If
+    
 End Sub
 
 
@@ -234,6 +275,7 @@ End Sub
 
 Private Sub Class_Initialize()
     m_code = 0
+    m_module_name = "APP NAME"
     Set m_sub_results = New Collection
 End Sub
 
