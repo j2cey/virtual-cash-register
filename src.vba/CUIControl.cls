@@ -10,7 +10,7 @@ Option Explicit
 Private m_control_inner As IUIControl
 Private m_user As CUser
 
-Private m_record As CRecord
+Private m_business_logic As CBusinessLogic
 
 
 '***************************************************************************************************************************************************************
@@ -61,28 +61,28 @@ End Property
 ' ---------------------------------------------------------------------------------------
 ' 2025/01/11    Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Property Let Value(varValue As Variant)
-    Me.ControlInner.Value = varValue
+Public Property Let value(varValue As Variant)
+    Me.ControlInner.value = varValue
 End Property
 
-Public Property Get Value() As Variant
-    Value = Me.ControlInner.Value
+Public Property Get value() As Variant
+    value = Me.ControlInner.value
 End Property
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-' Property      : Record
-' Purpose       : The UI Record s for BLL operations
+' Property      : BusinessLogic
+' Purpose       : The UI Business Logic
 '
 ' Date          Developer           Action
 ' ---------------------------------------------------------------------------------------
-' 2025/01/11    Jude Parfait        Created
+' 2025/02/10    Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Property Set Record(oRecord As CRecord)
-    Set Record = oRecord
+Public Property Set BusinessLogic(oBusinessLogic As CBusinessLogic)
+    Set m_business_logic = oBusinessLogic
 End Property
 
-Public Property Get Record() As CRecord
-    Set Record = m_record
+Public Property Get BusinessLogic() As CBusinessLogic
+    Set BusinessLogic = m_business_logic
 End Property
 
 

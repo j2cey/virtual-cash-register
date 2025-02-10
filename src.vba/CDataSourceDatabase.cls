@@ -351,8 +351,8 @@ Private Function SetRecordIdValue(ByRef oRecordValue As CRecord) As CResult
     Set result = NewResult(MODULE_NAME, "SetIdFieldValue", False)
     
     With Me.RequestRecordset
-        If Not IsNull(.fields(strIdName).Value) Then
-            oRecordValue.RecordId = CLng(.fields(strIdName).Value)
+        If Not IsNull(.fields(strIdName).value) Then
+            oRecordValue.RecordId = CLng(.fields(strIdName).value)
             result.SetSuccess
         Else
             result.SetFailure "field " & strIdName & " NOT in Record"
@@ -369,9 +369,9 @@ Private Function SetSelectableFieldValue(ByVal oFieldValue As CField) As CResult
     
     If Not oFieldValue Is Nothing Then
         With Me.RequestRecordset
-            If Not IsNull(.fields(oFieldValue.Name).Value) Then
+            If Not IsNull(.fields(oFieldValue.Name).value) Then
                 If oFieldValue.IsSelectable Then
-                    oFieldValue.FieldValue.SetValue CVar(.fields(oFieldValue.Name).Value)
+                    oFieldValue.FieldValue.SetValue CVar(.fields(oFieldValue.Name).value)
                     result.SetSuccess
                 Else
                     result.SetFailure "field " & oFieldValue.Name & " Is NOT Selectable"

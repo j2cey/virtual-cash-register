@@ -29,10 +29,10 @@ End Property
 ' ---------------------------------------------------------------------------------------
 ' 2025/01/08    Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Property Let Value(varValue As Variant)
+Public Property Let value(varValue As Variant)
 End Property
 
-Public Property Get Value() As Variant
+Public Property Get value() As Variant
 End Property
 
 
@@ -95,3 +95,39 @@ End Function
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 Public Sub SetEnabled(blnEnabledValue As Boolean)
 End Sub
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+' Function      : FillFromField
+' Purpose       : Fill the Control From Field
+' Returns       : CResult
+'
+' Date          Developer           Action
+' ---------------------------------------------------------------------------------------
+' 2025/02/10    Jude Parfait        Created
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Public Function FillFromField(ByVal oField As CField) As CResult
+End Function
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+' Function      : FillFromRecord
+' Purpose       : Fill the Control From Record
+' Returns       : CResult
+'
+' Date          Developer           Action
+' ---------------------------------------------------------------------------------------
+' 2025/02/10    Jude Parfait        Created
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Public Function FillFromRecord(ByVal oRecord As CRecord) As CResult
+End Function
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+' Function      : FillFromRecord
+' Purpose       : Fill the Control From Record-List
+' Returns       : CResult
+'
+' Date          Developer           Action
+' ---------------------------------------------------------------------------------------
+' 2025/02/10    Jude Parfait        Created
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Public Function FillFromRecordList(ByVal oRecord As CRecordList) As CResult
+End Function

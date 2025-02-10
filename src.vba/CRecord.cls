@@ -84,12 +84,12 @@ End Property
 '   ---------------------------------------------------------------------------------------
 '   2025/01/18      Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Property Let Value(vrnValue As Variant)
+Public Property Let value(vrnValue As Variant)
     Let m_value = vrnValue
 End Property
 
-Public Property Get Value() As Variant
-    Value = m_value
+Public Property Get value() As Variant
+    value = m_value
 End Property
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -200,7 +200,7 @@ Public Function Read() As CResult
     
     If result.IsOK Then
         Set result = Me.RecordDA.Read(vrnValue)
-        Me.Value = vrnValue
+        Me.value = vrnValue
         Me.FillFields
     End If
     
@@ -382,7 +382,7 @@ Private Function FillFields() As CResult
             Set currResult = oField.Clear()
             
             If currResult.IsOK Then
-                oField.Value
+                oField.value
             End If
             
             ' Set the current result values to Function result
