@@ -13,6 +13,8 @@ Private m_data_access As CDataAccess
 
 Private m_field_list As CFieldList
 
+Private m_uicontrol As CUIControl
+
 ' TODO: remove m_value ?
 Private m_value As Variant
 
@@ -125,6 +127,22 @@ Public Property Set LastResult(oLastResult As CResult)
     Set m_last_result = oLastResult
 End Property
 
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'   Property      : UIControl
+'   Purpose       : The related UI Control
+'
+'   Date            Developer           Action
+'   ---------------------------------------------------------------------------------------
+'   2025/02/12      Jude Parfait        Created
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Public Property Set UIControl(oUIControl As CUIControl)
+    Set m_uicontrol = oUIControl
+End Property
+
+Public Property Get UIControl() As CUIControl
+    Set UIControl = m_uicontrol
+End Property
+
 
 
 '***************************************************************************************************************************************************************
@@ -181,6 +199,12 @@ Public Function Save() As CResult
     
     Set Save = result
 End Function
+
+Public Sub FillControl()
+    If Not Me.UIControl Is Nothing Then
+        Me.UIControl.FillFromRecord Me
+    End If
+End Sub
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 '   Function    : Read

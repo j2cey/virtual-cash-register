@@ -160,7 +160,7 @@ Public Function AddField(ByVal oField As CField, Optional ByVal lngAtIndex = -1)
     Set result = NewResult(MODULE_NAME, "Addfield", True)
     
     If lngAtIndex = -1 Then
-        lngFieldIndex = Me.FieldList.Count + 1
+        lngFieldIndex = Me.FieldList.count + 1
     Else
         lngFieldIndex = lngAtIndex
     End If
@@ -403,7 +403,7 @@ End Function
 Public Function LastFieldReached() As Boolean
     Dim lngFieldCount As Long
     
-    lngFieldCount = Me.FieldList.Count
+    lngFieldCount = Me.FieldList.count
     LastFieldReached = ((Me.PreviousFieldIndexPicked + FIELD_INDEX_INCREMENT) >= lngFieldCount)
 End Function
 
@@ -486,7 +486,7 @@ Private Function GetNextFieldKey(Optional ByVal lngAtIndex = -1) As String
         currIndex = IncrementPreviousFieldIndexPicked()
         
         ' If the max Index is reached
-        If (currIndex + MIN_FIELD_INDEX) >= Me.FieldList.Count Then
+        If (currIndex + MIN_FIELD_INDEX) >= Me.FieldList.count Then
             GetNextFieldKey = ""
             Exit Function
         End If

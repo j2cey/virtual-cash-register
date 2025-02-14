@@ -93,7 +93,7 @@ Sub CompareCurrentTimeFunctions()
 End Sub
 
 Public Function GetUuid() As String
-    GetUuid = Format(Date, "yyyymmdd") & Format(Time, "hhmmss") & GetTodayMilliseconds()
+    GetUuid = Format(Date, "yyyymmdd") & Format(time, "hhmmss") & GetTodayMilliseconds()
 End Function
 
 ' ----------------------------------------------------------------

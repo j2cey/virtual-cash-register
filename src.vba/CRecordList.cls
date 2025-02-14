@@ -13,6 +13,8 @@ Private m_data_access As CDataAccess
 Private m_list As Collection
 Private m_previous_record_index_picked As Long
 
+Private m_uicontrol As CUIControl
+
 Private Const MODULE_NAME As String = "Record-List Class"
 Private Const FIRST_INDEX As Long = 1
 Private Const RECORD_INDEX_INCREMENT As Long = 1
@@ -84,7 +86,7 @@ End Property
 ' 2025/02/03    Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 Public Property Get FirstRecord() As CRecord
-    If Me.List.Count = 0 Then
+    If Me.List.count = 0 Then
         Set FirstRecord = Nothing
     Else
         Set FirstRecord = Me.List.Item(CStr(FIRST_INDEX))
@@ -100,10 +102,10 @@ End Property
 ' 2025/02/03    Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 Public Property Get LastRecord() As CRecord
-    If Me.List.Count = 0 Then
+    If Me.List.count = 0 Then
         Set LastRecord = Nothing
     Else
-        Set LastRecord = Me.List.Item(CStr(Me.List.Count))
+        Set LastRecord = Me.List.Item(CStr(Me.List.count))
     End If
 End Property
 
@@ -121,6 +123,22 @@ End Property
 
 Public Property Get PreviousRecordIndexPicked() As Long
     PreviousRecordIndexPicked = m_previous_record_index_picked
+End Property
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'   Property      : UIControl
+'   Purpose       : The related UI Control
+'
+'   Date            Developer           Action
+'   ---------------------------------------------------------------------------------------
+'   2025/02/12      Jude Parfait        Created
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Public Property Set UIControl(oUIControl As CUIControl)
+    Set m_uicontrol = oUIControl
+End Property
+
+Public Property Get UIControl() As CUIControl
+    Set UIControl = m_uicontrol
 End Property
 
 
@@ -153,6 +171,12 @@ Public Sub Init(Optional oDataAccess As CDataAccess = Nothing, Optional oUser As
     
 End Sub
 
+Public Sub FillControl()
+    If Not Me.UIControl Is Nothing Then
+        Me.UIControl.FillFromRecordList Me
+    End If
+End Sub
+
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 '   Subroutine    : AddRecord
 '   Purpose       : Add a record to the record list
@@ -167,7 +191,7 @@ End Sub
 Public Sub AddRecord(ByVal oRecord As CRecord)
     Dim lngCode As Long
     
-    lngCode = Me.List.Count + 1
+    lngCode = Me.List.count + 1
     
     Me.List.Add oRecord, CStr(lngCode)
     
@@ -236,7 +260,7 @@ End Function
 '   2025/02/03  Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 Public Function GetRecordAt(ByVal lngAtIndex As Long) As CRecord
-    If lngAtIndex < FIRST_INDEX Or lngAtIndex > (Me.List.Count + 1) Then
+    If lngAtIndex < FIRST_INDEX Or lngAtIndex > (Me.List.count + 1) Then
         Set GetRecordAt = Nothing
     Else
         Set GetRecordAt = Me.List.Item(lngAtIndex)
@@ -257,7 +281,7 @@ End Function
 Public Function LastRecordReached() As Boolean
     Dim lngRecordCount As Long
     
-    lngRecordCount = Me.List.Count
+    lngRecordCount = Me.List.count
     LastRecordReached = ((Me.PreviousFieldIndexPicked + RECORD_INDEX_INCREMENT) >= lngRecordCount)
 End Function
 

@@ -120,11 +120,50 @@ End Function
 
 Public Sub ExecuteAction(oUIControlAction As IUIControlAction)
     If Not IsEmpty(oUIControlAction.ActionPermissions) Then
-        If Not LoggedUser.Can(Me.IUCTLACTION_ActionPermissions) Then
+        If Not loggedUser.Can(Me.IUCTLACTION_ActionPermissions) Then
             Exit Sub
         End If
     End If
 End Sub
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+' Function      : FillFromField
+' Purpose       : Fill the Control From Field
+' Returns       : CResult
+'
+' Date          Developer           Action
+' ---------------------------------------------------------------------------------------
+' 2025/02/10    Jude Parfait        Created
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Public Function FillFromField(ByVal oField As CField) As CResult
+    Set FillFromField = Me.ControlInner.FillFromField(oField)
+End Function
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+' Function      : FillFromRecord
+' Purpose       : Fill the Control From Record
+' Returns       : CResult
+'
+' Date          Developer           Action
+' ---------------------------------------------------------------------------------------
+' 2025/02/10    Jude Parfait        Created
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Public Function FillFromRecord(ByVal oRecord As CRecord) As CResult
+    Set FillFromRecord = Me.ControlInner.FillFromRecord(oRecord)
+End Function
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+' Function      : FillFromRecord
+' Purpose       : Fill the Control From Record-List
+' Returns       : CResult
+'
+' Date          Developer           Action
+' ---------------------------------------------------------------------------------------
+' 2025/02/10    Jude Parfait        Created
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Public Function FillFromRecordList(ByVal oRecordList As CRecordList) As CResult
+    Set FillFromRecordList = Me.ControlInner.FillFromRecordList(oRecord)
+End Function
 
 '***************************************************************************************************************************************************************
 '    Private Functions and Subs

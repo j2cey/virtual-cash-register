@@ -77,9 +77,9 @@ End Function
 '   ---------------------------------------------------------------------------------------
 '   2025/01/31      Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Function NewField(ByVal oFieldValue As IFieldValue, strName As String, strLabel As String, Optional vrnValue As Variant = Null) As CField
+Public Function NewField(ByVal oFieldValue As IFieldValue, strName As String, strLabel As String, Optional vrnValue As Variant = Null, Optional ByVal strNameForSaving As String = "", Optional ByVal strNameForSelecting As String = "") As CField
     With New CField
-        .Init oFieldValue, strName, strLabel, vrnValue
+        .Init oFieldValue, strName, strLabel, vrnValue, strNameForSaving, strNameForSelecting
         Set NewField = .Self 'returns the newly created instance
     End With
 End Function

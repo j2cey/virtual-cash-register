@@ -13,14 +13,14 @@ Private m_name As String
 Private m_role As CUserRole
 Private m_pwd As String
 
-Private m_isLogged As Boolean
-Private m_loggedAt As Date
-Private m_pwdLastUpdateAt As Date
-Private m_isPwdExpired As Boolean
+Private m_is_logged As Boolean
+Private m_logged_at As Date
+Private m_pwd_last_update_at As Date
+Private m_is_pwd_expired As Boolean
 
-Private m_auditsColl As Collection
+Private m_audits As Collection
 
-Private m_record As CRecord
+Private m_business_logic As CBusinessLogic
 
 
 '***************************************************************************************************************************************************************
@@ -32,19 +32,19 @@ Public Property Get Self() As CUser
 End Property
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-'   Property      : Record
-'   Purpose       : The Record of the user
+'   Property      : BusinessLogic
+'   Purpose       : The Business Logic Object
 '
 '   Date            Developer           Action
 '   ---------------------------------------------------------------------------------------
 '   2025/01/09      Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Property Set Record(oRecord As CRecord)
-    Set m_record = oRecord
+Public Property Set BusinessLogic(oBusinessLogic As CBusinessLogic)
+    Set m_business_logic = oBusinessLogic
 End Property
 
-Public Property Get Record() As CRecord
-    Set Record = m_record
+Public Property Get BusinessLogic() As CBusinessLogic
+    Set BusinessLogic = m_business_logic
 End Property
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -136,11 +136,11 @@ End Property
 '   2025/01/09      Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 Public Property Let IsLogged(bIsLogged As Boolean)
-    m_isLogged = bIsLogged
+    m_is_logged = bIsLogged
 End Property
 
 Public Property Get IsLogged() As Boolean
-    IsLogged = m_isLogged
+    IsLogged = m_is_logged
 End Property
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -151,12 +151,12 @@ End Property
 '   ---------------------------------------------------------------------------------------
 '   2025/01/09      Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Property Let LoggedAt(dLoggedAt As Date)
-    m_loggedAt = dLoggedAt
+Public Property Let LoggedAt(dteLoggedAt As Date)
+    m_logged_at = dteLoggedAt
 End Property
 
 Public Property Get LoggedAt() As Date
-    LoggedAt = m_loggedAt
+    LoggedAt = m_logged_at
 End Property
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -167,12 +167,12 @@ End Property
 '   ---------------------------------------------------------------------------------------
 '   2025/01/09      Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Property Let PwdLastUpdateAt(dPwdLastUpdateAt As Date)
-    m_pwdLastUpdateAt = dPwdLastUpdateAt
+Public Property Let PwdLastUpdateAt(dtePwdLastUpdateAt As Date)
+    m_pwd_last_update_at = dtePwdLastUpdateAt
 End Property
 
 Public Property Get PwdLastUpdateAt() As Date
-    PwdLastUpdateAt = m_pwdLastUpdateAt
+    PwdLastUpdateAt = m_pwd_last_update_at
 End Property
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -183,17 +183,17 @@ End Property
 '   ---------------------------------------------------------------------------------------
 '   2025/01/09      Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Property Let IsPwdExpired(bIsPwdExpired As Boolean)
-    m_isPwdExpired = bIsPwdExpired
+Public Property Let IsPwdExpired(blnIsPwdExpired As Boolean)
+    m_is_pwd_expired = blnIsPwdExpired
 End Property
 
 Public Property Get IsPwdExpired() As Boolean
-    IsPwdExpired = m_isPwdExpired
+    IsPwdExpired = m_is_pwd_expired
 End Property
 
 ' AuditsList
 Public Property Get AuditsList() As Collection
-    Set AuditsList = m_auditsColl
+    Set AuditsList = m_audits
 End Property
 
 
@@ -201,11 +201,11 @@ End Property
 '    Public functions and subs
 '*****************************************************************************************************************************
 
-Public Sub Init(Optional ByVal lId As Long = -1, Optional ByVal oRecord As CRecord = Nothing, Optional ByVal sLogin As String = "", Optional ByVal sName As String = "", Optional ByVal sPwd As String = "")
+Public Sub Init(Optional ByVal lId As Long = -1, Optional ByVal oBusinessLogic As CBusinessLogic = Nothing, Optional ByVal sLogin As String = "", Optional ByVal sName As String = "", Optional ByVal sPwd As String = "")
     Me.Id = lId
     
-    If Not oRecord Is Nothing Then
-        Set Me.Record = oRecord
+    If Not oBusinessLogic Is Nothing Then
+        Set Me.BusinessLogic = oBusinessLogic
     End If
     
     'If sLogin = "" Then
@@ -254,7 +254,7 @@ Public Function SavePwd(sPwd As String, Optional auditAction As Boolean = True) 
     Dim userData As Variant, sqlRst As String, recordCount As Long, i As Integer, audit As CAudit
     
     If auditAction Then
-        Set audit = LoggedUser.StartNewAudit("Modification Mot de Passe Utilisateur (" & Me.Id & ") " & Me.Name)
+        Set audit = loggedUser.StartNewAudit("Modification Mot de Passe Utilisateur (" & Me.Id & ") " & Me.Name)
     End If
     
     sqlRst = "UPDATE users SET userpwd = '" & encrypter.encrypt(sPwd) & "', userpwd_lastupdate_at = '" & Now & "' WHERE Id = " & CStr(Me.Id)
@@ -287,7 +287,7 @@ Public Function SaveLastLogin(Optional auditAction As Boolean = True) As Boolean
     Dim userData As Variant, sqlRst As String, recordCount As Long, i As Integer, audit As CAudit
     
     If auditAction Then
-        Set audit = LoggedUser.StartNewAudit("Modification Derniere date Login Utilisateur (" & Me.Id & ") " & Me.Name)
+        Set audit = loggedUser.StartNewAudit("Modification Derniere date Login Utilisateur (" & Me.Id & ") " & Me.Name)
     End If
     
     sqlRst = "UPDATE users SET user_lastlogin_at = '" & Now & "' WHERE Id = " & CStr(Me.Id)
@@ -402,6 +402,6 @@ End Sub
 
 Private Sub Class_Initialize()
     m_name = "Invité"
-    Set m_auditsColl = New Collection
+    Set m_audits = New Collection
 End Sub
 

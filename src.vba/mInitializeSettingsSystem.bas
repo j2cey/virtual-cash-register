@@ -1,9 +1,9 @@
 'Build 000
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-'   Module    : mInitializeSettingsDataSource
+'   Module    : mInitializeSettingsSystem
 '   Author    : Jude Parfait NGOM NZE (jud10parfait@gmail.com)
-'   Created   : 2025/02/05
-'   Purpose   : Manage All Data source parameters related variables
+'   Created   : 2025/02/12
+'   Purpose   : Manage All System parameters related variables
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 Option Explicit
 
@@ -11,44 +11,41 @@ Option Explicit
 '   Public Variables
 '***************************************************************************************************************************************************************
 
-Public oMainDatasourceSettings As CSettingDataSource
-
-Public Const DB_FOLDER_NAME As String = "db"
-Public Const DB_NAME As String = "comilogcashdb"
+Public oSystemSettings As CSettingSystem
 
 '***************************************************************************************************************************************************************
 '   Public Functions & Subroutines
 '***************************************************************************************************************************************************************
 
-Private Sub SetMainDatasourceDefaultSetting()
+Private Sub SetSystemDefaultSetting()
     ' Set DataSource Default attributes
-    oMainDatasourceSettings.UserLogin = "defaultDSUser"
-    oMainDatasourceSettings.UserPwd = "Default Data Source User password"
-    oMainDatasourceSettings.DataSourceClass = databaseSource
-    oMainDatasourceSettings.DatabaseClass = access2007
-    oMainDatasourceSettings.ServerOrPath = DbPath
-    oMainDatasourceSettings.DatabaseOrFileName = DB_NAME
-    oMainDatasourceSettings.IntegratedSecurity = True
+    oSystemSettings.UserLogin = "Caisse Virtuelle - COMILOG"
+    oSystemSettings.UserPwd = "OutLook"
     
-    oMainDatasourceSettings.SaveValues
+    oSystemSettings.SaveValues
 End Sub
 
-Public Sub MainDatasourceSettingsLoad()
-    Set oMainDatasourceSettings = NewSettingDataSource(GetLoggedUser(), GetMainSheetDataSource(), "Settings Data Source")
+Public Sub SystemSettingsLoad()
+    Set oSystemSettings = NewSettingSystem(GetLoggedUser(), GetMainSheetDataSource(), "Settings Data Source")
     
     ' Try Load saved settings
-    oMainDatasourceSettings.LoadValues
+    oSystemSettings.LoadValues
     
-    If Not oMainDatasourceSettings.IsComplete Then
-        SetMainDatasourceDefaultSetting
+    If Not oSystemSettings.IsComplete Then
+        SetSystemDefaultSetting
     End If
 End Sub
 
-Public Function DbPath() As String
-    DbPath = AppPath & Application.PathSeparator & DB_FOLDER_NAME & Application.PathSeparator
+Public Function GetSettingSystem() As CSettingSystem
+    If oSystemSettings Is Nothing Then
+        SystemSettingsLoad
+    End If
+    
+    Set GetSettingSystem = oSystemSettings
 End Function
 
 '***************************************************************************************************************************************************************
 '   Private Functions & Subroutines
 '***************************************************************************************************************************************************************
+
 

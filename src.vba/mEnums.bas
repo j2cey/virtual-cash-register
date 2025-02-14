@@ -24,7 +24,12 @@ Public Enum enuDataSourceClass
 End Enum
 
 Public Enum enuDatabaseClass
-  none = 1
+  None = 1
   access2007 = 2
   sqlserver2014 = 3
+End Enum
+
+Public Enum enuHoverAction
+    changeSize = 1
+    changeBackground = 2
 End Enum

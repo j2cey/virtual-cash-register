@@ -10,7 +10,11 @@ Option Explicit
 Private m_guid As String
 Private m_value As IFieldValue
 Private m_previous_value As IFieldValue
+
 Private m_name As String
+Private m_name_for_saving As String
+Private m_name_for_selecting As String
+
 Private m_offset_start As Long
 Private m_offset_end As Long
 Private m_label As String
@@ -22,6 +26,8 @@ Private m_is_selectable As Boolean
 Private m_is_savable As Boolean
 Private m_is_input_parameter As Boolean
 Private m_is_output_parameter As Boolean
+
+Private m_uicontrol As CUIControl
 
 Private Const MODULE_NAME As String = "Field Class"
 
@@ -77,6 +83,38 @@ End Property
 
 Public Property Get Name() As String
     Name = m_name
+End Property
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'   Property      : NameForSaving
+'   Purpose       : The field Name for Saving purpose
+'
+'   Date            Developer           Action
+'   ---------------------------------------------------------------------------------------
+'   2025/02/12      Jude Parfait        Created
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Public Property Let NameForSaving(strNameForSaving As String)
+    m_name_for_saving = strNameForSaving
+End Property
+
+Public Property Get NameForSaving() As String
+    NameForSaving = m_name_for_saving
+End Property
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'   Property      : NameForSelecting
+'   Purpose       : The field Name for Selecting purpose
+'
+'   Date            Developer           Action
+'   ---------------------------------------------------------------------------------------
+'   2025/02/12      Jude Parfait        Created
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Public Property Let NameForSelecting(strNameForSelecting As String)
+    m_name_for_selecting = strNameForSelecting
+End Property
+
+Public Property Get NameForSelecting() As String
+    NameForSelecting = m_name_for_selecting
 End Property
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -255,6 +293,22 @@ Public Property Get IsOutputParameter() As Boolean
     IsOutputParameter = m_is_output_parameter
 End Property
 
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'   Property      : UIControl
+'   Purpose       : The related UI Control
+'
+'   Date            Developer           Action
+'   ---------------------------------------------------------------------------------------
+'   2025/02/12      Jude Parfait        Created
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Public Property Set UIControl(oUIControl As CUIControl)
+    Set m_uicontrol = oUIControl
+End Property
+
+Public Property Get UIControl() As CUIControl
+    Set UIControl = m_uicontrol
+End Property
+
 
 '***************************************************************************************************************************************************************
 '    Public Functions and Subs
@@ -273,7 +327,7 @@ End Property
 '   ---------------------------------------------------------------------------------------
 '   2025/01/12      Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Sub Init(ByVal oFieldValue As IFieldValue, strName As String, strLabel As String, Optional vrnValue As Variant = Null)
+Public Sub Init(ByVal oFieldValue As IFieldValue, ByVal strName As String, ByVal strLabel As String, Optional ByVal vrnValue As Variant = Null, Optional ByVal strNameForSaving As String = "", Optional ByVal strNameForSelecting As String = "")
     
     Set Me.FieldValue = oFieldValue
     Set oFieldValue.UpperField = Me
@@ -284,13 +338,35 @@ Public Sub Init(ByVal oFieldValue As IFieldValue, strName As String, strLabel As
     If Not vrnValue = Null Then
         Me.SetValue vrnValue
     End If
+    
+    If strNameForSaving = "" Then
+        Me.NameForSaving = Me.Name
+    Else
+        Me.NameForSaving = strNameForSaving
+    End If
+    
+    If strNameForSelecting = "" Then
+        Me.NameForSelecting = Me.Name
+    Else
+        Me.NameForSelecting = strNameForSelecting
+    End If
 End Sub
 
-Public Sub SetValue(vrnValue As Variant)
+Public Sub SetValue(vrnValue As Variant, Optional ByVal blnFillControl As Boolean = False)
     Me.Reset
     Set m_previous_value = Me.FieldValue
     
     Me.FieldValue.SetValue (vrnValue)
+    
+    If blnFillControl Then
+        FillControl
+    End If
+End Sub
+
+Public Sub FillControl()
+    If Not Me.UIControl Is Nothing Then
+        Me.UIControl.FillFromField Me
+    End If
 End Sub
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''

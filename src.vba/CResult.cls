@@ -130,10 +130,10 @@ End Property
 ' 2025/02/03    Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 Public Property Get LastResult() As CResult
-    If Me.SubResults.Count = 0 Then
+    If Me.SubResults.count = 0 Then
         Set LastResult = Self
     Else
-        Set LastResult = Me.SubResults.Item(CStr(Me.SubResults.Count))
+        Set LastResult = Me.SubResults.Item(CStr(Me.SubResults.count))
     End If
 End Property
 
@@ -200,7 +200,7 @@ End Sub
 Public Sub AddSubResult(ByVal oResult As CResult)
     Dim lngCode As Long
     
-    lngCode = Me.SubResults.Count + 1
+    lngCode = Me.SubResults.count + 1
     oResult.Code = lngCode
     
     Me.SubResults.Add oResult, CStr(lngCode)

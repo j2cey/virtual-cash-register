@@ -171,7 +171,7 @@ Public Function ValidEmail_Old(eMail As String) As Boolean
     MyRegExp.Global = False
     Set myMatches = MyRegExp.Execute(eMail)
     
-    ValidEmail = (myMatches.Count = 1)
+    ValidEmail = (myMatches.count = 1)
     
     Set myMatches = Nothing
     Set MyRegExp = Nothing

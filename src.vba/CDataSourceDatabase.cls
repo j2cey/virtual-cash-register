@@ -193,7 +193,7 @@ End Property
 '   ---------------------------------------------------------------------------------------
 '   2025/01/25      Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Sub Init(ByVal oUser As CUser, ByVal strServerOrPath As String, ByVal strDatabaseOrFileName As String, Optional ByVal eDatabaseClass As enuDatabaseClass = none, Optional ByVal blnIntegratedSecurity As Boolean = True)
+Public Sub Init(ByVal oUser As CUser, ByVal strServerOrPath As String, ByVal strDatabaseOrFileName As String, Optional ByVal eDatabaseClass As enuDatabaseClass = None, Optional ByVal blnIntegratedSecurity As Boolean = True)
     
     Set Me.User = oUser
     Me.ServerOrPath = strServerOrPath
@@ -201,7 +201,7 @@ Public Sub Init(ByVal oUser As CUser, ByVal strServerOrPath As String, ByVal str
     
     Me.IntegratedSecurity = blnIntegratedSecurity
     
-    If Not eDatabaseClass = none Then
+    If Not eDatabaseClass = None Then
         Me.SetInnerDatabase eDatabaseClass
     End If
 End Sub

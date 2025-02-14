@@ -175,6 +175,33 @@ Public Sub Init(Optional oUser As CUser = Nothing)
     End If
 End Sub
 
+Public Function FirstBlankCell(Optional lngSourceCol As Long = 1, Optional ByVal StartRow& = 1, Optional ByVal SelectCell As Boolean = False) As Long
+    Dim lngRowCount As Long, lngCurrentRow As Long
+    Dim strCurrentRowValue As String
+    Dim Data()
+    
+    If Me.CurrentSheet Is Nothing Then Set Me.CurrentSheet = ActiveSheet
+    
+    With Me.CurrentSheet
+    
+        lngRowCount = .Cells(.Rows.count, SourceCol).End(xlUp).Row
+        Data = .Range(.Cells(1, SourceCol), .Cells(RowCount, SourceCol)).Value2
+    
+        For lngCurrentRow = StartRow To lngRowCount
+            If Data(lngCurrentRow, lngSourceCol) = vbNullString Then
+                If SelectCell Then .Cells(CurrentRow, SourceCol).Select
+                'if selection is out of screen, intead of .select , use : application.goto reference:=.cells(...), scroll:= true
+                FirstBlankCell = CurrentRow
+                Exit For
+            End If
+        Next
+    
+    End With ' Sh
+    
+    Erase Data
+    Set Sh = Nothing
+End Function
+
 
 
 '***************************************************************************************************************************************************************

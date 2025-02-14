@@ -44,7 +44,7 @@ End Function
 '   ---------------------------------------------------------------------------------------
 '   2025/01/25      Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Function NewDatabase(ByVal oUser As CUser, ByVal strServerOrPath As String, ByVal strDatabaseOrFileName As String, Optional ByVal eDatabaseClass As enuDatabaseClass = none, Optional ByVal blnIntegratedSecurity As Boolean = True) As CDataSourceDatabase
+Public Function NewDatabase(ByVal oUser As CUser, ByVal strServerOrPath As String, ByVal strDatabaseOrFileName As String, Optional ByVal eDatabaseClass As enuDatabaseClass = None, Optional ByVal blnIntegratedSecurity As Boolean = True) As CDataSourceDatabase
     Dim oInnerDatabase As IDataSourceDatabase
     
     With New CDataSourceDatabase
