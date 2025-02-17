@@ -18,18 +18,25 @@ Public Enum enuResultCode
 End Enum
 
 Public Enum enuDataSourceClass
+  noDataSource = 0
   fileSource = 1
   sheetSource = 2
   databaseSource = 3
 End Enum
 
 Public Enum enuDatabaseClass
-  None = 1
-  access2007 = 2
-  sqlserver2014 = 3
+  noDatabase = 0
+  access2007 = 1
+  sqlserver2014 = 2
 End Enum
 
 Public Enum enuHoverAction
     changeSize = 1
     changeBackground = 2
+End Enum
+
+Public Enum enuStoreFieldName
+    doNotStore = 0
+    toTheLeft = 1
+    toTheRight = 2
 End Enum

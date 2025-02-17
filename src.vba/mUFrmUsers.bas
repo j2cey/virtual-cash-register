@@ -3,7 +3,7 @@ Public sUserSelectedId As String
 
 
 Public Sub InitUsers(uFrm As MSForms.UserForm, oUserSaveForm As clsSaveForm)
-    uFrm.UsersMultiPage.value = 0
+    uFrm.UsersMultiPage.Value = 0
     
     Set oUserSaveForm.SaveBtn = Nothing
     
@@ -164,7 +164,7 @@ End Sub
 
 Public Sub EditUser(uFrm As MSForms.UserForm, oUserSaveForm As clsSaveForm)
     oUserSaveForm.ExecEdit sUserSelectedId
-    uFrm.UsersMultiPage.value = 1
+    uFrm.UsersMultiPage.Value = 1
 End Sub
 
 Public Sub FormatUserSaveForm(uFrm As MSForms.UserForm, oUserSaveForm As clsSaveForm, bValue As Boolean)
@@ -206,7 +206,7 @@ End Sub
 
 Private Sub ResetUserForms(uFrm As MSForms.UserForm, oUserSaveForm As clsSaveForm)
     oUserSearchForm.ResetForm
-    uFrm.UsersMultiPage.value = 0
+    uFrm.UsersMultiPage.Value = 0
     UnselectUser uFrm
 End Sub
 
@@ -216,7 +216,7 @@ Private Sub InitSearchForm(uFrm As MSForms.UserForm)
     
     ' ErrorColor
     clr = uFrm.SearchUserLoginTBx.BackColor
-    clr = uFrm.SearchUsernameTBx.BackColor
+    clr = uFrm.SearchUserNameTBx.BackColor
     
     Set oUserSearchForm = NewSearchForm("users_view", uFrm.UserSearchImg, uFrm.UsersListLBx, uFrm.UserSearchCancelImg)
     oUserSearchForm.SetResultTitle uFrm.UsersListLbl, "Utilisateur", "Utilisateurs"
@@ -225,9 +225,9 @@ Private Sub InitSearchForm(uFrm As MSForms.UserForm)
     SetClearContentButton(uFrm.UserSearchFrm.SearchUserLoginCancelImg)
     Set searchUctl = oUserSearchFrm.AddCtl(uFrm.UserSearchFrm.SearchUserLoginCancelImg).SetSizes(NewSize(10, 12), NewSize(12, 14))
     
-    Set searchUctl = oUserSearchForm.AddFieldCtl(uFrm.SearchUsernameTBx, "username", "Nom", True, True). _
-    SetClearContentButton(uFrm.SearchUsernameCancelImg)
-    Set searchUctl = oUserSearchFrm.AddCtl(uFrm.UserSearchFrm.SearchUsernameCancelImg).SetSizes(NewSize(10, 12), NewSize(12, 14))
+    Set searchUctl = oUserSearchForm.AddFieldCtl(uFrm.SearchUserNameTBx, "username", "Nom", True, True). _
+    SetClearContentButton(uFrm.SearchUserNameCancelImg)
+    Set searchUctl = oUserSearchFrm.AddCtl(uFrm.UserSearchFrm.SearchUserNameCancelImg).SetSizes(NewSize(10, 12), NewSize(12, 14))
     
     oUserSearchForm.AddFieldCtl uFrm.SearchUserRoleCBx, "role_title", "Profile", True, True
     

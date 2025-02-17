@@ -29,7 +29,7 @@ Private Sub ValidateCBtn_Click()
 End Sub
 
 Private Sub PwdTBx_KeyDown(ByVal KeyCode As MSForms.ReturnInteger, ByVal Shift As Integer)
-    If KeyCode.value = vbKeyReturn Then
+    If KeyCode.Value = vbKeyReturn Then
        LaunchTryLogin
     End If
 End Sub

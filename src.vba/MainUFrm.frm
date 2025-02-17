@@ -115,11 +115,11 @@ End Sub
 '   EMPLOYEES
 '
 Private Sub EmployeeNewImg_Click()
-    EmployeesMultiPage.value = 1
+    EmployeesMultiPage.Value = 1
 End Sub
 
 Private Sub EmployeeSearchImg_Click()
-    EmployeesMultiPage.value = 0
+    EmployeesMultiPage.Value = 0
 End Sub
 
 Private Sub EmployeesListLBx_Click()
@@ -139,7 +139,7 @@ Private Sub EmployeeDeleteImg_Click()
 End Sub
 
 Private Sub EmployeeCancelImg_Click()
-    EmployeesMultiPage.value = 0
+    EmployeesMultiPage.Value = 0
 End Sub
 
 Private Sub ManageEmployeeSiteImg_Click()
@@ -164,7 +164,7 @@ End Sub
 Private Sub UserNewImg_Click()
     FormatUserSaveForm Me, oUserSaveForm, True
     
-    UsersMultiPage.value = 1
+    UsersMultiPage.Value = 1
 End Sub
 
 Private Sub UserSaveImg_Click()
@@ -177,7 +177,7 @@ End Sub
 
 Private Sub UserSearchImg_Click()
     UnselectUser Me
-    UsersMultiPage.value = 0
+    UsersMultiPage.Value = 0
 End Sub
 
 Private Sub UsersListLBx_Click()
@@ -195,7 +195,7 @@ Private Sub UserDeleteImg_Click()
 End Sub
 
 Private Sub UserCancelImg_Click()
-    UsersMultiPage.value = 0
+    UsersMultiPage.Value = 0
 End Sub
 
 Private Sub UserEditPwdImg_Click()
@@ -214,7 +214,7 @@ End Sub
 '   USER ROLES
 '
 Private Sub UserrolesImg_Click()
-    UsersMultiPage.value = 2
+    UsersMultiPage.Value = 2
 End Sub
 
 Private Sub UserroleSearchImg_Click()
@@ -329,13 +329,13 @@ Private Sub PaymentSearchCancelImg_Click()
 End Sub
 
 Private Sub PaymentAmountTBx_KeyDown(ByVal KeyCode As MSForms.ReturnInteger, ByVal Shift As Integer)
-    If KeyCode.value = vbKeyReturn Then
+    If KeyCode.Value = vbKeyReturn Then
        AddPaymentDetail Me
     End If
 End Sub
 
 Private Sub PaymentTitleTBx_KeyDown(ByVal KeyCode As MSForms.ReturnInteger, ByVal Shift As Integer)
-    If KeyCode.value = vbKeyReturn Then
+    If KeyCode.Value = vbKeyReturn Then
        SavePayment Me
     End If
 End Sub
@@ -408,19 +408,19 @@ Private Sub MotifSpecialCharDeleteImg_Click()
 End Sub
 
 Private Sub PwdLegnthMinSCb_Change()
-    PwdLegnthMinTBx.Text = PwdLegnthMinSCb.value
+    PwdLegnthMinTBx.Text = PwdLegnthMinSCb.Value
 End Sub
 
 Private Sub PwdUppercaseMinSCb_Change()
-    PwdUppercaseMinTBx.Text = PwdUppercaseMinSCb.value
+    PwdUppercaseMinTBx.Text = PwdUppercaseMinSCb.Value
 End Sub
 
 Private Sub PwdNumberMinSCb_Change()
-    PwdNumberMinTBx.Text = PwdNumberMinSCb.value
+    PwdNumberMinTBx.Text = PwdNumberMinSCb.Value
 End Sub
 
 Private Sub PwdSpecialCharsMinSCb_Change()
-    PwdSpecialCharsMinTBx.Text = PwdSpecialCharsMinSCb.value
+    PwdSpecialCharsMinTBx.Text = PwdSpecialCharsMinSCb.Value
 End Sub
 
 Private Sub SettingSecuritySaveCBtn_Click()

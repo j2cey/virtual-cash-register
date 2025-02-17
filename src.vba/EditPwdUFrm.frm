@@ -25,7 +25,7 @@ Private Sub EditPwdSaveImg_Click()
 End Sub
 
 Private Sub UserRePwdTBx_KeyDown(ByVal KeyCode As MSForms.ReturnInteger, ByVal Shift As Integer)
-    If KeyCode.value = vbKeyReturn Then
+    If KeyCode.Value = vbKeyReturn Then
        TrySavePwd
     End If
 End Sub

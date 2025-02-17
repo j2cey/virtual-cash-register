@@ -1,6 +1,6 @@
 'Build 000
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-' Module    : CUser
+' Module    : CModelUser
 ' Author    : Jude Parfait NGOM NZE (jud10parfait@gmail.com)
 ' Created   : 2025/01/09
 ' Purpose   : A User of the System
@@ -8,43 +8,72 @@
 Option Explicit
 
 Private m_id As Long
+Private m_upper_model As CModel
+
+Private Const MODULE_NAME As String = "Model User"
+
+' Login
 Private m_login As String
-Private m_name As String
-Private m_role As CUserRole
+Private Const LOGIN_FIELD_SAVING_KEY As String = "userlogin"
+Private Const LOGIN_FIELD_SELECT_KEY As String = "userlogin"
+Private Const LOGIN_FIELD_LABEL_KEY As String = "User Login"
+
+'Pwd
 Private m_pwd As String
+Private Const PWD_FIELD_SAVING_KEY As String = "userpwd"
+Private Const PWD_FIELD_SELECT_KEY As String = "userpwd"
+Private Const PWD_FIELD_LABEL_KEY As String = "User Password"
+
+' Name
+'Private m_name As String
+Private Const USERNAME_FIELD_SAVING_KEY As String = "username"
+Private Const USERNAME_FIELD_SELECT_KEY As String = "username"
+Private Const USERNAME_FIELD_LABEL_KEY As String = "User Name"
+
+' Role
+Private m_role As CModelUserRole
 
 Private m_is_logged As Boolean
 Private m_logged_at As Date
-Private m_pwd_last_update_at As Date
+
+' LastLoginAt
+Private Const LAST_LOGIN_AT_FIELD_SAVING_KEY As String = "user_lastlogin_at"
+Private Const LAST_LOGIN_AT_FIELD_SELECT_KEY As String = "user_lastlogin_at"
+Private Const LAST_LOGIN_AT_FIELD_LABEL_KEY As String = "User Password Last Update Date"
+
+' PwdLastUpdateAt
+'Private m_pwd_last_update_at As Date
+Private Const PWD_LAST_UPDATE_AT_FIELD_SAVING_KEY As String = "userpwd_lastupdate_at"
+Private Const PWD_LAST_UPDATE_AT_FIELD_SELECT_KEY As String = "userpwd_lastupdate_at"
+Private Const PWD_LAST_UPDATE_AT_FIELD_LABEL_KEY As String = "User Last Login Date"
+
 Private m_is_pwd_expired As Boolean
 
 Private m_audits As Collection
-
-Private m_business_logic As CBusinessLogic
 
 
 '***************************************************************************************************************************************************************
 '   Public Properties
 '***************************************************************************************************************************************************************
 
-Public Property Get Self() As CUser
+Public Property Get Self() As CModelUser
     Set Self = Me
 End Property
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-'   Property      : BusinessLogic
-'   Purpose       : The Business Logic Object
+'   Property      : UpperModel
+'   Purpose       : The Upper Model Object
 '
 '   Date            Developer           Action
 '   ---------------------------------------------------------------------------------------
 '   2025/01/09      Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Property Set BusinessLogic(oBusinessLogic As CBusinessLogic)
-    Set m_business_logic = oBusinessLogic
+Public Property Set UpperModel(oUpperModel As CModel)
+    Set m_upper_model = oUpperModel
 End Property
 
-Public Property Get BusinessLogic() As CBusinessLogic
-    Set BusinessLogic = m_business_logic
+Public Property Get UpperModel() As CModel
+    Set UpperModel = m_upper_model
 End Property
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -55,12 +84,20 @@ End Property
 '   ---------------------------------------------------------------------------------------
 '   2025/01/09      Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Property Let Id(lId As Long)
-    m_id = lId
+Public Property Let Id(lngId As Long)
+    If Not Me.UpperModel Is Nothing Then
+        Me.UpperModel.SetId lngId
+    Else
+        m_id = lngId
+    End If
 End Property
 
 Public Property Get Id() As Long
-    Id = m_id
+    If Not Me.UpperModel Is Nothing Then
+        Id = Me.UpperModel.GetId()
+    Else
+        Id = m_id
+    End If
 End Property
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -71,44 +108,20 @@ End Property
 '   ---------------------------------------------------------------------------------------
 '   2025/01/09      Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Property Let LogIn(sLogin As String)
-    m_login = sLogin
+Public Property Let LogIn(strLogin As String)
+    If Not Me.UpperModel Is Nothing Then
+        Me.UpperModel.SetFieldValue NewFieldValueString, LOGIN_FIELD_SAVING_KEY, LOGIN_FIELD_LABEL_KEY, LOGIN_FIELD_SELECT_KEY, strLogin
+    Else
+        m_login = strLogin
+    End If
 End Property
 
 Public Property Get LogIn() As String
-    LogIn = m_login
-End Property
-
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-'   Property      : Name
-'   Purpose       : The User Name
-'
-'   Date            Developer           Action
-'   ---------------------------------------------------------------------------------------
-'   2025/01/09      Jude Parfait        Created
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Property Let Name(sName As String)
-    m_name = sName
-End Property
-
-Public Property Get Name() As String
-    Name = m_name
-End Property
-
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-'   Property      : Role
-'   Purpose       : The User Role
-'
-'   Date            Developer           Action
-'   ---------------------------------------------------------------------------------------
-'   2025/01/09      Jude Parfait        Created
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Property Set Role(oRole As CUserRole)
-    Set m_role = oRole
-End Property
-
-Public Property Get Role() As CUserRole
-    Set Role = m_role
+    Dim vrnValue As Variant
+    
+    vrnValue = Me.UpperModel.GetFieldValue(NewFieldValueString, LOGIN_FIELD_SAVING_KEY, LOGIN_FIELD_LABEL_KEY, LOGIN_FIELD_SELECT_KEY)
+    
+    LogIn = IIf(vrnValue = Null, Null, CStr(vrnValue))
 End Property
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -119,12 +132,58 @@ End Property
 '   ---------------------------------------------------------------------------------------
 '   2025/01/09      Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Property Let Pwd(sPwd As String)
-    m_pwd = sPwd
+Public Property Let Pwd(strPwd As String)
+    If Not Me.UpperModel Is Nothing Then
+        Me.UpperModel.SetFieldValue NewFieldValueString, PWD_FIELD_SAVING_KEY, PWD_FIELD_LABEL_KEY, PWD_FIELD_SELECT_KEY, strPwd
+    Else
+        m_pwd = strPwd
+    End If
 End Property
 
 Public Property Get Pwd() As String
-    Pwd = m_pwd
+    Dim vrnValue As Variant
+    
+    vrnValue = Me.UpperModel.GetFieldValue(NewFieldValueString, PWD_FIELD_SAVING_KEY, PWD_FIELD_LABEL_KEY, PWD_FIELD_SELECT_KEY)
+    
+    Pwd = IIf(vrnValue = Null, Null, CStr(vrnValue))
+End Property
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'   Property      : Name
+'   Purpose       : The User Name
+'
+'   Date            Developer           Action
+'   ---------------------------------------------------------------------------------------
+'   2025/01/09      Jude Parfait        Created
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Public Property Let Name(strName As String)
+    If Not Me.UpperModel Is Nothing Then
+        Me.UpperModel.SetFieldValue NewFieldValueString, USERNAME_FIELD_SAVING_KEY, USERNAME_FIELD_LABEL_KEY, USERNAME_FIELD_LABEL_KEY, strName
+    End If
+End Property
+
+Public Property Get Name() As String
+    Dim vrnValue As Variant
+    
+    vrnValue = Me.UpperModel.GetFieldValue(NewFieldValueString, USERNAME_FIELD_SAVING_KEY, USERNAME_FIELD_LABEL_KEY, USERNAME_FIELD_LABEL_KEY)
+    
+    Name = IIf(vrnValue = Null, Null, CStr(vrnValue))
+End Property
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'   Property      : Role
+'   Purpose       : The User Role
+'
+'   Date            Developer           Action
+'   ---------------------------------------------------------------------------------------
+'   2025/01/09      Jude Parfait        Created
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Public Property Set Role(oRole As CModelUserRole)
+    Set m_role = oRole
+End Property
+
+Public Property Get Role() As CModelUserRole
+    Set Role = m_role
 End Property
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -160,6 +219,28 @@ Public Property Get LoggedAt() As Date
 End Property
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'   Property      : LastLoginAt
+'   Purpose       : User last login date
+'
+'   Date            Developer           Action
+'   ---------------------------------------------------------------------------------------
+'   2025/02/15      Jude Parfait        Created
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Public Property Let LastLoginAt(dtePwdLastUpdateAt As Date)
+    If Not Me.UpperModel Is Nothing Then
+        Me.UpperModel.SetFieldValue NewFieldValueDate, LAST_LOGIN_AT_FIELD_SAVING_KEY, LAST_LOGIN_AT_FIELD_LABEL_KEY, LAST_LOGIN_AT_FIELD_SELECT_KEY, dtePwdLastUpdateAt
+    End If
+End Property
+
+Public Property Get LastLoginAt() As Date
+    Dim vrnValue As Variant
+    
+    vrnValue = Me.UpperModel.GetFieldValue(NewFieldValueString, LAST_LOGIN_AT_FIELD_SAVING_KEY, LAST_LOGIN_AT_FIELD_LABEL_KEY, LAST_LOGIN_AT_FIELD_SELECT_KEY)
+    
+    LastLoginAt = IIf(vrnValue = Null, Null, CDate(vrnValue))
+End Property
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 '   Property      : PwdLastUpdateAt
 '   Purpose       : User last password update date
 '
@@ -168,11 +249,17 @@ End Property
 '   2025/01/09      Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 Public Property Let PwdLastUpdateAt(dtePwdLastUpdateAt As Date)
-    m_pwd_last_update_at = dtePwdLastUpdateAt
+    If Not Me.UpperModel Is Nothing Then
+        Me.UpperModel.SetFieldValue NewFieldValueDate, PWD_LAST_UPDATE_AT_FIELD_SAVING_KEY, PWD_LAST_UPDATE_AT_FIELD_LABEL_KEY, PWD_LAST_UPDATE_AT_FIELD_SELECT_KEY, dtePwdLastUpdateAt
+    End If
 End Property
 
 Public Property Get PwdLastUpdateAt() As Date
-    PwdLastUpdateAt = m_pwd_last_update_at
+    Dim vrnValue As Variant
+    
+    vrnValue = Me.UpperModel.GetFieldValue(NewFieldValueString, PWD_LAST_UPDATE_AT_FIELD_SAVING_KEY, PWD_LAST_UPDATE_AT_FIELD_LABEL_KEY, PWD_LAST_UPDATE_AT_FIELD_SELECT_KEY)
+    
+    PwdLastUpdateAt = IIf(vrnValue = Null, Null, CDate(vrnValue))
 End Property
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -201,11 +288,11 @@ End Property
 '    Public functions and subs
 '*****************************************************************************************************************************
 
-Public Sub Init(Optional ByVal lId As Long = -1, Optional ByVal oBusinessLogic As CBusinessLogic = Nothing, Optional ByVal sLogin As String = "", Optional ByVal sName As String = "", Optional ByVal sPwd As String = "")
+Public Sub Init(Optional ByVal lId As Long = -1, Optional ByVal oModel As CModel = Nothing, Optional ByVal sLogin As String = "", Optional ByVal sName As String = "", Optional ByVal sPwd As String = "")
     Me.Id = lId
     
-    If Not oBusinessLogic Is Nothing Then
-        Set Me.BusinessLogic = oBusinessLogic
+    If Not oModel Is Nothing Then
+        Set Me.UpperModel = oModel
     End If
     
     'If sLogin = "" Then
@@ -214,6 +301,12 @@ Public Sub Init(Optional ByVal lId As Long = -1, Optional ByVal oBusinessLogic A
     '    Me.LogIn = sLogin
     '    Me.Name = sName
     'End If
+End Sub
+
+Public Sub LoadValues()
+    If Not Me.UpperModel Is Nothing Then
+        Me.UpperModel.LoadValues
+    End If
 End Sub
 
 Public Function TryLogIn(sLogin As String, sPwd As String) As Boolean
@@ -350,8 +443,18 @@ End Function
 
 
 '*****************************************************************************************************************************
-'    Public functions and subs
+'    Private functions and subs
 '*****************************************************************************************************************************
+
+Private Sub SetFieldValue(ByVal strFieldKey As String, ByVal varFieldValue As Variant)
+    Me.UpperModel.SetFieldValue strFieldKey, varFieldValue
+End Sub
+
+Private Function GetFieldValue(ByVal oFieldType As IFieldValue, ByVal strNameForSaving As String, ByVal strFieldLabel As String, ByVal strNameForSelecting As String) As Variant
+    GetFieldValue = Me.UpperModel.GetFieldValue(oFieldType, strNameForSaving, strFieldLabel, strNameForSelecting)
+End Function
+
+
 
 Private Function LoadFromDB() As Boolean
     Dim userData As Variant, sqlRst As String, recordCount As Long, i As Integer
@@ -401,7 +504,7 @@ End Sub
 '*****************************************************************************************************************************
 
 Private Sub Class_Initialize()
-    m_name = "Invité"
+    Me.Name = "Invité"
     Set m_audits = New Collection
 End Sub
 

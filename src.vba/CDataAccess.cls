@@ -8,10 +8,11 @@
 Option Explicit
 
 Private m_guid As String
-Private m_user As CUser
+Private m_user As CModelUser
 Private m_data_source As IDataSource
 
-Private m_record_table As String
+Private m_table_for_saving As String
+Private m_table_for_selecting As String
 Private m_record As CRecord
 
 
@@ -44,11 +45,11 @@ End Property
 '   ---------------------------------------------------------------------------------------
 '   2025/01/21      Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Property Set User(oUser As CUser)
+Public Property Set User(oUser As CModelUser)
     Set m_user = oUser
 End Property
 
-Public Property Get User() As CUser
+Public Property Get User() As CModelUser
     Set User = m_user
 End Property
 
@@ -69,19 +70,35 @@ Public Property Get DataSource() As IDataSource
 End Property
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-' Property      : RecordTable
-' Purpose       : The Record s Table Name
+' Property      : TableForSaving
+' Purpose       : The Record s Table Name for Saving
 '
 ' Date          Developer           Action
 ' ---------------------------------------------------------------------------------------
 ' 2025/01/21    Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Property Let RecordTable(strRecordTable As String)
-    m_record_table = strRecordTable
+Public Property Let TableForSaving(strTableForSaving As String)
+    m_table_for_saving = strTableForSaving
 End Property
 
-Public Property Get RecordTable() As String
-    RecordTable = m_record_table
+Public Property Get TableForSaving() As String
+    TableForSaving = m_table_for_saving
+End Property
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+' Property      : TableForSelecting
+' Purpose       : The Record s Table Name for Selecting
+'
+' Date          Developer           Action
+' ---------------------------------------------------------------------------------------
+' 2025/02/15    Jude Parfait        Created
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Public Property Let TableForSelecting(strTableForSelecting As String)
+    m_table_for_selecting = strTableForSelecting
+End Property
+
+Public Property Get TableForSelecting() As String
+    TableForSelecting = m_table_for_selecting
 End Property
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -117,12 +134,19 @@ End Property
 '   Date            Developer           Action
 '   ---------------------------------------------------------------------------------------
 '   2025/01/25      Jude Parfait        Created
+'   2025/02/15      Jude Parfait        Change "RecordTable" to "TableForSaving"; Add "TableForSelecting"
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Sub Init(ByVal oUser As CUser, ByVal oDataSource As IDataSource, ByVal strRecordTable As String, Optional ByVal oRecord As CRecord = Nothing)
+Public Sub Init(ByVal oUser As CModelUser, ByVal oDataSource As IDataSource, ByVal strTableForSaving As String, Optional ByVal strTableForSelecting As String = "", Optional ByVal oRecord As CRecord = Nothing)
     
     Set Me.User = oUser
     Set Me.DataSource = oDataSource
-    Me.RecordTable = strRecordTable
+    Me.TableForSaving = strTableForSaving
+    
+    If strTableForSelecting = "" Then
+        Me.TableForSelecting = Me.TableForSaving
+    Else
+        Me.TableForSelecting = strTableForSelecting
+    End If
     
     If Not oRecord Is Nothing Then
         Set Me.Record = oRecord

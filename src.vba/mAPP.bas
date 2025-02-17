@@ -1,7 +1,7 @@
 Option Explicit
 
 'Public sAppName As String
-Public SettAppName As clsSetting
+'Public SettAppName As clsSetting
 
 Public Function GetAppName() As String
     If SettAppName Is Nothing Then

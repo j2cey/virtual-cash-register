@@ -11,7 +11,10 @@ Option Explicit
 '   Public Variables
 '***************************************************************************************************************************************************************
 
-Public oLoggedUser As CUser
+Public Const USERS_TABLE_FOR_SAVING_DEFAULT As String = "users"
+Public Const USERS_TABLE_FOR_SELECTING_DEFAULT As String = "users_view"
+
+Public oLoggedUser As CModelUser
 
 
 
@@ -19,7 +22,7 @@ Public oLoggedUser As CUser
 '   Public Functions & Subroutines
 '***************************************************************************************************************************************************************
 
-Public Function GetLoggedUser() As CUser
+Public Function GetLoggedUser() As CModelUser
     If oLoggedUser Is Nothing Then
         Set oLoggedUser = NewUser()
     Else

@@ -32,12 +32,12 @@ End Property
 '   ---------------------------------------------------------------------------------------
 '   2025/01/28      Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Property Let value(lngValue As Long)
+Public Property Let Value(lngValue As Long)
     m_value = lngValue
 End Property
 
-Public Property Get value() As Long
-    value = m_value
+Public Property Get Value() As Long
+    Value = m_value
 End Property
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -125,7 +125,7 @@ End Sub
 '   2025/01/28  Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 Private Sub SetValue(ByVal vrnValue As Variant)
-    Me.value = CInt(vrnValue)
+    Me.Value = CInt(vrnValue)
     Me.IsEmpty = False
 End Sub
 
@@ -142,7 +142,7 @@ End Sub
 '   2025/01/28  Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 Private Function GetValue() As Variant
-    GetValue = CVar(Me.value)
+    GetValue = CVar(Me.Value)
 End Function
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -158,7 +158,7 @@ End Function
 '   2025/01/28  Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 Private Sub ClearValue()
-    Me.value = 0
+    Me.Value = 0
     Me.IsEmpty = True
 End Sub
 
@@ -178,11 +178,11 @@ Private Function SetInputParameter(ByRef oRequestCommand As ADODB.Command) As CR
     
     Set result = NewResult(MODULE_NAME, "SetInputParameter", True)
     
-    If Me.UpperField.value <> "" Then
+    If Not Me.IsEmpty Then
         If Me.UpperField.SearchCriteriaMustMatchExact Then
-            oRequestCommand.Parameters.Append oRequestCommand.CreateParameter("@" & Me.UpperField.Name, adNumeric, adParamInput, 255, CInt(Me.value))
+            oRequestCommand.Parameters.Append oRequestCommand.CreateParameter("@" & Me.UpperField.Name, adNumeric, adParamInput, 255, CInt(Me.Value))
         Else
-            oRequestCommand.Parameters.Append oRequestCommand.CreateParameter("@" & Me.UpperField.Name, adNumeric, adParamInput, 255, "%" & Me.value & "%")
+            oRequestCommand.Parameters.Append oRequestCommand.CreateParameter("@" & Me.UpperField.Name, adNumeric, adParamInput, 255, "%" & Me.Value & "%")
         End If
     End If
     
@@ -205,8 +205,8 @@ Private Function SetOutputParameter(ByRef oRequestCommand As ADODB.Command) As C
     
     Set result = NewResult(MODULE_NAME, "SetOutputParameter", True)
     
-    If Me.UpperField.value <> "" Then
-        oRequestCommand.Parameters.Append oRequestCommand.CreateParameter("@" & Me.UpperField.Name, adNumeric, adParamOutput, 255, CInt(Me.value))
+    If Not Me.IsEmpty Then
+        oRequestCommand.Parameters.Append oRequestCommand.CreateParameter("@" & Me.UpperField.Name, adNumeric, adParamOutput, 255, CInt(Me.Value))
     End If
     
     Set SetInputParameters = result

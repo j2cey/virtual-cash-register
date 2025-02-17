@@ -51,7 +51,7 @@ End Function
 '   Private Functions & Subroutines
 '***************************************************************************************************************************************************************
 
-Private Function GetDatabase(ByVal oUser As CUser, ByVal strServerOrPath As String, ByVal strDatabaseOrFileName As String, ByVal oInnerDatabase As IDataSourceDatabase, Optional ByVal blnIntegratedSecurity As Boolean = True) As CDataSourceDatabase
+Private Function GetDatabase(ByVal oUser As CModelUser, ByVal strServerOrPath As String, ByVal strDatabaseOrFileName As String, ByVal oInnerDatabase As IDataSourceDatabase, Optional ByVal blnIntegratedSecurity As Boolean = True) As CDataSourceDatabase
     Dim oMainDatabase As CDataSourceDatabase
     
     

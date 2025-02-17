@@ -1,6 +1,6 @@
 Option Explicit
 
-Private m_user As CUser
+Private m_user As CModelUser
 Private m_action_date As Date
 
 
@@ -13,11 +13,11 @@ Public Property Get Self() As CActor
 End Property
 
 ' User
-Public Property Set User(oUser As CUser)
+Public Property Set User(oUser As CModelUser)
     Set m_user = oUser
 End Property
 
-Public Property Get User() As CUser
+Public Property Get User() As CModelUser
     Set User = m_user
 End Property
 

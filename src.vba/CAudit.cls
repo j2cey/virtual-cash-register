@@ -1,6 +1,6 @@
 Option Explicit
 
-Private m_user As CUser
+Private m_user As CModelUser
 
 Private m_id As Long
 Private m_action As String
@@ -26,11 +26,11 @@ Public Property Get Self() As CAudit
 End Property
 
 ' User
-Public Property Set User(oUser As CUser)
+Public Property Set User(oUser As CModelUser)
     Set m_user = oUser
 End Property
 
-Public Property Get User() As CUser
+Public Property Get User() As CModelUser
     Set User = m_user
 End Property
 
@@ -139,7 +139,7 @@ End Property
 '    Public functions and subs
 '*****************************************************************************************************************************
 
-Public Sub Init(oUser As CUser, sAction As String)
+Public Sub Init(oUser As CModelUser, sAction As String)
     Set Me.User = oUser
     Me.Action = sAction
     Me.ActionResult = 0

@@ -9,7 +9,7 @@ Option Explicit
 
 
 
-Public Function NewDataSource(ByVal eDataSourceClass As enuDataSourceClass, ByVal oUser As CUser, ByVal strServerOrPath As String, ByVal strDatabaseOrFileName As String, Optional ByVal blnIntegratedSecurity As Boolean = True) As IDataSource
+Public Function NewDataSource(ByVal eDataSourceClass As enuDataSourceClass, ByVal oUser As CModelUser, ByVal strServerOrPath As String, ByVal strDatabaseOrFileName As String, Optional ByVal blnIntegratedSecurity As Boolean = True) As IDataSource
     Dim oDataSource As IDataSource
     
     Select Case eDataSourceClass
@@ -44,7 +44,7 @@ End Function
 '   ---------------------------------------------------------------------------------------
 '   2025/01/25      Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Function NewDatabase(ByVal oUser As CUser, ByVal strServerOrPath As String, ByVal strDatabaseOrFileName As String, Optional ByVal eDatabaseClass As enuDatabaseClass = None, Optional ByVal blnIntegratedSecurity As Boolean = True) As CDataSourceDatabase
+Public Function NewDatabase(ByVal oUser As CModelUser, ByVal strServerOrPath As String, ByVal strDatabaseOrFileName As String, Optional ByVal eDatabaseClass As enuDatabaseClass = noDatabase, Optional ByVal blnIntegratedSecurity As Boolean = True) As CDataSourceDatabase
     Dim oInnerDatabase As IDataSourceDatabase
     
     With New CDataSourceDatabase
@@ -105,7 +105,7 @@ End Function
 '   ---------------------------------------------------------------------------------------
 '   2025/01/25      Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Function NewAccess2007(Optional oUser As CUser = Nothing, Optional oDataAccess As CDataAccess = Nothing) As CDatabaseAccess2007
+Public Function NewAccess2007(Optional oUser As CModelUser = Nothing, Optional oDataAccess As CDataAccess = Nothing) As CDatabaseAccess2007
     With New CDatabaseAccess2007
         .Init oUser, oDataAccess
         Set NewAccess2007 = .Self 'returns the newly created instance
@@ -117,7 +117,7 @@ End Function
 '   Purpose     : Create and Initialize a New DataAccess Data Access
 '   Arguments   : oUser                     The user performing
 '                 oDataSource               The Data Source
-'                 strRecordTable            The Record Table
+'                 strTableForSaving            The Record Table
 '                 lngRecordId               The Record ID (if any)
 '
 '   Returns     : CDataAccess
@@ -126,9 +126,9 @@ End Function
 '   ---------------------------------------------------------------------------------------
 '   2025/01/25      Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Function NewDataAccess(ByVal oUser As CUser, ByVal oDataSource As IDataSource, ByVal strRecordTable As String, Optional ByVal oRecord As CRecord = Nothing) As CDataAccess
+Public Function NewDataAccess(ByVal oUser As CModelUser, ByVal oDataSource As IDataSource, ByVal strTableForSaving As String, Optional ByVal strTableForSelecting As String = "", Optional ByVal oRecord As CRecord = Nothing) As CDataAccess
     With New CDataAccess
-        .Init oUser, oDataSource, strRecordTable, oRecord
+        .Init oUser, oDataSource, strTableForSaving, strTableForSelecting, oRecord
         Set NewDataAccess = .Self 'returns the newly created instance
     End With
 End Function
@@ -144,7 +144,7 @@ End Function
 '   ---------------------------------------------------------------------------------------
 '   2025/02/05      Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Function NewDataSourceSheet(Optional oUser As CUser = Nothing) As CDataSourceSheet
+Public Function NewDataSourceSheet(Optional oUser As CModelUser = Nothing) As CDataSourceSheet
     With New CDataSourceSheet
         .Init oUser
         Set NewDataSourceSheet = .Self 'returns the newly created instance

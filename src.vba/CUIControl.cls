@@ -8,7 +8,7 @@
 Option Explicit
 
 Private m_control_inner As IUIControl
-Private m_user As CUser
+Private m_user As CModelUser
 
 Private m_business_logic As CBusinessLogic
 
@@ -61,12 +61,12 @@ End Property
 ' ---------------------------------------------------------------------------------------
 ' 2025/01/11    Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Property Let value(varValue As Variant)
-    Me.ControlInner.value = varValue
+Public Property Let Value(varValue As Variant)
+    Me.ControlInner.Value = varValue
 End Property
 
-Public Property Get value() As Variant
-    value = Me.ControlInner.value
+Public Property Get Value() As Variant
+    Value = Me.ControlInner.Value
 End Property
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''

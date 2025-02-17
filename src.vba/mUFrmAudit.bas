@@ -34,9 +34,9 @@ Private Sub InitSearchForm(uFrm As MSForms.UserForm)
     
     oAuditSearchForm.LimitLines = 100
     
-    Set searchUctl = oAuditSearchForm.AddFieldCtl(uFrm.SearchUsernameTBx, "username", "Utilisateur", True, True). _
-    SetClearContentButton(uFrm.SearchUsernameCancelImg)
-    Set searchUctl = oAuditSearchFrm.AddCtl(uFrm.AuditSearchFrm.SearchUsernameCancelImg).SetSizes(NewSize(8, 10), NewSize(10, 12))
+    Set searchUctl = oAuditSearchForm.AddFieldCtl(uFrm.SearchUserNameTBx, "username", "Utilisateur", True, True). _
+    SetClearContentButton(uFrm.SearchUserNameCancelImg)
+    Set searchUctl = oAuditSearchFrm.AddCtl(uFrm.AuditSearchFrm.SearchUserNameCancelImg).SetSizes(NewSize(8, 10), NewSize(10, 12))
     
     Set searchUctl = oAuditSearchForm.AddFieldCtl(uFrm.SearchActionTBx, "audit_action", "Action", True, True). _
     SetClearContentButton(uFrm.SearchActionCancelImg)

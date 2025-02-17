@@ -1,9 +1,9 @@
 'Build 000
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-'   Module    : mInitializeSettingsSystem
+'   Module    : mInitializeSettings
 '   Author    : Jude Parfait NGOM NZE (jud10parfait@gmail.com)
-'   Created   : 2025/02/12
-'   Purpose   : Manage All System parameters related variables
+'   Created   : 2025/02/14
+'   Purpose   : Manage All App Settings related variables
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 Option Explicit
 
@@ -11,35 +11,21 @@ Option Explicit
 '   Public Variables
 '***************************************************************************************************************************************************************
 
+Public oMainDatasourceSettings As CSettingDataSource
+Public oSystemSettings As CSettingSystem
+
+
 '***************************************************************************************************************************************************************
 '   Public Functions & Subroutines
 '***************************************************************************************************************************************************************
 
-Private Sub SetSystemDefaultSetting()
-    ' Set DataSource Default attributes
-    oSystemSettings.UserLogin = "Caisse Virtuelle - COMILOG"
-    oSystemSettings.UserPwd = "OutLook"
-    
-    oSystemSettings.SaveValues
+Public Sub InitSettingsMainDatasource()
+    Set oMainDatasourceSettings = NewSettingDataSource(NewSetting(GetLoggedUser(), GetMainSheetDataSource(), "Settings-Data-Source", "Settings-Data-Source", 1))
 End Sub
 
-Public Sub SystemSettingsLoad()
-        
-    ' Try Load saved settings
-    oSystemSettings.LoadValues
-    
-    If Not oSystemSettings.IsComplete Then
-        SetSystemDefaultSetting
-    End If
+Public Sub InitSettingsSystem()
+    Set oSystemSettings = NewSettingSystem(NewSetting(GetLoggedUser(), GetMainSheetDataSource(), "Settings-Data-Source", "Settings-Data-Source", 1))
 End Sub
-
-Public Function GetSettingSystem() As CSettingSystem
-    If oSystemSettings Is Nothing Then
-        SystemSettingsLoad
-    End If
-    
-    Set GetSettingSystem = oSystemSettings
-End Function
 
 '***************************************************************************************************************************************************************
 '   Private Functions & Subroutines

@@ -72,7 +72,7 @@ Public Sub InitSettingsForm(uFrm As MSForms.UserForm)
     uFrm.SettingDbNameTBx.Text = GetDbName
     uFrm.SettingDbUserTBx.Text = GetDbUserName
     uFrm.SettingDbPwdTBx.Text = GetDbUserPassword
-    uFrm.OpenCodeCBx.value = CBool(SettOpenCode.Val)
+    uFrm.OpenCodeCBx.Value = CBool(SettOpenCode.Val)
     
     uFrm.PhoneLengthTBx.Text = CStr(SettPhoneNumLength.Val)
     InitMofifSpecialChars uFrm
@@ -88,11 +88,11 @@ Public Sub InitSettingsForm(uFrm As MSForms.UserForm)
     uFrm.PymntStatusEffectueIdTBx.Text = CStr(SettPymntStatusEffectueId.Val)
     uFrm.PymntStatusEffectueLabelTBx.Text = CStr(SettPymntStatusEffectueLabel.Val)
     
-    uFrm.PymntAttenteValidationChBx.value = CBool(SettPymntNotifyAttenteValidation.Val)
-    uFrm.PymntAttenteExtractionNotifyChBx.value = CBool(SettPymntNotifyAttenteExtraction.Val)
-    uFrm.PymntExtraitNotifyChBx.value = CBool(SettPymntNotifyExtraction.Val)
-    uFrm.PymntFichierEnvoyeNotifyChBx.value = CBool(SettPymntNotifyFichierEnvoye.Val)
-    uFrm.PymntEffectueNotifyChBx.value = CBool(SettPymntNotifyEffectue.Val)
+    uFrm.PymntAttenteValidationChBx.Value = CBool(SettPymntNotifyAttenteValidation.Val)
+    uFrm.PymntAttenteExtractionNotifyChBx.Value = CBool(SettPymntNotifyAttenteExtraction.Val)
+    uFrm.PymntExtraitNotifyChBx.Value = CBool(SettPymntNotifyExtraction.Val)
+    uFrm.PymntFichierEnvoyeNotifyChBx.Value = CBool(SettPymntNotifyFichierEnvoye.Val)
+    uFrm.PymntEffectueNotifyChBx.Value = CBool(SettPymntNotifyEffectue.Val)
     
     Set oSettingPaymentFrm = NewUCTL(uFrm.SettingPaymentFrm, oMainUfrm)
     Set oUctl = oSettingPaymentFrm.AddCtl(uFrm.SettingPaymentFrm.MotifSpecialCharCancelImg).SetSizes(NewSize(15, 15), NewSize(17, 17))
@@ -113,7 +113,7 @@ Public Sub InitSettingsForm(uFrm As MSForms.UserForm)
     uFrm.PwdNumberMinTBx.Text = CStr(GetPwdNumberMin)
     uFrm.PwdSpecialCharsMinTBx.Text = CStr(GetPwdSpecialCharsMin)
     uFrm.PwdValidityTBx.Text = CStr(GetPwdValidity)
-    uFrm.PwdUpdCanBeSameChBx.value = CBool(GetPwdUpdCanBeSame)
+    uFrm.PwdUpdCanBeSameChBx.Value = CBool(GetPwdUpdCanBeSame)
 
     InitDbSelectLimitPosition uFrm
 
@@ -131,10 +131,10 @@ Public Sub InitSettingsForm(uFrm As MSForms.UserForm)
     
     InitMailSettingUfrm uFrm
 
-    uFrm.PymntExtractionDontSendFileOBtn.value = CBool(SettPymntExtractionDontSendFile.Val)
-    uFrm.PymntExtractionSendFileToListOBtn.value = CBool(SettPymntExtractionSendFileToList.Val)
-    uFrm.PymntExtractionSendFileToUsersOBtn.value = CBool(SettPymntExtractionSendFileToUsers.Val)
-    uFrm.PymntExtractionSendFileToAllOBtn.value = CBool(SettPymntExtractionSendFileToAll.Val)
+    uFrm.PymntExtractionDontSendFileOBtn.Value = CBool(SettPymntExtractionDontSendFile.Val)
+    uFrm.PymntExtractionSendFileToListOBtn.Value = CBool(SettPymntExtractionSendFileToList.Val)
+    uFrm.PymntExtractionSendFileToUsersOBtn.Value = CBool(SettPymntExtractionSendFileToUsers.Val)
+    uFrm.PymntExtractionSendFileToAllOBtn.Value = CBool(SettPymntExtractionSendFileToAll.Val)
     uFrm.PymntExtractionFileFolderTBx.Text = CStr(SettPymntExtractionFileFolder.Val)
     InitPymntExtractionReceiversList uFrm
     
@@ -226,7 +226,7 @@ End Sub
 
 Public Sub SaveCodeAccessParamSettings(uFrm As MSForms.UserForm)
     
-    currOpenCode = uFrm.OpenCodeCBx.value
+    currOpenCode = uFrm.OpenCodeCBx.Value
     
     If SaveAPPSettings(False, False, False, True, False, False, False, False) Then
         MsgBox "Paramètres Accès au Code enregistés avec Succès", vbInformation, GetAppName
@@ -283,11 +283,11 @@ Public Sub SaveSettingPayment(uFrm As MSForms.UserForm)
     currPymntLastLinesSizeDashboard = CLng(uFrm.PymntLastLinesSizeDashboardTBx.Text)
     currPymntEmployeesSearchLinesSize = CLng(uFrm.PymntEmployeesSearchLinesSizeTBx.Text)
 
-    currPymntNotifyAttenteValidation = CBool(uFrm.PymntAttenteValidationChBx.value)
-    currPymntNotifyAttenteExtraction = CBool(uFrm.PymntAttenteExtractionNotifyChBx.value)
-    currPymntNotifyExtrait = CBool(uFrm.PymntExtraitNotifyChBx.value)
-    currPymntNotifyFichierEnvoye = CBool(uFrm.PymntFichierEnvoyeNotifyChBx.value)
-    currPymntNotifyEffectue = CBool(uFrm.PymntEffectueNotifyChBx.value)
+    currPymntNotifyAttenteValidation = CBool(uFrm.PymntAttenteValidationChBx.Value)
+    currPymntNotifyAttenteExtraction = CBool(uFrm.PymntAttenteExtractionNotifyChBx.Value)
+    currPymntNotifyExtrait = CBool(uFrm.PymntExtraitNotifyChBx.Value)
+    currPymntNotifyFichierEnvoye = CBool(uFrm.PymntFichierEnvoyeNotifyChBx.Value)
+    currPymntNotifyEffectue = CBool(uFrm.PymntEffectueNotifyChBx.Value)
     
     If SaveAPPSettings(False, False, False, False, True, False, False, False) Then
         MsgBox "Paramètres Enregistrement Paiement enregistés avec Succès", vbInformation, GetAppName
@@ -297,10 +297,10 @@ Public Sub SaveSettingPayment(uFrm As MSForms.UserForm)
 End Sub
 
 Public Sub SaveSettingPaymentSendFile(uFrm As MSForms.UserForm)
-    currPymntExtractionDontSendFile = CBool(uFrm.PymntExtractionDontSendFileOBtn.value)
-    currPymntExtractionSendFileToList = CBool(uFrm.PymntExtractionSendFileToListOBtn.value)
-    currPymntExtractionSendFileToUsers = CBool(uFrm.PymntExtractionSendFileToUsersOBtn.value)
-    currPymntExtractionSendFileToAll = CBool(uFrm.PymntExtractionSendFileToAllOBtn.value)
+    currPymntExtractionDontSendFile = CBool(uFrm.PymntExtractionDontSendFileOBtn.Value)
+    currPymntExtractionSendFileToList = CBool(uFrm.PymntExtractionSendFileToListOBtn.Value)
+    currPymntExtractionSendFileToUsers = CBool(uFrm.PymntExtractionSendFileToUsersOBtn.Value)
+    currPymntExtractionSendFileToAll = CBool(uFrm.PymntExtractionSendFileToAllOBtn.Value)
     currPymntExtractionFileFolder = uFrm.PymntExtractionFileFolderTBx.Text
 
     currPymntExtractionReceiversList = GetNewPymntExtractionReceivers(uFrm)
@@ -319,7 +319,7 @@ Public Sub SaveSettingSecurity(uFrm As MSForms.UserForm)
     currPwdNumberMin = uFrm.PwdNumberMinTBx.Text
     currPwdSpecialCharsMin = uFrm.PwdSpecialCharsMinTBx.Text
     currPwdValidity = uFrm.PwdValidityTBx.Text
-    currPwdUpdCanBeSame = uFrm.PwdUpdCanBeSameChBx.value
+    currPwdUpdCanBeSame = uFrm.PwdUpdCanBeSameChBx.Value
     
     If SaveAPPSettings(False, False, False, False, False, True, False, False) Then
         MsgBox "Paramètres Sécurité enregistés avec Succès", vbInformation, GetAppName
@@ -808,13 +808,13 @@ Private Sub InitPymntExtractionReceiversList(uFrm As MSForms.UserForm)
 End Sub
 
 Public Sub ChangePymntExtractionSendFile(uFrm As MSForms.UserForm)
-    If uFrm.PymntExtractionDontSendFileOBtn.value Then
+    If uFrm.PymntExtractionDontSendFileOBtn.Value Then
         ChangePymntExtractionReceiversListStatus uFrm, False
-    ElseIf uFrm.PymntExtractionSendFileToListOBtn.value Then
+    ElseIf uFrm.PymntExtractionSendFileToListOBtn.Value Then
         ChangePymntExtractionReceiversListStatus uFrm, True
-    ElseIf uFrm.PymntExtractionSendFileToUsersOBtn.value Then
+    ElseIf uFrm.PymntExtractionSendFileToUsersOBtn.Value Then
         ChangePymntExtractionReceiversListStatus uFrm, False
-    ElseIf uFrm.PymntExtractionSendFileToAllOBtn.value Then
+    ElseIf uFrm.PymntExtractionSendFileToAllOBtn.Value Then
         ChangePymntExtractionReceiversListStatus uFrm, True
     Else
         ChangePymntExtractionReceiversListStatus uFrm, False
@@ -848,7 +848,7 @@ Public Sub ResetPymntExtractionReceiver(uFrm As MSForms.UserForm)
     
     uFrm.PymntExtractionReceiverNameTBx.Text = ""
     uFrm.PymntExtractionReceiverEMailTBx.Text = ""
-    uFrm.PymntExtractionReceiverActivatedChBx.value = False
+    uFrm.PymntExtractionReceiverActivatedChBx.Value = False
 End Sub
 
 Public Sub SelectPymntExtractionReceiver(uFrm As MSForms.UserForm)
@@ -865,7 +865,7 @@ Public Sub SelectPymntExtractionReceiver(uFrm As MSForms.UserForm)
             
             uFrm.PymntExtractionReceiverNameTBx.Text = .List(i, 0)
             uFrm.PymntExtractionReceiverEMailTBx.Text = .List(i, 1)
-            uFrm.PymntExtractionReceiverActivatedChBx.value = CBool(.List(i, 2))
+            uFrm.PymntExtractionReceiverActivatedChBx.Value = CBool(.List(i, 2))
             
             lPymntExtractionReceiverSelectedIndex = i
           End If
@@ -882,7 +882,7 @@ Public Sub SavePymntExtractionReceiver(uFrm As MSForms.UserForm)
     Else
         newReceiverName = uFrm.PymntExtractionReceiverNameTBx.Text
         newReceiverEMail = uFrm.PymntExtractionReceiverEMailTBx.Text
-        newActivated = IIf(uFrm.PymntExtractionReceiverActivatedChBx.value, "1", "0")
+        newActivated = IIf(uFrm.PymntExtractionReceiverActivatedChBx.Value, "1", "0")
 
         If lPymntExtractionReceiverSelectedIndex = -1 Then
             ' Add Receiver

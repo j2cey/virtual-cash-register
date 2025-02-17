@@ -7,10 +7,11 @@
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 Option Explicit
 
-Private m_business_logic As CBusinessLogic
-Private m_last_result As CResult
+Private m_upper_setting As CSetting
 
 Private Const MODULE_NAME As String = "Setting Data Source Class"
+Private Const COLUMN_VALUE As Long = 2
+
 Private Const USER_LOGIN_FIELD_KEY As String = "UserLogin"
 Private Const USER_PWD_FIELD_KEY As String = "UserPwd"
 
@@ -29,35 +30,19 @@ Public Property Get Self() As CSettingDataSource
 End Property
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-'   Property      : BusinessLogic
-'   Purpose       : The Business Logic object
+'   Property      : UpperSetting
+'   Purpose       : The Super Setting object
 '
 '   Date            Developer           Action
 '   ---------------------------------------------------------------------------------------
-'   2025/02/09      Jude Parfait        Created
+'   2025/02/14      Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Property Set BusinessLogic(oBusinessLogic As CBusinessLogic)
-    Set m_business_logic = oBusinessLogic
+Public Property Set UpperSetting(oUpperSetting As CSetting)
+    Set m_upper_setting = oUpperSetting
 End Property
 
-Public Property Get BusinessLogic() As CBusinessLogic
-    Set BusinessLogic = m_business_logic
-End Property
-
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-'   Property      : LastResult
-'   Purpose       : The Last Result
-'
-'   Date            Developer           Action
-'   ---------------------------------------------------------------------------------------
-'   2025/02/08      Jude Parfait        Created
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Property Set LastResult(oLastResult As CResult)
-    Set m_last_result = oLastResult
-End Property
-
-Public Property Get LastResult() As CResult
-    Set LastResult = m_last_result
+Public Property Get UpperSetting() As CSetting
+    Set UpperSetting = m_upper_setting
 End Property
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -105,7 +90,15 @@ Public Property Let DataSourceClass(eDataSourceClass As enuDataSourceClass)
 End Property
 
 Public Property Get DataSourceClass() As enuDataSourceClass
-    DataSourceClass = CInt(GetFieldValue(DATA_SOURCE_CLASS_KEY))
+    Dim vrnValue As Variant
+    
+    vrnValue = GetFieldValue(DATA_SOURCE_CLASS_KEY)
+    
+    If vrnValue = Empty Or CStr(vrnValue) = "" Then
+        DataSourceClass = noDataSource
+    Else
+        DataSourceClass = CInt(vrnValue)
+    End If
 End Property
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -190,49 +183,38 @@ End Property
 '   ---------------------------------------------------------------------------------------
 '   2025/01/12      Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Sub Init(ByVal oUser As CUser, ByVal oDataSource As IDataSource, ByVal strRecordTable As String)
+Public Sub Init(ByVal oUpperSetting As CSetting)
+    Set Me.UpperSetting = oUpperSetting
     
-    Call InitBusinessLogic(oUser, oDataSource, strRecordTable)
+    InitFields
 End Sub
 
 Public Sub LoadValues()
-    Dim result As CResult, oRecordValue As CRecord
-    
-    Set result = Me.BusinessLogic.ReadValues(False)
-    
-    If Not result.IsOK Then
-        result.Notify
-    End If
+    Me.UpperSetting.LoadValues
 End Sub
 
 Public Sub SaveValues()
-    Dim result As CResult, oRecordValue As CRecord
-    
-    Set result = Me.BusinessLogic.Save(False)
-    
-    If Not result.IsOK Then
-        result.Notify
-    End If
+    Me.UpperSetting.SaveValues
 End Sub
 
 Public Function IsComplete() As Boolean
     Dim blnAnyImportantFieldIsEmpty As Boolean
     
-    Set Me.LastResult = SetNewResult("Check Is Complete", MODULE_NAME)
+    Set Me.UpperSetting.LastResult = SetNewResult("Check Is Complete", MODULE_NAME)
     
-    If Not Me.BusinessLogic Is Nothing Then
+    If Not Me.UpperSetting.BusinessLogic Is Nothing Then
         blnAnyImportantFieldIsEmpty = _
-            Me.BusinessLogic.GetField(SERVER_OR_PATH_KEY).FieldValue.IsEmpty Or _
-            Me.BusinessLogic.GetField(DATABASE_OR_FILE_NAME_KEY).FieldValue.IsEmpty Or _
-            Me.BusinessLogic.GetField(DATA_SOURCE_CLASS_KEY).FieldValue.IsEmpty Or _
-            Me.BusinessLogic.GetField(DATABASE_CLASS_KEY).FieldValue.IsEmpty Or _
-            Me.BusinessLogic.GetField(USER_LOGIN_FIELD_KEY).FieldValue.IsEmpty Or _
-            Me.BusinessLogic.GetField(USER_PWD_FIELD_KEY).FieldValue.IsEmpty Or _
-            Me.BusinessLogic.GetField(INTEGRATED_SECURITY_KEY).FieldValue.IsEmpty
+            Me.UpperSetting.IsFieldEmpty(SERVER_OR_PATH_KEY) Or _
+            Me.UpperSetting.IsFieldEmpty(DATABASE_OR_FILE_NAME_KEY) Or _
+            Me.UpperSetting.IsFieldEmpty(DATA_SOURCE_CLASS_KEY) Or _
+            Me.UpperSetting.IsFieldEmpty(DATABASE_CLASS_KEY) Or _
+            Me.UpperSetting.IsFieldEmpty(USER_LOGIN_FIELD_KEY) Or _
+            Me.UpperSetting.IsFieldEmpty(USER_PWD_FIELD_KEY) Or _
+            Me.UpperSetting.IsFieldEmpty(INTEGRATED_SECURITY_KEY)
     
         IsComplete = Not blnAnyImportantFieldIsEmpty
     Else
-        Me.LastResult.SetFailure "The Business Logic Object not set yet !", True
+        Me.UpperSetting.LastResult.SetFailure "The Business Logic Object not set yet !", True
         IsComplete = False
     End If
 End Function
@@ -243,43 +225,29 @@ End Function
 '    Private Functions and Subs
 '***************************************************************************************************************************************************************
 
-Private Sub InitBusinessLogic(ByVal oUser As CUser, ByVal oDataSource As IDataSource, ByVal strRecordTable As String)
-    Set Me.BusinessLogic = NewBusinessLogic(oUser, NewDataAccess(oUser, oDataSource, strRecordTable))
-    
+Private Sub InitFields()
     ' UserLogin
-    Me.BusinessLogic.AddField(NewFieldValueString, USER_LOGIN_FIELD_KEY, "User Login").SetOffsetStart(2).SetOffsetEnd (2)
+    Me.UpperSetting.AddField NewFieldValueString, USER_LOGIN_FIELD_KEY, "User Login", COLUMN_VALUE, -1, toTheLeft
     ' UserPwd
-    Me.BusinessLogic.AddField(NewFieldValueString, USER_PWD_FIELD_KEY, "User Pwd").SetOffsetStart(3).SetOffsetEnd (2)
+    Me.UpperSetting.AddField NewFieldValueString, USER_PWD_FIELD_KEY, "User Pwd", COLUMN_VALUE, -1, toTheLeft
     ' Data Source Class
-    Me.BusinessLogic.AddField(NewFieldValueString, DATA_SOURCE_CLASS_KEY, "Data Source Class Name").SetOffsetStart(4).SetOffsetEnd (2)
+    Me.UpperSetting.AddField NewFieldValueString, DATA_SOURCE_CLASS_KEY, "Data Source Class Name", COLUMN_VALUE, -1, toTheLeft
     ' Database Class
-    Me.BusinessLogic.AddField(NewFieldValueString, DATABASE_CLASS_KEY, "Data Source Class Name").SetOffsetStart(5).SetOffsetEnd (2)
+    Me.UpperSetting.AddField NewFieldValueString, DATABASE_CLASS_KEY, "Data Source Class Name", COLUMN_VALUE, -1, toTheLeft
     ' Server or Path
-    Me.BusinessLogic.AddField(NewFieldValueString, SERVER_OR_PATH_KEY, "Server or Path").SetOffsetStart(6).SetOffsetEnd (2)
+    Me.UpperSetting.AddField NewFieldValueString, SERVER_OR_PATH_KEY, "Server or Path", COLUMN_VALUE, -1, toTheLeft
     ' Database or File Name
-    Me.BusinessLogic.AddField(NewFieldValueString, DATABASE_OR_FILE_NAME_KEY, "Database or File Name").SetOffsetStart(7).SetOffsetEnd (2)
+    Me.UpperSetting.AddField NewFieldValueString, DATABASE_OR_FILE_NAME_KEY, "Database or File Name", COLUMN_VALUE, -1, toTheLeft
     ' Integrated Security
-    Me.BusinessLogic.AddField(NewFieldValueBoolean, INTEGRATED_SECURITY_KEY, "Integrated Security").SetOffsetStart(8).SetOffsetEnd (2)
+    Me.UpperSetting.AddField NewFieldValueBoolean, INTEGRATED_SECURITY_KEY, "Integrated Security", COLUMN_VALUE, -1, toTheLeft
 End Sub
 
 Private Sub SetFieldValue(ByVal strFieldKey As String, ByVal varFieldValue As Variant)
-    Set Me.LastResult = SetNewResult("Set Field Value", MODULE_NAME)
-    
-    If Not Me.BusinessLogic Is Nothing Then
-        Set Me.LastResult = Me.BusinessLogic.SetFieldValue(strFieldKey, varFieldValue)
-    Else
-        Me.LastResult.SetFailure "The Business Logic Object not set yet !", True
-    End If
+    Me.UpperSetting.SetFieldValue strFieldKey, varFieldValue
 End Sub
 
 Private Function GetFieldValue(ByVal strFieldKey As String) As Variant
-    Set Me.LastResult = SetNewResult("Get Field Value", MODULE_NAME)
-    
-    If Not Me.BusinessLogic Is Nothing Then
-        GetFieldValue = Me.BusinessLogic.GetFieldValue(strFieldKey).GetValue()
-    Else
-        Me.LastResult.SetFailure "The Business Logic Object not set yet !", True
-    End If
+    GetFieldValue = Me.UpperSetting.GetFieldValue(strFieldKey)
 End Function
 
 

@@ -17,6 +17,7 @@ Private m_name_for_selecting As String
 
 Private m_offset_start As Long
 Private m_offset_end As Long
+Private m_store_field_name As enuStoreFieldName
 Private m_label As String
 
 Private m_is_required As Boolean
@@ -147,6 +148,22 @@ End Property
 
 Public Property Get OffsetEnd() As Long
     OffsetEnd = m_offset_end
+End Property
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'   Property      : StoreFieldName
+'   Purpose       : Determine how to store the field name, if any (sheet Data source)
+'
+'   Date            Developer           Action
+'   ---------------------------------------------------------------------------------------
+'   2025/02/03      Jude Parfait        Created
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Public Property Let StoreFieldName(eStoreFieldName As enuStoreFieldName)
+    m_store_field_name = eStoreFieldName
+End Property
+
+Public Property Get StoreFieldName() As enuStoreFieldName
+    StoreFieldName = m_store_field_name
 End Property
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -493,6 +510,12 @@ Public Function SetOffsetEnd(ByVal lngOffsetEnd As Long) As CField
     Set SetOffsetEnd = Me
 End Function
 
+Public Function SetStoreFieldName(ByVal eStoreFieldName As enuStoreFieldName) As CField
+    Me.StoreFieldName = eStoreFieldName
+    
+    Set SetStoreFieldName = Me
+End Function
+
 Public Function ResetCode() As CField
     m_guid = CreateGUID
     
@@ -515,7 +538,7 @@ End Function
 
 Private Sub Class_Initialize()
     m_guid = CreateGUID
-    'Set m_previous_value = New IFieldValue
+    m_store_field_name = doNotStore
 End Sub
 
 Private Sub Class_Terminate()

@@ -2,7 +2,7 @@ Public empBodyFrm As CUIControl, oEmployeeSearchFrm As CUIControl, oEmployeeSave
 Public oEmployeeSaveForm As clsSaveForm, sEmployeeSelectedId As String
 
 Public Sub InitEmployees(uFrm As MSForms.UserForm)
-    uFrm.EmployeesMultiPage.value = 0
+    uFrm.EmployeesMultiPage.Value = 0
     
     ' Main Body
     Set empBodyFrm = NewUCTL(uFrm.EmployeesBodyCardFrm, oMainUfrm)
@@ -107,7 +107,7 @@ End Sub
 
 Public Sub EditEmployee(uFrm As MSForms.UserForm)
     oEmployeeSaveForm.ExecEdit sEmployeeSelectedId
-    uFrm.EmployeesMultiPage.value = 1
+    uFrm.EmployeesMultiPage.Value = 1
 End Sub
 
 Public Sub DeleteEmployee(uFrm As MSForms.UserForm)
@@ -128,7 +128,7 @@ End Sub
 
 Public Sub ResetEmployeeForms(uFrm As MSForms.UserForm)
     oEmployeeSearchForm.ResetForm
-    uFrm.EmployeesMultiPage.value = 0
+    uFrm.EmployeesMultiPage.Value = 0
 End Sub
 
 Private Sub InitSearchForm(uFrm As MSForms.UserForm)

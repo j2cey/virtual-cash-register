@@ -20,9 +20,9 @@ Option Explicit
 '   ---------------------------------------------------------------------------------------
 '   2025/01/31      Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Function NewBusinessLogic(ByVal oUser As CUser, ByVal oDataAccess As CDataAccess) As CBusinessLogic
+Public Function NewBusinessLogic(ByVal oDataAccess As CDataAccess, Optional ByVal oUser As CModelUser = Nothing) As CBusinessLogic
     With New CBusinessLogic
-        .Init oUser, oDataAccess
+        .Init oDataAccess, oUser
         Set NewBusinessLogic = .Self 'returns the newly created instance
     End With
 End Function
@@ -40,7 +40,7 @@ End Function
 '   ---------------------------------------------------------------------------------------
 '   2025/01/31      Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Function NewRecord(Optional oDataAccess As CDataAccess = Nothing, Optional oUser As CUser = Nothing, Optional ByVal lngRecordId As Long = -1) As CRecord
+Public Function NewRecord(Optional ByVal oDataAccess As CDataAccess = Nothing, Optional ByVal oUser As CModelUser = Nothing, Optional ByVal lngRecordId As Long = -1) As CRecord
     With New CRecord
         .Init oDataAccess, oUser, lngRecordId
         Set NewRecord = .Self 'returns the newly created instance
@@ -59,7 +59,7 @@ End Function
 '   ---------------------------------------------------------------------------------------
 '   2025/01/31      Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Function NewRecordList(Optional oDataAccess As CDataAccess = Nothing, Optional oUser As CUser = Nothing) As CRecordList
+Public Function NewRecordList(Optional ByVal oDataAccess As CDataAccess = Nothing, Optional ByVal oUser As CModelUser = Nothing) As CRecordList
     With New CRecordList
         .Init oDataAccess, oUser
         Set NewRecordList = .Self 'returns the newly created instance
@@ -77,7 +77,7 @@ End Function
 '   ---------------------------------------------------------------------------------------
 '   2025/01/31      Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Function NewField(ByVal oFieldValue As IFieldValue, strName As String, strLabel As String, Optional vrnValue As Variant = Null, Optional ByVal strNameForSaving As String = "", Optional ByVal strNameForSelecting As String = "") As CField
+Public Function NewField(ByVal oFieldValue As IFieldValue, ByVal strName As String, ByVal strLabel As String, Optional ByVal vrnValue As Variant = Null, Optional ByVal strNameForSaving As String = "", Optional ByVal strNameForSelecting As String = "") As CField
     With New CField
         .Init oFieldValue, strName, strLabel, vrnValue, strNameForSaving, strNameForSelecting
         Set NewField = .Self 'returns the newly created instance
@@ -153,5 +153,23 @@ Public Function NewFieldValueBoolean(Optional ByVal oUpperField As CField = Noth
     With New CFieldValueBoolean
         .Init oUpperField
         Set NewFieldValueBoolean = .Self 'returns the newly created instance
+    End With
+End Function
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'   Function    : NewFieldValueDate
+'   Purpose     : Create and Initialize a New Date Field Value
+'   Arguments   :
+'
+'   Returns     : CFieldValueDate
+'
+'   Date        Developer           Action
+'   ---------------------------------------------------------------------------------------
+'   2025/02/15      Jude Parfait        Created
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Public Function NewFieldValueDate(Optional ByVal oUpperField As CField = Nothing) As CFieldValueDate
+    With New CFieldValueDate
+        .Init oUpperField
+        Set NewFieldValueDate = .Self 'returns the newly created instance
     End With
 End Function

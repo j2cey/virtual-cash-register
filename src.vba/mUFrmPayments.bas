@@ -7,7 +7,7 @@ Public paymentEmployeeSelectedCount As Long
 Public oPaymentDetailFrm As CUIControl
 
 Public Sub InitPayments(uFrm As MSForms.UserForm)
-    uFrm.PaymentsMultiPage.value = 0
+    uFrm.PaymentsMultiPage.Value = 0
     
     ' Main Body
     Set paymentBodyFrm = NewUCTL(uFrm.PaymentsBodyCardFrm, oMainUfrm)
@@ -153,7 +153,7 @@ End Sub
 
 Public Sub SwitchToPaymentSearch(uFrm As MSForms.UserForm)
     InitPaymentListFormat uFrm
-    uFrm.PaymentsMultiPage.value = 0
+    uFrm.PaymentsMultiPage.Value = 0
 End Sub
 
 Public Sub SelectPayment(uFrm As MSForms.UserForm)
@@ -186,7 +186,7 @@ Public Sub SelectPayment(uFrm As MSForms.UserForm)
 End Sub
 
 Public Sub LaunchCreatePayment(uFrm As MSForms.UserForm)
-    uFrm.PaymentsMultiPage.value = 1
+    uFrm.PaymentsMultiPage.Value = 1
     SetCreatedAtFormat uFrm, False
     ResetPaymentForm uFrm
     
@@ -329,14 +329,14 @@ Private Sub UpdateTotalAmount(uFrm As MSForms.UserForm, currAmount As Long, bAdd
 End Sub
 
 Public Sub ClearPaymentEmployeeDetails(uFrm As MSForms.UserForm)
-    uFrm.PaymentMotifCBx.value = ""
+    uFrm.PaymentMotifCBx.Value = ""
     uFrm.PaymentMotifCBx.ListIndex = -1
     uFrm.PaymentAmountTBx.Text = ""
 End Sub
 
 Public Sub PaymentReset(uFrm As MSForms.UserForm)
     If oPaymentSaveForm.Status = Show Then
-        uFrm.PaymentsMultiPage.value = 0
+        uFrm.PaymentsMultiPage.Value = 0
         Exit Sub
     End If
     
@@ -591,13 +591,13 @@ Public Sub EditPayment(uFrm As MSForms.UserForm)
     oPaymentSaveForm.SwitchStatus Update
     SetCreatedAtFormat uFrm, True
     FormatPaymentActions uFrm
-    uFrm.PaymentsMultiPage.value = 1
+    uFrm.PaymentsMultiPage.Value = 1
     
     SetPaymentShowFormat uFrm, True
 End Sub
 
 Public Sub SavePayment(uFrm As MSForms.UserForm)
-    If uFrm.PaymentTitleTBx.value = "" Then
+    If uFrm.PaymentTitleTBx.Value = "" Then
         MsgBox "Veuillez rensigner un Titre", vbCritical, GetAppName
         With uFrm.PaymentTitleTBx
             .SelStart = 0
@@ -620,12 +620,12 @@ Public Sub SavePayment(uFrm As MSForms.UserForm)
     If oPaymentSaveForm.Status = Add Then
         If CreatePayment(uFrm) Then
             InitFormat uFrm
-            uFrm.PaymentsMultiPage.value = 0
+            uFrm.PaymentsMultiPage.Value = 0
         End If
     Else
         If UpdatePayment(uFrm) Then
             InitFormat uFrm
-            uFrm.PaymentsMultiPage.value = 0
+            uFrm.PaymentsMultiPage.Value = 0
         End If
     End If
 End Sub
@@ -645,7 +645,7 @@ Public Sub ValidatePayment(uFrm As MSForms.UserForm)
         audit.EndWithSuccess
         oPaymentSearchForm.Search True
         InitPaymentListFormat uFrm
-        uFrm.PaymentsMultiPage.value = 0
+        uFrm.PaymentsMultiPage.Value = 0
     Else
         audit.EndWithFailure
         MsgBox "Erreur Validation Paiement dans la Base de Données !", vbCritical, GetAppName
@@ -677,7 +677,7 @@ Public Sub ExtractPayment(uFrm As MSForms.UserForm)
                 audit.EndWithSuccess
                 oPaymentSearchForm.Search True
                 InitPaymentListFormat uFrm
-                uFrm.PaymentsMultiPage.value = 0
+                uFrm.PaymentsMultiPage.Value = 0
             Else
                 audit.EndWithFailure
                 MsgBox "Erreur Extraction Paiement dans la Base de Données !", vbCritical, GetAppName
@@ -718,7 +718,7 @@ Public Sub ExecutePayment(uFrm As MSForms.UserForm)
         audit.EndWithSuccess
         oPaymentSearchForm.Search True
         InitPaymentListFormat uFrm
-        uFrm.PaymentsMultiPage.value = 0
+        uFrm.PaymentsMultiPage.Value = 0
     Else
         audit.EndWithFailure
         MsgBox "Erreur Exécution Paiement dans la Base de Données !", vbCritical, GetAppName
@@ -816,7 +816,7 @@ Public Sub DeletePayment(uFrm As MSForms.UserForm)
             
             oPaymentSearchForm.Search True
             InitPaymentListFormat uFrm
-            uFrm.PaymentsMultiPage.value = 0
+            uFrm.PaymentsMultiPage.Value = 0
             
             audit.EndWithSuccess
         Else
@@ -923,7 +923,7 @@ Private Function ExportToCsv(ByRef paymentFileName As String, ByRef exportFile A
   'Print #OutputFileNum, "Field1" & "," & "Field2"
 
   RowCount = ws.Cells(ws.Rows.count, "A").End(xlUp).Row
-  SheetValues = Sheets("Curr Payment").Range("A1:F" & CStr(RowCount)).value
+  SheetValues = Sheets("Curr Payment").Range("A1:F" & CStr(RowCount)).Value
   
   ReDim LineValues(1 To 6)
 

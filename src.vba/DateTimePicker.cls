@@ -308,26 +308,26 @@ Public Property Let DateFormat(Optional ByVal Index As Integer = 0, ByVal NewFor
     End If
 End Property
 
-Public Property Get value(Optional ByVal Index As Integer = 0) As Date
+Public Property Get Value(Optional ByVal Index As Integer = 0) As Date
     Dim st     As SYSTEMTIME
     Dim lngResult As Long
     If (blnCreate = True) Then
         Select Case Index
             Case 0
                 lngResult = SendMessage(lnghwndDTP(1), DTM_GETSYSTEMTIME, 0, st)
-                value = DateSerial(st.Year, st.Month, st.Day)
+                Value = DateSerial(st.Year, st.Month, st.Day)
             Case 1 To colBaseCtrl.count
                 lngResult = SendMessage(lnghwndDTP(Index), DTM_GETSYSTEMTIME, 0, st)
-                value = DateSerial(st.Year, st.Month, st.Day)
+                Value = DateSerial(st.Year, st.Month, st.Day)
             Case Else
-                value = CDate(0)
+                Value = CDate(0)
         End Select
     Else
-        value = CDate(0)
+        Value = CDate(0)
     End If
 End Property
 
-Public Property Let value(Optional ByVal Index As Integer = 0, ByVal newValue As Date)
+Public Property Let Value(Optional ByVal Index As Integer = 0, ByVal newValue As Date)
     Dim lngResult As Long
     Dim st     As SYSTEMTIME
     Dim i      As Integer

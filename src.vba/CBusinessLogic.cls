@@ -8,7 +8,7 @@
 Option Explicit
 
 
-Private m_user As CUser
+Private m_user As CModelUser
 Private m_data_access As CDataAccess
 
 Private m_output_record_list As CRecordList
@@ -37,11 +37,11 @@ End Property
 '   ---------------------------------------------------------------------------------------
 '   2025/02/08      Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Property Set User(oUser As CUser)
+Public Property Set User(oUser As CModelUser)
     Set m_user = oUser
 End Property
 
-Public Property Get User() As CUser
+Public Property Get User() As CModelUser
     Set User = m_user
 End Property
 
@@ -143,10 +143,13 @@ End Property
 '   ---------------------------------------------------------------------------------------
 '   2025/02/08      Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Sub Init(ByVal oUser As CUser, ByVal oDataAccess As CDataAccess)
+Public Sub Init(ByVal oDataAccess As CDataAccess, Optional ByVal oUser As CModelUser = Nothing)
     
-    Set Me.User = oUser
     Set Me.DataAccess = oDataAccess
+    
+    If Not oUser Is Nothing Then
+        Set Me.User = oUser
+    End If
     
 End Sub
 
@@ -231,7 +234,7 @@ End Function
 '   ---------------------------------------------------------------------------------------
 '   2025/02/08  Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Function Save(Optional ByVal blnQuietly As Boolean = True) As CField
+Public Function Save(Optional ByVal blnQuietly As Boolean = True) As CResult
     
     Set Me.LastResult = SetNewResult("Save", MODULE_NAME)
     
@@ -246,11 +249,11 @@ Public Function Save(Optional ByVal blnQuietly As Boolean = True) As CField
     Set Save = Me.LastResult
 End Function
 
-Public Function AddField(ByVal oFieldType As IFieldValue, ByVal strFieldName As String, ByVal strFieldLabel As String) As CField
+Public Function AddField(ByVal oFieldType As IFieldValue, ByVal strNameForSaving As String, ByVal strFieldLabel As String, Optional ByVal strNameForSelecting As String = "") As CField
     Dim result As CResult, oNewField As CField
     
     If CheckRecord Then
-        Set oNewField = NewField(oFieldType, strFieldName, strFieldLabel)
+        Set oNewField = NewField(oFieldType, strNameForSaving, strFieldLabel, Null, strNameForSaving, strNameForSelecting)
         
         Set result = Me.DataAccess.Record.FieldList.AddField(oNewField)
         
@@ -260,7 +263,7 @@ Public Function AddField(ByVal oFieldType As IFieldValue, ByVal strFieldName As 
     End If
 End Function
 
-Public Function GetRecord() As Record
+Public Function GetRecord() As CRecord
     Set GetRecord = Me.DataAccess.Record
 End Function
 
@@ -269,6 +272,18 @@ Public Function GetField(ByVal strFieldName As String) As CField
         Set GetField = Me.DataAccess.Record.FieldList.GetFieldByName(strFieldName)
     Else
         Set GetField = Nothing
+    End If
+End Function
+
+Public Function GetOrAddField(ByVal strFieldName As String, ByVal oFieldType As IFieldValue, ByVal strNameForSaving As String, ByVal strFieldLabel As String, ByVal strNameForSelecting As String)
+    Dim oField As CField
+    
+    Set oField = Me.GetField(strFieldName)
+    
+    If Not oField Is Nothing Then
+        Set GetOrAddField = oField
+    Else
+        Set GetOrAddField = Me.AddField(oFieldType, strNameForSaving, strFieldLabel, strNameForSelecting)
     End If
 End Function
 
@@ -284,12 +299,24 @@ Public Function GetFieldValue(ByVal strFieldName As String) As IFieldValue
     End If
 End Function
 
-Public Function SetFieldValue(ByVal strFieldName As String, ByVal varFieldValue As Variant) As CResult
+Public Function SetFieldValue(ByVal strFieldName As String, ByVal varFieldValue As Variant, Optional ByVal oFieldType As IFieldValue = Nothing, Optional ByVal strNameForSaving As String = "", Optional ByVal strFieldLabel As String = "", Optional ByVal strNameForSelecting As String = "") As CResult
     
     Set Me.LastResult = SetNewResult("Set Field Value", MODULE_NAME)
     
     If CheckRecord Then
-        Me.GetField(strFieldName).SetValue (varFieldValue)
+        Dim oField As CField
+        
+        If Not oFieldType Is Nothing Then
+            Set oField = GetOrAddField(strFieldName, oFieldType, strNameForSaving, strFieldLabel, strNameForSelecting)
+        Else
+            Set oField = Me.GetField(strFieldName)
+        End If
+        
+        If Not oField Is Nothing Then
+            oField.SetValue (varFieldValue)
+        Else
+            Me.LastResult.SetFailure "Field '" & strFieldName & "' not found !", True
+        End If
     End If
     
     Set SetFieldValue = Me.LastResult

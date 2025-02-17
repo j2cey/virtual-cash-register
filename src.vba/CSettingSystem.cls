@@ -15,7 +15,7 @@ Private Const USER_LOGIN_FIELD_KEY As String = "UserLogin"
 Private Const USER_PWD_FIELD_KEY As String = "UserPwd"
 
 Private Const APP_NAME_KEY As String = "AppName"
-Private Const MAIL_PROVIDER_KEY As String = "MailProvider"
+Private Const MAIL_PROVIDERS_KEY As String = "MailProvider"
 
 '***************************************************************************************************************************************************************
 '   Public Properties
@@ -114,11 +114,11 @@ End Property
 ' 2025/02/12    Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 Public Property Let MailProvider(strMailProvider As String)
-    SetFieldValue MAIL_PROVIDER_KEY, CStr(strMailProvider)
+    SetFieldValue MAIL_PROVIDERS_KEY, CStr(strMailProvider)
 End Property
 
 Public Property Get MailProvider() As String
-    MailProvider = CStr(GetFieldValue(MAIL_PROVIDER_KEY))
+    MailProvider = CStr(GetFieldValue(MAIL_PROVIDERS_KEY))
 End Property
 
 
@@ -139,9 +139,9 @@ End Property
 '   ---------------------------------------------------------------------------------------
 '   2025/01/12      Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Sub Init(ByVal oUser As CUser, ByVal oDataSource As IDataSource, ByVal strRecordTable As String)
+Public Sub Init(ByVal oUser As CModelUser, ByVal oDataSource As IDataSource, ByVal strTableForSaving As String, Optional ByVal strTableForSelecting As String = "")
     
-    Call InitBusinessLogic(oUser, oDataSource, strRecordTable)
+    Call InitBusinessLogic(oUser, oDataSource, stTableForSaving, strTableForSelecting)
 End Sub
 
 Public Sub LoadValues()
@@ -172,7 +172,7 @@ Public Function IsComplete() As Boolean
     If Not Me.BusinessLogic Is Nothing Then
         blnAnyImportantFieldIsEmpty = _
             Me.BusinessLogic.GetField(APP_NAME_KEY).FieldValue.IsEmpty Or _
-            Me.BusinessLogic.GetField(MAIL_PROVIDER_KEY).FieldValue.IsEmpty
+            Me.BusinessLogic.GetField(MAIL_PROVIDERS_KEY).FieldValue.IsEmpty
     
         IsComplete = Not blnAnyImportantFieldIsEmpty
     Else
@@ -187,14 +187,14 @@ End Function
 '    Private Functions and Subs
 '***************************************************************************************************************************************************************
 
-Private Sub InitBusinessLogic(ByVal oUser As CUser, ByVal oDataSource As IDataSource, ByVal strRecordTable As String)
-    Set Me.BusinessLogic = NewBusinessLogic(oUser, NewDataAccess(oUser, oDataSource, strRecordTable))
+Private Sub InitBusinessLogic(ByVal oUser As CModelUser, ByVal oDataSource As IDataSource, ByVal strTableForSaving As String, Optional ByVal strTableForSelecting As String = "")
+    Set Me.BusinessLogic = NewBusinessLogic(NewDataAccess(oUser, oDataSource, strTableForSaving, strTableForSelecting), oUser)
     
     ' TODO: From Excel, Get the first cell empty, and use it as start row for offset
     ' UserLogin
     Me.BusinessLogic.AddField(NewFieldValueString, APP_NAME_KEY, "User Login").SetOffsetStart(2).SetOffsetEnd (2)
     ' UserPwd
-    Me.BusinessLogic.AddField(NewFieldValueString, MAIL_PROVIDER_KEY, "User Pwd").SetOffsetStart(3).SetOffsetEnd (2)
+    Me.BusinessLogic.AddField(NewFieldValueString, MAIL_PROVIDERS_KEY, "User Pwd").SetOffsetStart(3).SetOffsetEnd (2)
 End Sub
 
 Private Sub SetFieldValue(ByVal strFieldKey As String, ByVal varFieldValue As Variant)

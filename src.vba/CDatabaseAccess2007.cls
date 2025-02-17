@@ -7,7 +7,7 @@
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 Option Explicit
 
-Private m_user As CUser
+Private m_user As CModelUser
 Private m_upper_database As CDataSourceDatabase
 Private m_current_recordable As CDataAccess
 
@@ -36,11 +36,11 @@ End Property
 '   ---------------------------------------------------------------------------------------
 '   2025/01/25      Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Property Set User(oUser As CUser)
+Public Property Set User(oUser As CModelUser)
     Set m_user = oUser
 End Property
 
-Public Property Get User() As CUser
+Public Property Get User() As CModelUser
     Set User = m_user
 End Property
 
@@ -124,7 +124,7 @@ End Property
 '   ---------------------------------------------------------------------------------------
 '   2025/01/12      Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Sub Init(Optional oUser As CUser = Nothing, Optional oDataAccess As CDataAccess = Nothing)
+Public Sub Init(Optional oUser As CModelUser = Nothing, Optional oDataAccess As CDataAccess = Nothing)
     
     If Not oDataAccess Is Nothing Then
         Me.CurrentDataAccess = oDataAccess
@@ -212,11 +212,11 @@ Private Function GetSelectStatement(oDataAccess As CDataAccess, ByRef strSelectS
     Set rslt = NewResult(MODULE_NAME, "GetConnectionString", True)
     
     ' If the Table Name is not given, we return empty string
-    If oDataAccess.RecordTable = "" Then
+    If oDataAccess.TableForSelecting = "" Then
         rslt.IsOK = False
-        rslt.Message = "The Table Name is not given"
+        rslt.Message = "The Table Name For Selecting is not given"
     Else
-        Me.RequestString = "SELECT * FROM " & oDataAccess.RecordTable
+        Me.RequestString = "SELECT * FROM " & oDataAccess.TableForSelecting
     End If
     
     If rslt.IsOK Then

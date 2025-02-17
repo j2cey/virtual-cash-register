@@ -7,18 +7,23 @@
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 Option Explicit
 
-Private m_user As CUser
-Private m_record_id As Long
-Private m_data_access As CDataAccess
+Private m_user As CModelUser
 
+Private m_record_id As Long
+Private Const ID_KEY As String = "Id"
+Private Const ID_LABEL As String = "ID"
+
+Private m_data_access As CDataAccess
 Private m_field_list As CFieldList
+Private m_last_result As CResult
 
 Private m_uicontrol As CUIControl
 
 ' TODO: remove m_value ?
-Private m_value As Variant
+'Private m_value As Variant
 
 
+Private Const MODULE_NAME As String = "Record"
 Private Const DEFAULT_ID As Long = 0
 
 
@@ -38,11 +43,11 @@ End Property
 '   ---------------------------------------------------------------------------------------
 '   2025/01/12      Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Property Set User(oUser As CUser)
+Public Property Set User(oUser As CModelUser)
     Set m_user = oUser
 End Property
 
-Public Property Get User() As CUser
+Public Property Get User() As CModelUser
     Set User = m_user
 End Property
 
@@ -71,11 +76,27 @@ End Property
 ' 2025/01/31    Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 Public Property Let RecordId(lngRecordId As Long)
-    m_record_id = lngRecordId
+    Dim oField As CField
+    
+    Set oField = Me.FieldList.GetFieldByName(ID_KEY)
+    
+    If Not oField Is Nothing Then
+        oField.SetValue lngRecordId
+    Else
+        m_record_id = lngRecordId
+    End If
 End Property
 
 Public Property Get RecordId() As Long
-    RecordId = m_record_id
+    Dim oField As CField
+    
+    Set oField = Me.FieldList.GetFieldByName(ID_KEY)
+    
+    If Not oField Is Nothing Then
+        RecordId = CLng(oField.FieldValue.GetValue)
+    Else
+        RecordId = m_record_id
+    End If
 End Property
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -86,13 +107,13 @@ End Property
 '   ---------------------------------------------------------------------------------------
 '   2025/01/18      Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Property Let value(vrnValue As Variant)
-    Let m_value = vrnValue
-End Property
+'Public Property Let value(vrnValue As Variant)
+'    Let m_value = vrnValue
+'End Property
 
-Public Property Get value() As Variant
-    value = m_value
-End Property
+'Public Property Get value() As Variant
+'    value = m_value
+'End Property
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 ' Property      : FieldList
@@ -109,6 +130,18 @@ End Property
 
 Public Property Get FieldList() As CFieldList
     Set FieldList = m_field_list
+End Property
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+' Property      : FieldListCount
+' Purpose       : Get the amount of Fields in the Record
+'
+' Date          Developer           Action
+' ---------------------------------------------------------------------------------------
+' 2025/02/14    Jude Parfait        Created
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Public Property Get FieldListCount() As Long
+    FieldListCount = Me.FieldList.FieldList.count
 End Property
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -161,11 +194,11 @@ End Property
 '   ---------------------------------------------------------------------------------------
 '   2025/01/12      Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Sub Init(Optional oDataAccess As CDataAccess = Nothing, Optional oUser As CUser = Nothing, Optional ByVal lngRecordId As Long = -1)
+Public Sub Init(Optional oDataAccess As CDataAccess = Nothing, Optional oUser As CModelUser = Nothing, Optional ByVal lngRecordId As Long = -1)
     
     If Not oDataAccess Is Nothing Then
         Set Me.DataAccess = oDataAccess
-        Set Me.DataAccess.Record = Me
+        'Set Me.DataAccess.Record = Me
     End If
     
     If Not oUser Is Nothing Then
@@ -176,6 +209,22 @@ Public Sub Init(Optional oDataAccess As CDataAccess = Nothing, Optional oUser As
         Me.RecordId = lngRecordId
     End If
 End Sub
+
+
+Public Function SetIdField(Optional ByVal lngId As Long = -1) As CField
+    Dim oField As CField, lngTest As Long
+    
+    Set Me.LastResult = SetNewResult("SetIdField", MODULE_NAME)
+    
+    Set oField = NewField(NewFieldValueInteger, ID_KEY, ID_LABEL, lngId, ID_KEY, ID_KEY)
+    
+    AddSubResult MODULE_NAME, "SetIdField", Me.LastResult, Me.FieldList.AddField(oField)
+    
+    lngTest = Me.FieldListCount
+    
+    Set SetIdField = oField
+End Function
+
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 '   Function    : Save
@@ -224,7 +273,7 @@ Public Function Read() As CResult
     
     If result.IsOK Then
         Set result = Me.RecordDA.Read(vrnValue)
-        Me.value = vrnValue
+        Me.Value = vrnValue
         Me.FillFields
     End If
     
@@ -406,7 +455,7 @@ Private Function FillFields() As CResult
             Set currResult = oField.Clear()
             
             If currResult.IsOK Then
-                oField.value
+                oField.Value
             End If
             
             ' Set the current result values to Function result

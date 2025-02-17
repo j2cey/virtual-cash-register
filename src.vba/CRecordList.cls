@@ -7,7 +7,7 @@
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 Option Explicit
 
-Private m_user As CUser
+Private m_user As CModelUser
 Private m_data_access As CDataAccess
 
 Private m_list As Collection
@@ -37,11 +37,11 @@ End Property
 '   ---------------------------------------------------------------------------------------
 '   2025/02/03      Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Property Set User(oUser As CUser)
+Public Property Set User(oUser As CModelUser)
     Set m_user = oUser
 End Property
 
-Public Property Get User() As CUser
+Public Property Get User() As CModelUser
     Set User = m_user
 End Property
 
@@ -159,7 +159,7 @@ End Property
 '   ---------------------------------------------------------------------------------------
 '   2025/02/03      Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Sub Init(Optional oDataAccess As CDataAccess = Nothing, Optional oUser As CUser = Nothing)
+Public Sub Init(Optional oDataAccess As CDataAccess = Nothing, Optional oUser As CModelUser = Nothing)
     
     If Not oDataAccess Is Nothing Then
         Set Me.DataAccess = oDataAccess

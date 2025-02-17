@@ -11,7 +11,7 @@ Private m_usersInRole As Collection
 '   Public Properties
 '*****************************************************************************************************************************
 
-Public Property Get Self() As CUserRole
+Public Property Get Self() As CModelUserRole
     Set Self = Me
 End Property
 
@@ -79,7 +79,7 @@ Public Sub Init(lId As Long, sTitle As String, Optional sDescription As String)
 End Sub
 
 Public Sub LoadUsersInRoleToList(lbx As MSForms.ListBox)
-    Dim itemColl As Variant, currUser As CUser
+    Dim itemColl As Variant, currUser As CModelUser
     
     ResetUsersInRoleList lbx
     

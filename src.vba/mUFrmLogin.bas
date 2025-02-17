@@ -21,7 +21,7 @@ End Sub
 Public Sub SetLoggedUser(Optional uFrm As MSForms.UserForm)
     
     If oLoggedUser Is Nothing Then
-        Set oLoggedUser = New CUser
+        Set oLoggedUser = New CModelUser
     End If
     
     If IsMissing(uFrm) Or (uFrm Is Nothing) Then

@@ -1,17 +1,17 @@
 'Build 000
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-' Module    : CFieldValueBoolean
+' Module    : CFieldValueDate
 ' Author    : Jude Parfait NGOM NZE (jud10parfait@gmail.com)
-' Created   : 2025/02/05
-' Purpose   : The String Field Type
+' Created   : 2025/02/15
+' Purpose   : The Date Field Type
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 Option Explicit
 
-Private m_value As Boolean
+Private m_value As Date
 Private m_upper_field As CField
 Private m_is_empty As Boolean
 
-Private Const MODULE_NAME As String = "Field-Value Boolean"
+Private Const MODULE_NAME As String = "Field-Value Date"
 
 Implements IFieldValue
 
@@ -20,11 +20,7 @@ Implements IFieldValue
 '   Public Properties
 '***************************************************************************************************************************************************************
 
-'***************************************************************************************************************************************************************
-'   Public Properties
-'***************************************************************************************************************************************************************
-
-Public Property Get Self() As CFieldValueBoolean
+Public Property Get Self() As CFieldValueDate
     Set Self = Me
 End Property
 
@@ -34,13 +30,13 @@ End Property
 '
 '   Date            Developer           Action
 '   ---------------------------------------------------------------------------------------
-'   2025/02/05      Jude Parfait        Created
+'   2025/01/28      Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Property Let Value(strValue As Boolean)
-    m_value = strValue
+Public Property Let Value(dteValue As Date)
+    m_value = dteValue
 End Property
 
-Public Property Get Value() As Boolean
+Public Property Get Value() As Date
     Value = m_value
 End Property
 
@@ -53,7 +49,7 @@ End Property
 '   2025/01/28      Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 Public Property Let IsEmpty(blnIsEmpty As Boolean)
-    m_is_empty = blnIsEmpty
+    Set m_is_empty = blnIsEmpty
 End Property
 
 Public Property Get IsEmpty() As Boolean
@@ -90,7 +86,6 @@ End Property
 
 
 
-
 '***************************************************************************************************************************************************************
 '    Public Functions and Subs
 '***************************************************************************************************************************************************************
@@ -98,7 +93,7 @@ End Property
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 '   Subroutine    : Init
 '   Purpose       : Initialize the Object
-'   Arguments     : oUpperField the Upper Field
+'   Arguments     : oUpperField         The Upper Field
 '
 '   Returns       : Void
 '
@@ -130,11 +125,7 @@ End Sub
 '   2025/01/28  Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 Private Sub SetValue(ByVal vrnValue As Variant)
-    If CStr(vrnValue) = "Faux" Then
-        Me.Value = False
-    Else
-        Me.Value = CBool(vrnValue)
-    End If
+    Me.Value = CDate(vrnValue)
     Me.IsEmpty = False
 End Sub
 
@@ -167,7 +158,7 @@ End Function
 '   2025/01/28  Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 Private Sub ClearValue()
-    Me.Value = False
+    Me.Value = Null
     Me.IsEmpty = True
 End Sub
 
@@ -189,9 +180,9 @@ Private Function SetInputParameter(ByRef oRequestCommand As ADODB.Command) As CR
     
     If Not Me.IsEmpty Then
         If Me.UpperField.SearchCriteriaMustMatchExact Then
-            oRequestCommand.Parameters.Append oRequestCommand.CreateParameter("@" & Me.UpperField.Name, adBoolean, adParamInput, 255, CBool(Me.Value))
+            oRequestCommand.Parameters.Append oRequestCommand.CreateParameter("@" & Me.UpperField.Name, adDate, adParamInput, 255, CDate(Me.Value))
         Else
-            oRequestCommand.Parameters.Append oRequestCommand.CreateParameter("@" & Me.UpperField.Name, adVarChar, adParamInput, 255, CBool(Me.Value))
+            oRequestCommand.Parameters.Append oRequestCommand.CreateParameter("@" & Me.UpperField.Name, adDate, adParamInput, 255, CDate(Me.Value))
         End If
     End If
     
@@ -214,7 +205,9 @@ Private Function SetOutputParameter(ByRef oRequestCommand As ADODB.Command) As C
     
     Set result = NewResult(MODULE_NAME, "SetOutputParameter", True)
     
-    oRequestCommand.Parameters.Append oRequestCommand.CreateParameter("@" & Me.UpperField.Name, adBoolean, adParamOutput, 255, CBool(Me.Value))
+    If Not Me.IsEmpty Then
+        oRequestCommand.Parameters.Append oRequestCommand.CreateParameter("@" & Me.UpperField.Name, adDate, adParamOutput, 255, CDate(Me.Value))
+    End If
     
     Set SetInputParameters = result
 End Function
@@ -308,7 +301,7 @@ End Function
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 '   Property    : IFieldValue_SetInputParameter
-'   Purpose     : Set Input Parameters
+'   Purpose     : Set Input Parameter
 '
 '   Date        Developer       Action
 '   ---------------------------------------------------------------------------------------
@@ -319,15 +312,15 @@ Public Function IFieldValue_SetInputParameter(ByRef oRequestCommand As ADODB.Com
 End Function
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-'   Property    : IFieldValue_SetOutputParameters
-'   Purpose     : Set Output Parameters
+'   Property    : IFieldValue_SetOutputParameter
+'   Purpose     : Set Output Parameter
 '
 '   Date        Developer       Action
 '   ---------------------------------------------------------------------------------------
 '   2025/01/12  Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 Public Function IFieldValue_SetOutputParameter(ByRef oRequestCommand As ADODB.Command) As CResult
-    Set IFieldValue_SetOutputParameter = SetOutputParameter(oRequestCommand)
+    Set IFieldValue_SetOutputParameter = SetOutputParameters(oRequestCommand)
 End Function
 
 
@@ -337,9 +330,12 @@ End Function
 '***************************************************************************************************************************************************************
 
 Private Sub Class_Initialize()
+    m_is_empty = True
 End Sub
 
 Private Sub Class_Terminate()
+    
 End Sub
+
 
 

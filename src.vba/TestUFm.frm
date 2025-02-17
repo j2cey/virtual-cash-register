@@ -3,9 +3,12 @@ Option Explicit
 
 Private Sub UserForm_Initialize()
     
-    Dim userListBL As CBusinessLogic
+    Dim userListBL As CBusinessLogic, oUser As CModelUser
     
-    Set userListBL = NewBusinessLogic(GetLoggedUser(), NewDataAccess(GetLoggedUser(), GetMainDataSource, "users_view"))
+    Set userListBL = NewBusinessLogic(NewDataAccess(GetLoggedUser(), GetMainDataSource, "users", "users_view"), GetLoggedUser())
+    
+    Set oUser = NewUserFromBD(1)
+    oUser.LoadValues
     
     userListBL.AddField NewFieldValueString(), "userlogin", "User Login"
     userListBL.AddField NewFieldValueString(), "username", "User Name"

@@ -7,7 +7,7 @@
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 Option Explicit
 
-Private m_user As CUser
+Private m_user As CModelUser
 
 Private m_workbook_source As Workbook
 Private m_current_sheet As Worksheet
@@ -34,11 +34,11 @@ End Property
 '   ---------------------------------------------------------------------------------------
 '   2025/02/05      Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Property Set User(oUser As CUser)
+Public Property Set User(oUser As CModelUser)
     Set m_user = oUser
 End Property
 
-Public Property Get User() As CUser
+Public Property Get User() As CModelUser
     Set User = m_user
 End Property
 
@@ -157,6 +157,12 @@ End Property
 '   Public Functions and Subs
 '***************************************************************************************************************************************************************
 
+Private Sub ActivateCurrentSheet()
+    If Not Me.CurrentSheet Is ActiveSheet Then
+        Me.CurrentSheet.Activate
+    End If
+End Sub
+
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 '   Subroutine    : Init
 '   Purpose       : Initialize the Object
@@ -168,7 +174,7 @@ End Property
 '   ---------------------------------------------------------------------------------------
 '   2025/02/05      Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Sub Init(Optional oUser As CUser = Nothing)
+Public Sub Init(Optional oUser As CModelUser = Nothing)
     
     If Not oUser Is Nothing Then
         Set Me.User = oUser
@@ -208,7 +214,7 @@ End Function
 '   Private Functions and Subs
 '***************************************************************************************************************************************************************
 
-Private Function ValidateDataAccessSheetParams(ByVal oDataAccess As CDataAccess, Optional ByVal blnSaveCurrentSheet As Boolean = False) As CResult
+Private Function ValidateDataAccessSheetParams(ByVal oDataAccess As CDataAccess, Optional ByVal blnSaveCurrentSheet As Boolean = False, Optional ByVal blnForSaving As Boolean = True) As CResult
     Dim result As CResult
     
     Set result = NewResult(MODULE_NAME, "ValidateDataAccessSheetParams", True)
@@ -220,15 +226,28 @@ Private Function ValidateDataAccessSheetParams(ByVal oDataAccess As CDataAccess,
         Exit Function
     End If
     
-    If oDataAccess.RecordTable = "" Then
-        result.SetFailure "RecordTable not set yet !"
-        Set ValidateDataAccessSheetParams = result
-        
-        Exit Function
+    If blnForSaving Then
+        If oDataAccess.TableForSaving = "" Then
+            result.SetFailure "Table For Saving not set yet !"
+            Set ValidateDataAccessSheetParams = result
+            
+            Exit Function
+        End If
+    Else
+        If oDataAccess.TableForSelecting = "" Then
+            result.SetFailure "Table For Selecting not set yet !"
+            Set ValidateDataAccessSheetParams = result
+            
+            Exit Function
+        End If
     End If
     
     If blnSaveCurrentSheet Then
-        Set Me.CurrentSheet = Me.WorkbookSource.Sheets(oDataAccess.RecordTable)
+        If blnForSaving Then
+            Set Me.CurrentSheet = Me.WorkbookSource.Sheets(oDataAccess.TableForSaving)
+        Else
+            Set Me.CurrentSheet = Me.WorkbookSource.Sheets(oDataAccess.TableForSelecting)
+        End If
     End If
     
     Set ValidateDataAccessSheetParams = result
@@ -276,7 +295,9 @@ Private Function SetCellValueToField(ByVal oField As CField) As CResult
         
         Exit Function
     Else
-        Me.CurrentSheet.Activate
+        
+        ActivateCurrentSheet
+        
         oField.SetValue (Me.CurrentSheet.Cells(Me.CurrentCellRownum, Me.CurrentCellColnum))
         result.SetSuccess
     End If
@@ -305,13 +326,37 @@ Private Function SetFieldValueToCell(ByVal oField As CField) As CResult
         
         Exit Function
     Else
-        Me.CurrentSheet.Activate
+        ActivateCurrentSheet
+        
         Me.CurrentSheet.Cells(Me.CurrentCellRownum, Me.CurrentCellColnum) = CStr(oField.FieldValue.GetValue)
+        
+        saveFieldName oField
+        
         result.SetSuccess
     End If
     
     Set SetFieldValueToCell = result
 End Function
+
+Private Sub saveFieldName(ByVal oField As CField)
+    Dim lngCol As Long
+    
+    If Not oField.StoreFieldName = doNotStore Then
+        ActivateCurrentSheet
+        
+        lngCol = -1
+        If oField.StoreFieldName = toTheLeft Then
+            lngCol = Me.CurrentCellColnum - 1
+        ElseIf oField.StoreFieldName = toTheRight Then
+            lngCol = Me.CurrentCellColnum + 1
+        End If
+        
+        ' save the field name
+        If lngCol > 0 Then
+            Me.CurrentSheet.Cells(Me.CurrentCellRownum, lngCol) = CStr(oField.NameForSaving)
+        End If
+    End If
+End Sub
 
 Private Function SetSelectableRecord(ByVal oRecordTemplate As CRecord, ByRef oRecordValue As CRecord) As CResult
     Dim result As CResult, loopDone As Boolean
@@ -363,7 +408,7 @@ Private Function GetValue(ByVal oDataAccess As CDataAccess, ByVal strFieldName A
     Dim lngRowNum As Long, lngColNum As Long, oField As CField
     
     ' Validate Data Access Sheet parameters
-    AddSubResult MODULE_NAME, "GetValue", oResult, ValidateDataAccessSheetParams(oDataAccess, True)
+    AddSubResult MODULE_NAME, "GetValue", oResult, ValidateDataAccessSheetParams(oDataAccess, True, False)
     If Not oResult.LastResult.IsOK Then
         Set GetValue = Nothing
         Exit Function
@@ -386,12 +431,17 @@ End Function
 
 Private Function GetRecord(ByVal oDataAccess As CDataAccess, ByRef oResult As CResult) As CRecord
     Dim result As CResult, oRecordValue As CRecord, loopDone As Boolean, oField As CField
+    Dim blnSaveCurrentSheet As Boolean
+    Dim blnForSaving As Boolean
+    
+    blnSaveCurrentSheet = True
+    blnForSaving = False
     
     ' Initialize the result object
     AddSubResult MODULE_NAME, "GetRecord", result, oResult
     
     ' Validate Data Access Sheet parameters
-    AddSubResult MODULE_NAME, "GetRecord", result, ValidateDataAccessSheetParams(oDataAccess, True)
+    AddSubResult MODULE_NAME, "GetRecord", result, ValidateDataAccessSheetParams(oDataAccess, blnSaveCurrentSheet, blnForSaving)
     If Not result.LastResult.IsOK Then
         Set GetRecord = Nothing
         Exit Function
@@ -418,7 +468,7 @@ Public Function InsertValues(ByVal oDataAccess As CDataAccess) As CResult
     Dim result As CResult, loopDone As Boolean
     
     ' Validate Data Access Sheet parameters
-    AddSubResult MODULE_NAME, "InsertValues", result, ValidateDataAccessSheetParams(oDataAccess, True)
+    AddSubResult MODULE_NAME, "InsertValues", result, ValidateDataAccessSheetParams(oDataAccess, True, True)
     If Not result.LastResult.IsOK Then
         result.SetFailure "Last Operation Failed: " & result.LastResult.Message
         Set InsertValues = result
@@ -468,11 +518,11 @@ End Function
 ' ---------------------------------------------------------------------------------------
 ' 2025/02/05    Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Property Set IDataSource_User(oUser As CUser)
+Public Property Set IDataSource_User(oUser As CModelUser)
     Set Me.User = oUser
 End Property
 
-Public Property Get IDataSource_User() As CUser
+Public Property Get IDataSource_User() As CModelUser
     Set IDataSource_User = Me.User
 End Property
 

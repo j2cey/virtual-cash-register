@@ -29,10 +29,10 @@ End Property
 ' ---------------------------------------------------------------------------------------
 ' 2025/01/08    Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Public Property Let value(varValue As Variant)
+Public Property Let Value(varValue As Variant)
 End Property
 
-Public Property Get value() As Variant
+Public Property Get Value() As Variant
 End Property
 
 

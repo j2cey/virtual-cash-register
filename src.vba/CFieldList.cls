@@ -203,9 +203,12 @@ End Function
 '   2025/01/31  Jude Parfait        Created
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 Public Function GetFieldByName(ByVal strFieldName As String) As CField
-    Dim result As CResult, itemColl As Variant, oCurrField As CField
+    Dim result As CResult, itemColl As Variant, oCurrField As CField, blnFound As Boolean
+    
+    blnFound = False
     
     If Me.FieldList Is Nothing Then
+        Set GetFieldByName = Nothing
     Else
         For Each itemColl In Me.FieldList
             
@@ -213,7 +216,10 @@ Public Function GetFieldByName(ByVal strFieldName As String) As CField
             
             If Not oCurrField Is Nothing Then
                 If oCurrField.Name = strFieldName Then
+                    
                     Set GetFieldByName = oCurrField
+                    blnFound = True
+                    
                     Exit For
                 End If
             End If
@@ -221,6 +227,10 @@ Public Function GetFieldByName(ByVal strFieldName As String) As CField
         Next itemColl
     End If
     
+    ' Field not found
+    If Not blnFound Then
+        Set GetFieldByName = Nothing
+    End If
 End Function
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -480,13 +490,14 @@ End Function
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 Private Function GetNextFieldKey(Optional ByVal lngAtIndex = -1) As String
     If lngAtIndex = -1 Then
-        Dim currIndex As Long
+        Dim currIndex As Long, lngFieldsCount As Long
         
         ' We increment the previous field index picked
         currIndex = IncrementPreviousFieldIndexPicked()
         
         ' If the max Index is reached
-        If (currIndex + MIN_FIELD_INDEX) >= Me.FieldList.count Then
+        lngFieldsCount = Me.FieldList.count
+        If (currIndex + MIN_FIELD_INDEX) >= lngFieldsCount Then
             GetNextFieldKey = ""
             Exit Function
         End If

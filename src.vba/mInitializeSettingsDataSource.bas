@@ -11,8 +11,6 @@ Option Explicit
 '   Public Variables
 '***************************************************************************************************************************************************************
 
-Public oMainDatasourceSettings As CSettingDataSource
-
 Public Const DB_FOLDER_NAME As String = "db"
 Public Const DB_NAME As String = "comilogcashdb"
 
@@ -20,7 +18,7 @@ Public Const DB_NAME As String = "comilogcashdb"
 '   Public Functions & Subroutines
 '***************************************************************************************************************************************************************
 
-Private Sub SetMainDatasourceDefaultSetting()
+Public Sub SetMainDatasourceDefaultSetting()
     ' Set DataSource Default attributes
     oMainDatasourceSettings.UserLogin = "defaultDSUser"
     oMainDatasourceSettings.UserPwd = "Default Data Source User password"
@@ -34,7 +32,7 @@ Private Sub SetMainDatasourceDefaultSetting()
 End Sub
 
 Public Sub MainDatasourceSettingsLoad()
-    Set oMainDatasourceSettings = NewSettingDataSource(GetLoggedUser(), GetMainSheetDataSource(), "Settings Data Source")
+    InitSettingsMainDatasource
     
     ' Try Load saved settings
     oMainDatasourceSettings.LoadValues

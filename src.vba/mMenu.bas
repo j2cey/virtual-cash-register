@@ -4,7 +4,7 @@ Public Sub AccessMenuSettings(uFrm As MSForms.UserForm)
     If loggedUser.Can(Array("parametre-nom_application", "parametre-base_de_donnees", "parametre-source_code", "parametre-paiement")) Then
         InitSettingsForm uFrm
         SetActivePage uFrm, 4, "Settings", uFrm.SettingsMultiPage
-        uFrm.SettingsMultiPage.value = 0
+        uFrm.SettingsMultiPage.Value = 0
     Else
         MsgBox "Vous n'êtes pas autorisé à accéder à cette Rubrique !", vbCritical, GetAppName
     End If
